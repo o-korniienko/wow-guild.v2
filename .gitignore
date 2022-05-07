@@ -1,0 +1,7 @@
+/target/
+/src/main/resources/
+/src/frontend/
+/.idea/
+/character_icon_request_parse_error
+/character_parser_error
+/character_request_error
