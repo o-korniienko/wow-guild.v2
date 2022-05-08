@@ -120,7 +120,11 @@ public class UserService implements UserDetailsService {
         try {
 
             userFromDB.setUsername(user.getUsername().trim());
-            userFromDB.setEmail(user.getEmail().trim());
+            if (user.getEmail() != null) {
+                userFromDB.setEmail(user.getEmail().trim());
+            } else {
+                userFromDB.setEmail("");
+            }
             userFromDB.setActive(user.isActive());
             if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
                 userFromDB.setPassword(passwordEncoder.encode(user.getPassword().trim()));

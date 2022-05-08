@@ -47,7 +47,7 @@ public class UserController {
         return service.findAll();
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+
     @PutMapping("/edit_user")
     public List<String> editUser(@RequestBody User user, @RequestParam("is_name_changed") boolean isNameChanged) {
 
