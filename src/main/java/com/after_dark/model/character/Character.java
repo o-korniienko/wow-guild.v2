@@ -15,13 +15,11 @@ public class Character {
     private long id;
     private String name;
     private ClassEn classEn;
-    private ClassRu classRu;
     private int level;
     private Rank rank;
     private String race;
     private String iconURL;
     private String regionEn;
-    private String regionRu;
     private String blizzardID;
     private long canonicalID;
     @ManyToOne
@@ -55,13 +53,6 @@ public class Character {
         this.classEn = classEn;
     }
 
-    public ClassRu getClassRu() {
-        return classRu;
-    }
-
-    public void setClassRu(ClassRu classRu) {
-        this.classRu = classRu;
-    }
 
     public int getLevel() {
         return level;
@@ -111,13 +102,6 @@ public class Character {
         this.regionEn = regionEn;
     }
 
-    public String getRegionRu() {
-        return regionRu;
-    }
-
-    public void setRegionRu(String regionRu) {
-        this.regionRu = regionRu;
-    }
 
     public long getCanonicalID() {
         return canonicalID;
@@ -184,46 +168,7 @@ public class Character {
         }
     }
 
-    public void setClassRuByInt(int classInt) {
-        switch (classInt) {
-            case 1:
-                this.classRu = ClassRu.Воин;
-                break;
-            case 2:
-                this.classRu = ClassRu.Паладин;
-                break;
-            case 3:
-                this.classRu = ClassRu.Охотник;
-                break;
-            case 4:
-                this.classRu = ClassRu.Разбойник;
-                break;
-            case 5:
-                this.classRu = ClassRu.Жрец;
-                break;
-            case 6:
-                this.classRu = ClassRu.Рыцарь_смерти;
-                break;
-            case 7:
-                this.classRu = ClassRu.Шаман;
-                break;
-            case 8:
-                this.classRu = ClassRu.Маг;
-                break;
-            case 9:
-                this.classRu = ClassRu.Чернокнижник;
-                break;
-            case 10:
-                this.classRu = ClassRu.Монах;
-                break;
-            case 11:
-                this.classRu = ClassRu.Друид;
-                break;
-            case 12:
-                this.classRu = ClassRu.Охотник_на_демонов;
-                break;
-        }
-    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -234,13 +179,12 @@ public class Character {
                 level == character.level &&
                 Objects.equals(name, character.name) &&
                 classEn == character.classEn &&
-                classRu == character.classRu &&
                 rank == character.rank;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, classEn, classRu, level, rank);
+        return Objects.hash(id, name, classEn, level, rank);
     }
 
     @Override
@@ -249,13 +193,11 @@ public class Character {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", classEn=" + classEn +
-                ", classRu=" + classRu +
                 ", level=" + level +
                 ", rank=" + rank +
                 ", race='" + race + '\'' +
                 ", iconURL='" + iconURL + '\'' +
                 ", regionEn='" + regionEn + '\'' +
-                ", regionRu='" + regionRu + '\'' +
                 ", blizzardID=" + blizzardID +
                 ", cannonicalID=" + canonicalID +
                 ", user=" + user +
@@ -266,35 +208,35 @@ public class Character {
     public void setRankByInt(int parseInt) {
         switch (parseInt) {
             case 0:
-                this.rank = Rank.Гильд_Мастер;
+                this.rank = Rank.Guild_Master;
                 break;
             case 1:
-                this.rank = Rank.Зам;
+                this.rank = Rank.Rank2;
                 break;
 
             case 2:
-                this.rank = Rank.Хранитель;
+                this.rank = Rank.Rank3;
                 break;
             case 3:
-                this.rank = Rank.Офицер;
+                this.rank = Rank.Rank4;
                 break;
             case 4:
-                this.rank = Rank.Рейдер;
+                this.rank = Rank.Rank5;
                 break;
             case 5:
-                this.rank = Rank.Ветеран;
+                this.rank = Rank.Rank6;
                 break;
             case 6:
-                this.rank = Rank.Мастер;
+                this.rank = Rank.Rank7;
                 break;
             case 7:
-                this.rank = Rank.Защитник;
+                this.rank = Rank.Rank8;
                 break;
             case 8:
-                this.rank = Rank.Игрок;
+                this.rank = Rank.Rank9;
                 break;
             case 9:
-                this.rank = Rank.Рекрут;
+                this.rank = Rank.Rank10;
                 break;
         }
 

@@ -209,7 +209,6 @@ public class CharacterService {
                     String race;
                     String iconURL;
                     String realmEN;
-                    String realmRU;
 
 
                     race = response.split("race")[2].split(",\"id\":")[1].split("},\"")[0];
@@ -223,18 +222,8 @@ public class CharacterService {
                     lvl = Integer.parseInt(response.split("\"level\":")[1].split(",")[0]);
                     realmEN = response.split("\"realm\"")[1].split("\"slug\":\"")[1].split("\"")[0];
 
-                    if (url.contains("ru_RU")) {
-                        realmRU = response.split("\"realm\"")[1].split("\"name\":\"")[1].split("\"")[0];
-                        realmRU = realmRU.trim().replace(" ", "-").toLowerCase();
-                    } else {
-                        realmRU = realmEN;
-                    }
 
                     iconURL = getIconURL(characterName, realmEN);
-
-                    if (realmRU.equals("tauren-milfs")) {
-                        System.out.println(characterName + " - " + realmRU);
-                    }
 
 
                     if (characterFromDB != null) {
@@ -244,20 +233,18 @@ public class CharacterService {
                         characterFromDB.setRaceByID(Integer.parseInt(race));
                         characterFromDB.setIconURL(iconURL);
                         characterFromDB.setRegionEn(realmEN);
-                        characterFromDB.setRegionRu(realmRU);
+
                         characterFromDB.setBlizzardID(blizzardID);
                         return characterFromDB;
                     } else {
                         character = new Character();
                         character.setName(name);
                         character.setClassEnByInt(Integer.parseInt(classRuID));
-                        character.setClassRuByInt(Integer.parseInt(classRuID));
                         character.setRankByInt(rank);
                         character.setLevel(lvl);
                         character.setRaceByID(Integer.parseInt(race));
                         character.setIconURL(iconURL);
                         character.setRegionEn(realmEN);
-                        character.setRegionRu(realmRU);
                         character.setBlizzardID(blizzardID);
                         return character;
                     }
@@ -445,7 +432,6 @@ public class CharacterService {
                         our_character.setIconURL(blizzard_character.getIconURL());
 
                         our_character.setClassEn(blizzard_character.getClassEn());
-                        our_character.setClassRu(blizzard_character.getClassRu());
                         our_character.setLevel(blizzard_character.getLevel());
                         our_character.setIconURL(blizzard_character.getIconURL());
                         our_character.setName(blizzard_character.getName());
