@@ -1,6 +1,7 @@
 package com.after_dark.service;
 
 import com.after_dark.model.*;
+import com.after_dark.model.blizzard_character.CharacterImageData;
 import com.after_dark.model.character.Character;
 import com.after_dark.model.rank.Boss;
 import com.after_dark.model.rank.CharacterRank;
@@ -285,13 +286,32 @@ public class CharacterService {
                 if (response != null) {
                     if (response.getStatusCodeValue() == 200) {
                         result2 = response.getBody().split("assets");
+                        CharacterImageData imageData = gson.fromJson(response.getBody(), CharacterImageData.class);
 
-                        if (result2.length > 1) {
+                        if (imageData != null && !imageData.getAssets().isEmpty()){
+                            List<CharacterImageData.AssetItem> assets = imageData.getAssets();
+                            boolean isContainMain = false;
+                            for (CharacterImageData.AssetItem asset : assets) {
+                                if (asset.getKey().equalsIgnoreCase("main")){
+                                    result = asset.getValue();
+                                    isContainMain = true;
+                                }
+                            }
+                            if (!isContainMain){
+                                for (CharacterImageData.AssetItem asset : assets) {
+                                    if (asset.getKey().equalsIgnoreCase("main-raw")){
+                                        result = asset.getValue();
+                                    }
+                                }
+                            }
+                        }
+
+                        /*if (result2.length > 1) {
                             result = result2[1].split("\"main\"")[1].split("value\":\"")[1].split("\"")[0];
                         } else {
                             result = result2[0].split("render_url\":\"")[1].split("\"}")[0];
 
-                        }
+                        }*/
                     }
                 } else {
 
@@ -1092,6 +1112,7 @@ public class CharacterService {
 
     private Character updateBlizzardData(Character character) {
         String response = getGuildDataFromBlizzardDB();
+
         if (response != null && !response.isEmpty()) {
             String[] charactersStrings = response.split("\"character\"");
             for (int i = 1; i < charactersStrings.length; i++) {
