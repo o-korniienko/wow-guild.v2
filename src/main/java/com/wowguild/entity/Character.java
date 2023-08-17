@@ -4,7 +4,7 @@ import com.wowguild.enums.ClassEn;
 import com.wowguild.enums.Rank;
 import com.wowguild.entity.rank.CharacterRank;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 

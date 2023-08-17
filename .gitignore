@@ -1,8 +1,29 @@
 /target/
 /src/main/resources/
-/src/frontend/
+
 /.idea/
 /character_icon_request_parse_error
 /character_parser_error
 /character_request_error
 /http requests
+/src/frontend/app/node_modules/
+/src/frontend/package-lock.json
+
+
+
+# testing
+/src/frontend/coverage
+
+# production
+/src/frontend/build
+
+# misc
+/src/frontend.DS_Store
+/src/frontend.env.local
+/src/frontend.env.development.local
+/src/frontend.env.test.local
+/src/frontend.env.production.local
+
+/src/frontendnpm-debug.log*
+/src/frontendyarn-debug.log*
+/src/frontendyarn-error.log*

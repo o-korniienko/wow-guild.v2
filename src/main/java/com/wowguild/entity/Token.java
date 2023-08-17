@@ -1,9 +1,6 @@
 package com.wowguild.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,6 +9,7 @@ public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+    @Column(columnDefinition = "TEXT")
     private String access_token;
     private Long expires_in;
     private LocalDateTime createTime;
