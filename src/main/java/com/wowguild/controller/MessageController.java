@@ -28,7 +28,6 @@ public class MessageController {
 
     @PostMapping("update_message_by_tag")
     public List<String> updateMessageByTag(@RequestBody InformingMessage message){
-
         return service.updateMessageByTag(message);
     }
 

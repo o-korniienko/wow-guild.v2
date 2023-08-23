@@ -17,9 +17,9 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class BattleNetTokenService implements TokenService {
 
-    @Value("${spring.battle_net_id}")
+    @Value("${battle_net_id}")
     private String BNET_ID;
-    @Value("${spring.battle_net_secret}")
+    @Value("${battle_net_secret}")
     private String BNET_SECRET;
     private final Gson gson;
 

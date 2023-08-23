@@ -1,36 +1,37 @@
 package com.wowguild.service;
 
-import com.wowguild.enums.user.Role;
 import com.wowguild.entity.User;
+import com.wowguild.enums.user.Role;
 import com.wowguild.repos.UserRepos;
+import com.wowguild.utils.Encoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @Service
 public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepos userRepos;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private Encoder encoder;
 
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user = userRepos.findByUsername(s);
-
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepos.findByUsername(username);
         return user;
     }
 
     public Collection<User> findAll() {
-
         return userRepos.findAll();
     }
 
@@ -49,17 +50,15 @@ public class UserService implements UserDetailsService {
         return result;
     }
 
-    public Collection<User> getUserByUserName(User user) {
+    public Collection<User> getUserByUserName(UserDetails user) {
         List<User> users = new ArrayList<>();
-        if (user != null) {
-            String username = user.getUsername();
-            User userFromDB = userRepos.findByUsername(username);
+        if (user != null && user.getUsername() != null) {
+            User userFromDB = userRepos.findByUsername(user.getUsername());
             users.add(userFromDB);
-            return users;
         } else {
             users.add(null);
-            return users;
         }
+        return users;
     }
 
     public List<String> registration(String userName, String password, String language) {
@@ -78,7 +77,7 @@ public class UserService implements UserDetailsService {
             user.setActive(true);
             user.setUsername(userName);
             user.setRoles(roles);
-            user.setPassword(passwordEncoder.encode(password));
+            user.setPassword(encoder.encode(password));
             userRepos.save(user);
             result.add("Success");
             result.add(userName);
@@ -127,7 +126,7 @@ public class UserService implements UserDetailsService {
             }
             userFromDB.setActive(user.isActive());
             if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
-                userFromDB.setPassword(passwordEncoder.encode(user.getPassword().trim()));
+                userFromDB.setPassword(encoder.encode(user.getPassword().trim()));
             }
             if (user.getRoles() == null || user.getRoles().size() == 0) {
                 roles.add(Role.USER);

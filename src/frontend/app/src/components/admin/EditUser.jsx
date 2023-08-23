@@ -1,77 +1,66 @@
-import React, { useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import AppNavbar from './../nav_bar/GeneralNavBar.jsx';
 import 'antd/dist/antd.css';
 import Cookies from 'universal-cookie';
-import { Input, Form, InputNumber, Select, Button, Tooltip, Space, message } from 'antd';
-import {  useHistory } from 'react-router-dom';
+import {Button, Form, Input, message, Select, Space} from 'antd';
+import {useHistory} from 'react-router-dom';
 
 
-
-
-
-
-const { TextArea } = Input;
+const {TextArea} = Input;
 
 let userRole;
 let isActive;
 let languageLocal;
 
 
-
 let user2;
 const cookies = new Cookies();
-const { Option } = Select;
+const {Option} = Select;
 const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
+    labelCol: {
+        span: 8,
+    },
+    wrapperCol: {
+        span: 16,
+    },
 };
 
 
-
-
-
-
-
-
 const UserRoles = []
-UserRoles.push(<Option style={{color:"#022715"}} key="USER">USER</Option>);
-UserRoles.push(<Option style={{color:"#022715"}} key="ADMIN">ADMIN</Option>);
-UserRoles.push(<Option style={{color:"#022715"}} key="RAIDER">RAIDER</Option>);
-UserRoles.push(<Option style={{color:"#022715"}} key="OFFICER">OFFICER</Option>);
+UserRoles.push(<Option style={{color: "#022715"}} key="USER">USER</Option>);
+UserRoles.push(<Option style={{color: "#022715"}} key="ADMIN">ADMIN</Option>);
+UserRoles.push(<Option style={{color: "#022715"}} key="RAIDER">RAIDER</Option>);
+UserRoles.push(<Option style={{color: "#022715"}} key="OFFICER">OFFICER</Option>);
 
 
 const UserActivities = []
-UserActivities.push(<Option style={{color:"#022715"}} key="true">true</Option>);
-UserActivities.push(<Option style={{color:"#022715"}} key="false">false</Option>);
+UserActivities.push(<Option style={{color: "#022715"}} key="true">true</Option>);
+UserActivities.push(<Option style={{color: "#022715"}} key="false">false</Option>);
 
 
 function setUserRole(value) {
-  userRole = value;
+    userRole = value;
 
 }
 
 function setUserActivity(value) {
-  isActive = value;
+    isActive = value;
 
 }
 
 
-const result = (data, language) =>{
-    if(data != undefined && data != null){
-        if(data[0] === "Exist"){
-            if(language == "UA"){
+const result = (data, language) => {
+    if (data != undefined && data != null) {
+        if (data[0] === "Exist") {
+            if (language == "UA") {
                 message.warning("Користувач із зазначеним іменем вже зареєстрований");
             }
-            if(language == "EN"){
+            if (language == "EN") {
                 message.warning("The user with the specified name already exist");
             }
 
-        }else{
-            data[0] != "Saved" ? message.error(data[0] ) : window.location.href = "/admin";
+        } else {
+            data[0] != "Saved" ? message.error(data[0]) : window.location.href = "/admin";
         }
 
     }
@@ -79,73 +68,77 @@ const result = (data, language) =>{
 }
 
 
-const EditForm = (props) =>{
+const EditForm = (props) => {
 
-     let id = props.id;
-     const [form] = Form.useForm();
-     const [user, setUser] = useState(null);
-     const history = useHistory();
-     const back = () => history.goBack();
-     const goBack = () => {
-         window.location.href = "/admin";
-     }
+    let id = props.id;
+    const [form] = Form.useForm();
+    const [user, setUser] = useState(null);
+    const history = useHistory();
+    const back = () => history.goBack();
+    const goBack = () => {
+        window.location.href = "/admin";
+    }
 
-     const onFinish = (values) => {
-         let isNameChanged = false;
-         if(user2.username.trim() != values.user_name.trim()){
-             isNameChanged = true;
-         }
-         var userObject ={
-             id:user2.id,
-             username:values.user_name,
-             password:values.password,
-             email:values.email,
-             active:isActive,
-             roles:userRole,
-             language:localStorage.getItem("language"),
-         }
+    const onFinish = (values) => {
+        let isNameChanged = false;
+        if (user2.username.trim() != values.user_name.trim()) {
+            isNameChanged = true;
+        }
+        var userObject = {
+            id: user2.id,
+            username: values.user_name,
+            password: values.password,
+            email: values.email,
+            active: isActive,
+            roles: userRole,
+            language: localStorage.getItem("language"),
+        }
 
-                  const XSRFToken  = cookies.get('XSRF-TOKEN')
-                  fetch("/edit_user?is_name_changed=" + isNameChanged, { method: 'PUT',
-                     headers: {
-                       'X-XSRF-TOKEN': XSRFToken,
-                       'Accept': 'application/json',
-                       'Content-Type': 'application/json'
-                     },
-                     credentials: 'include',
-                 body:JSON.stringify(userObject)
-             })
-             .then(response => response.status != 200 ? message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText) :
-                response.json() )
-             .then(data => result(data,props.language));
+        fetch("/csrf")
+            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+                response.json())
+            .then(data => {
+                if (data !== undefined && data !== null && data.token != undefined) {
+                    fetch("/edit_user?is_name_changed=" + isNameChanged, {
+                        method: 'PUT',
+                        headers: {
+                            'X-XSRF-TOKEN': data.token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(userObject)
+                    })
+                        .then(response => response.status != 200 ? message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText) :
+                            response.json())
+                        .then(data => result(data, props.language))
+                }
+            });
+    };
 
-
-
-     };
-
-     const getUser = ()=>{
-         fetch('/get_user/' + id)
-             .then(response => response.json())
-             .then(data => setUser(data));
-     }
-     if(user === null ){
+    const getUser = () => {
+        fetch('/get_user/' + id)
+            .then(response => response.json())
+            .then(data => setUser(data));
+    }
+    if (user === null) {
         getUser();
-     }else{
-         form.setFieldsValue({user_name: user.username});
-         form.setFieldsValue({email: user.email});
-         form.setFieldsValue({user_role: user.roles});
-         form.setFieldsValue({isActive: user.active.toString()});
-         userRole = user.roles;
-         isActive = user.active;
-         user2 = user;
-     }
-     const clickHandler = (event) => {
-       if (event.key === 'Enter' && event.target.tagName !== "INPUT") {
-          form.submit();
-       }
-     }
+    } else {
+        form.setFieldsValue({user_name: user.username});
+        form.setFieldsValue({email: user.email});
+        form.setFieldsValue({user_role: user.roles});
+        form.setFieldsValue({isActive: user.active.toString()});
+        userRole = user.roles;
+        isActive = user.active;
+        user2 = user;
+    }
+    const clickHandler = (event) => {
+        if (event.key === 'Enter' && event.target.tagName !== "INPUT") {
+            form.submit();
+        }
+    }
 
-     if(props.language === "EN"){
+    if (props.language === "EN") {
         props.setLoginFieldName("User Login")
         props.setEmailFieldName('Email')
         props.setTypeFieldName("Roles")
@@ -155,8 +148,8 @@ const EditForm = (props) =>{
         props.setCancelButtonText("Cancel")
         props.setLoginErrorText("Please input user name!")
         props.setEmailErrorText("input email");
-     }
-     if(props.language === "UA"){
+    }
+    if (props.language === "UA") {
         props.setLoginFieldName("Логін")
         props.setEmailFieldName('Пошта')
         props.setTypeFieldName("Ролі")
@@ -166,66 +159,67 @@ const EditForm = (props) =>{
         props.setCancelButtonText("Відміна")
         props.setLoginErrorText("Введіть логін!")
         props.setEmailErrorText("Введіть пошту");
-     }
+    }
 
 
     return (<div tabIndex={0} onKeyPress={clickHandler} className="sent-form">
-                 <br/>
-                 <br/>
-                 <p/>
-                 <Form form = {form}  {...layout} name="nest-messages"  onFinish={onFinish} >
-                   <Form.Item
-                     name= 'user_name'
-                     label={props.loginFieldName}
-                     rules={[{ required: true, message: props.loginErrorText}]}
-                   >
-                     <Input name= 'user_name' key="name" style={{ width: 400 }} placeholder={props.loginErrorText}/>
-                   </Form.Item>
-                  <Form.Item
+            <br/>
+            <br/>
+            <p/>
+            <Form form={form}  {...layout} name="nest-messages" onFinish={onFinish}>
+                <Form.Item
+                    name='user_name'
+                    label={props.loginFieldName}
+                    rules={[{required: true, message: props.loginErrorText}]}
+                >
+                    <Input name='user_name' key="name" style={{width: 400}} placeholder={props.loginErrorText}/>
+                </Form.Item>
+                <Form.Item
                     name="email"
                     label={props.emailFieldName}
-                     rules={[{type : "email" }]}
-                  >
-                   <Input name= 'email' key="email" style={{ width: 400 }} placeholder={props.emailErrorText}/>
-                  </Form.Item>
-                  <Form.Item
+                    rules={[{type: "email"}]}
+                >
+                    <Input name='email' key="email" style={{width: 400}} placeholder={props.emailErrorText}/>
+                </Form.Item>
+                <Form.Item
                     name="user_role"
                     label={props.typeFieldName}
-                  >
-                   <Select
-                     mode="multiple"
-                     style={{ width: 400, color:"#63baf2", border: "1px solid grey"}}
-                     onChange={setUserRole}
-                   >
-                     {UserRoles}
-                   </Select>
-                  </Form.Item>
-                  <Form.Item
+                >
+                    <Select
+                        mode="multiple"
+                        style={{width: 400, color: "#63baf2", border: "1px solid grey"}}
+                        onChange={setUserRole}
+                    >
+                        {UserRoles}
+                    </Select>
+                </Form.Item>
+                <Form.Item
                     name="password"
                     label={props.passFieldName}
-                    rules={[{message: 'Please input password!' }]}
-                  >
-                      <Input.Password id="password" name="password" key="password" style={{ width: 400 }} placeholder="input a password"  />
-                    </Form.Item>
-                    <Form.Item
-                        name="isActive"
-                        label={props.activeFieldName}
-                      >
-                       <Select
-                         style={{ width: 400, color:"#63baf2", border: "1px solid grey"}}
-                         onChange={setUserActivity}
-                       >
-                         {UserActivities}
-                       </Select>
-                      </Form.Item>
-                   <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-                     <Space>
-                         <Button onClick={goBack}>{props.cancelButtonText}</Button>
-                         <Button type="primary" htmlType="submit"> {props.saveButtonText} </Button>
-                     </Space>
-                   </Form.Item>
-                 </Form>
-              </div>
+                    rules={[{message: 'Please input password!'}]}
+                >
+                    <Input.Password id="password" name="password" key="password" style={{width: 400}}
+                                    placeholder="input a password"/>
+                </Form.Item>
+                <Form.Item
+                    name="isActive"
+                    label={props.activeFieldName}
+                >
+                    <Select
+                        style={{width: 400, color: "#63baf2", border: "1px solid grey"}}
+                        onChange={setUserActivity}
+                    >
+                        {UserActivities}
+                    </Select>
+                </Form.Item>
+                <Form.Item wrapperCol={{...layout.wrapperCol, offset: 8}}>
+                    <Space>
+                        <Button onClick={goBack}>{props.cancelButtonText}</Button>
+                        <Button type="primary" htmlType="submit"> {props.saveButtonText} </Button>
+                    </Space>
+                </Form.Item>
+            </Form>
+        </div>
 
     );
 
@@ -233,10 +227,7 @@ const EditForm = (props) =>{
 }
 
 
-
-
-
- function Display(props) {
+function Display(props) {
     languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
     const [currentLanguage, setLanguage] = useState(languageLocal);
     const [loginFieldName, setLoginFieldName] = useState('');
@@ -251,44 +242,42 @@ const EditForm = (props) =>{
     let patchName = window.location.pathname;
 
 
-
-
     return (
         <div>
-           <AppNavbar setFunction = {setLanguage} patchName = {patchName}/>
-           <br/>
-           <br/>
-           <EditForm
-                language ={currentLanguage}
-                setLanguage = {setLanguage}
-                loginFieldName = {loginFieldName}
-                setLoginFieldName = {setLoginFieldName}
-                emailFieldName = {emailFieldName}
-                setEmailFieldName = {setEmailFieldName}
-                typeFieldName = {typeFieldName}
-                setTypeFieldName = {setTypeFieldName}
-                activeFieldName = {activeFieldName}
-                setActiveFieldName = {setActiveFieldName}
-                passFieldName = {passFieldName}
-                setPassFieldName = {setPassFieldName}
-                cancelButtonText = {cancelButtonText}
-                setCancelButtonText = {setCancelButtonText}
-                saveButtonText = {saveButtonText}
-                setSaveButtonText = {setSaveButtonText}
-                id = {props.match.params.id}
-                loginErrorText = {loginErrorText}
-                setLoginErrorText = {setLoginErrorText}
-                emailErrorText = {emailErrorText}
-                setEmailErrorText = {setEmailErrorText}
+            <AppNavbar setFunction={setLanguage} patchName={patchName}/>
+            <br/>
+            <br/>
+            <EditForm
+                language={currentLanguage}
+                setLanguage={setLanguage}
+                loginFieldName={loginFieldName}
+                setLoginFieldName={setLoginFieldName}
+                emailFieldName={emailFieldName}
+                setEmailFieldName={setEmailFieldName}
+                typeFieldName={typeFieldName}
+                setTypeFieldName={setTypeFieldName}
+                activeFieldName={activeFieldName}
+                setActiveFieldName={setActiveFieldName}
+                passFieldName={passFieldName}
+                setPassFieldName={setPassFieldName}
+                cancelButtonText={cancelButtonText}
+                setCancelButtonText={setCancelButtonText}
+                saveButtonText={saveButtonText}
+                setSaveButtonText={setSaveButtonText}
+                id={props.match.params.id}
+                loginErrorText={loginErrorText}
+                setLoginErrorText={setLoginErrorText}
+                emailErrorText={emailErrorText}
+                setEmailErrorText={setEmailErrorText}
 
 
-           />
+            />
         </div>
     )
 }
 
 
- export default function EditUser(props){
+export default function EditUser(props) {
 
-    return <Display {... props}/>;
+    return <Display {...props}/>;
 }

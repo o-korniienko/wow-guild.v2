@@ -49,7 +49,6 @@ public class MemberController {
 
     @GetMapping("/get_ranked_members")
     public List<Character> getRankedMembers(){
-
         return guildManager.getRankedMembers();
     }
 

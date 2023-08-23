@@ -1,79 +1,84 @@
 import 'antd/dist/antd.css';
-import { PageHeader, Avatar, Image, message, Select, Descriptions, Button, Tag} from 'antd';
+import {Avatar, Button, Descriptions, message, PageHeader, Select} from 'antd';
 import styled from 'styled-components'
-import  './NavBar.css';
-import React, { useState, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import './NavBar.css';
+import React, {useEffect, useState} from 'react';
+import {Link, useHistory} from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import { UserOutlined, ArrowLeftOutlined} from '@ant-design/icons';
+import {ArrowLeftOutlined, UserOutlined} from '@ant-design/icons';
 import logo from './../logo/TM.png';
 
 
 const cookies = new Cookies();
-const { Option } = Select;
-const XSRFToken  = cookies.get('XSRF-TOKEN');
+const {Option} = Select;
+
 let languages = []
 let languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
-languages.push(<Option style={{color:"#022715"}} key="EN">EN</Option>)
-languages.push(<Option style={{color:"#022715"}} key="UA">UA</Option>)
+languages.push(<Option style={{color: "#022715"}} key="EN">EN</Option>)
+languages.push(<Option style={{color: "#022715"}} key="UA">UA</Option>)
 
 
-const Language = (props) =>{
+const Language = (props) => {
     let lang = localStorage.getItem("language");
-    if(lang == null){
-        localStorage.setItem("language","EN");
+    if (lang == null) {
+        localStorage.setItem("language", "EN");
     }
 
-    const UpdateData = (value) =>{
-        localStorage.setItem("language",value)
+    const UpdateData = (value) => {
+        localStorage.setItem("language", value)
         languageLocal = value
         props.setFunction(value);
         props.setLanguage(value);
     }
 
 
-
-    const setLanguage = (value) =>{
-
-        fetch('/update_language?language=' + value, {
-          method: 'POST',
-          headers: {
-            'X-XSRF-TOKEN': XSRFToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        }).then(response => response.status === false ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
-        response.json()).then(data => data[0] != "Success" ? message.error(data[0]) : UpdateData(value));
+    const setLanguage = (value) => {
+        fetch("/csrf")
+            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+                response.json())
+            .then(data => {
+                if (data !== undefined && data !== null && data.token != undefined) {
+                    fetch('/update_language?language=' + value, {
+                        method: 'POST',
+                        headers: {
+                            'X-XSRF-TOKEN': data.token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include'
+                    }).then(response => response.status === false ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+                        response.json()).then(data => data[0] != "Success" ? message.error(data[0]) : UpdateData(value));
+                }
+            });
     }
 
 
-    const onClick = (event) =>{
+    const onClick = (event) => {
         console.log(event);
     }
 
-    return(
+    return (
 
 
-            <Select
-              className = "language_selector"
-              onChange={setLanguage}
-              value = {props.language}
-              onClick = {onClick}
-            >
-             {languages}
-            </Select>
+        <Select
+            className="language_selector"
+            onChange={setLanguage}
+            value={props.language}
+            onClick={onClick}
+        >
+            {languages}
+        </Select>
 
     )
 }
 
-const getLogOut = () =>{
+const getLogOut = () => {
     window.location.href = "/login_in";
 
 }
 
-const BackIcon = () =>{
+const BackIcon = () => {
     const StyledBackIcon = styled(ArrowLeftOutlined)`
         color:#cd641b;
         &:hover {
@@ -85,43 +90,49 @@ const BackIcon = () =>{
 }
 
 
-
-const Logo = (props) =>{
-     let language = props.language;
-     if(language === "UA"){
-          props.setLogoText("Tauren Milfs");
-     }
-
-     if(language === "EN"){
-         props.setLogoText("Tauren Milfs");
-     }
-
-     return (<Link className="logo" to="/" ><img alt = "here must be a logo" style={{maxWidth:'20%', height:'auto'}} src={logo} />{props.logoText}</Link>
-     )
-}
-
-const LogOut = () =>{
-
-    fetch('/logout', {
-      method: 'POST',
-      headers: {
-        'X-XSRF-TOKEN': XSRFToken,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    }).then(response => response.status === false ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) : getLogOut())
-
-
-}
-
-function UserButton(props){
+const Logo = (props) => {
     let language = props.language;
-    if(language === "UA"){
+    if (language === "UA") {
+        props.setLogoText("Tauren Milfs");
+    }
+
+    if (language === "EN") {
+        props.setLogoText("Tauren Milfs");
+    }
+
+    return (<Link className="logo" to="/"><img alt="here must be a logo" style={{maxWidth: '20%', height: 'auto'}}
+                                               src={logo}/>{props.logoText}</Link>
+    )
+}
+
+const LogOut = () => {
+    fetch("/csrf")
+        .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+            response.json())
+        .then(data => {
+            if (data !== undefined && data !== null && data.token != undefined) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'X-XSRF-TOKEN': data.token,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                }).then(response => response.status === false ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) : getLogOut())
+            }
+        });
+
+
+}
+
+function UserButton(props) {
+    let language = props.language;
+    if (language === "UA") {
         props.setUserTittle("Налаштування користувача");
     }
 
-    if(language === "EN"){
+    if (language === "EN") {
         props.setUserTittle("User settings");
     }
 
@@ -134,20 +145,18 @@ function UserButton(props){
     text-decoration: underline;`
 
 
-
-    return ( <StyledUserButton  type="link" title={props.userTittle}>
-                    <Link to="/usr_settings">
-                 <Avatar className='usr_ava' style={{ backgroundColor: '#87d068' }} icon={<UserOutlined />} />&nbsp;
-                 {props.username}</Link>
-               </StyledUserButton>
-            )
+    return (<StyledUserButton type="link" title={props.userTittle}>
+            <Link to="/usr_settings">
+                <Avatar className='usr_ava' style={{backgroundColor: '#87d068'}} icon={<UserOutlined/>}/>&nbsp;
+                {props.username}</Link>
+        </StyledUserButton>
+    )
 
 
 }
 
 
-
-const LogOutButton = (props) =>{
+const LogOutButton = (props) => {
 
     const StyledLogOutButton = styled(Button)`
     position:relative;
@@ -158,26 +167,26 @@ const LogOutButton = (props) =>{
     text-decoration: underline;`
 
     let language = props.language;
-    if(language === "UA"){
+    if (language === "UA") {
         props.setLogOutText("Вийти");
 
     }
 
-    if(language === "EN"){
-       props.setLogOutText("Log out");
+    if (language === "EN") {
+        props.setLogOutText("Log out");
 
     }
 
-     return (
-            <StyledLogOutButton type="link"><Link onClick={LogOut}>
-                 {props.logOutText}</Link>
-               </StyledLogOutButton>
-               )
+    return (
+        <StyledLogOutButton type="link"><Link onClick={LogOut}>
+            {props.logOutText}</Link>
+        </StyledLogOutButton>
+    )
 
 
 }
 
-const Menu = (props) =>{
+const Menu = (props) => {
     let language = props.language;
     let user = props.user;
     let colorMembers = '#248755';
@@ -187,25 +196,31 @@ const Menu = (props) =>{
     let colorAbout = '#248755';
     let isAdmin = false;
 
-    if(props.patchName != undefined && props.patchName.includes("/edit_user/")){
+    if (props.patchName != undefined && props.patchName.includes("/edit_user/")) {
         colorAdmin = "#248755";
     }
-    switch(props.patchName){
-        case "/admin" : colorAdmin = "#c8e6c9"
-        break
-        case "/about_us" : colorAbout = "#c8e6c9"
-        break
-        case "/addons" : colorAdd = "#c8e6c9"
-        break
-        case "/crafts" : colorCrafts = "#c8e6c9"
-        break
-        case "/members/list" : colorMembers = "#c8e6c9"
-        break
-        case "/members/stars" : colorMembers = "#c8e6c9"
-        break
+    switch (props.patchName) {
+        case "/admin" :
+            colorAdmin = "#c8e6c9"
+            break
+        case "/about_us" :
+            colorAbout = "#c8e6c9"
+            break
+        case "/addons" :
+            colorAdd = "#c8e6c9"
+            break
+        case "/crafts" :
+            colorCrafts = "#c8e6c9"
+            break
+        case "/members/list" :
+            colorMembers = "#c8e6c9"
+            break
+        case "/members/stars" :
+            colorMembers = "#c8e6c9"
+            break
 
     }
-    if (language === "UA"){
+    if (language === "UA") {
         props.setCraftText("Ремесла")
         props.setAddonsText("Аддони")
         props.setMembersText("Склад")
@@ -213,7 +228,7 @@ const Menu = (props) =>{
         props.setAdminText("Адмін")
     }
 
-    if (language === "EN"){
+    if (language === "EN") {
         props.setCraftText("Crafts")
         props.setAddonsText("Addons")
         props.setMembersText("Members")
@@ -221,10 +236,10 @@ const Menu = (props) =>{
         props.setAdminText("Admin")
     }
 
-    if(user != null && user !="null"){
+    if (user != null && user != "null") {
         isAdmin = false;
-        for(var i = 0; i < user.roles.length; i++){
-            if(user.roles[i] === "ADMIN"){
+        for (var i = 0; i < user.roles.length; i++) {
+            if (user.roles[i] === "ADMIN") {
                 isAdmin = true;
             }
         }
@@ -236,46 +251,46 @@ const Menu = (props) =>{
       }
     `
 
-    if(!isAdmin){
+    if (!isAdmin) {
 
-        return(
-            <Descriptions  column={4} style={{width:'45%', position:'relative', left:'35%'}}>
+        return (
+            <Descriptions column={4} style={{width: '45%', position: 'relative', left: '35%'}}>
                 <Descriptions.Item>
-                   <Link className="header_menu" style = {{color:colorMembers}}  to="/members/list">{props.membersText}</Link>
-               </Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorMembers}}
+                          to="/members/list">{props.membersText}</Link>
+                </Descriptions.Item>
                 <Descriptions.Item>
-                   <Link className="header_menu" style = {{color:colorAdd}}  to="/addons">{props.addonsText}</Link>
-               </Descriptions.Item>
-               <Descriptions.Item>
-                   <Link className="header_menu"  style = {{color:colorCrafts}} to="/crafts">{props.craftText}</Link>
-               </Descriptions.Item>
-               <Descriptions.Item>
-                   <Link className="header_menu" style = {{color:colorAbout}} to="/about_us">{props.aboutText}</Link>
-               </Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorAdd}} to="/addons">{props.addonsText}</Link>
+                </Descriptions.Item>
+                <Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorCrafts}} to="/crafts">{props.craftText}</Link>
+                </Descriptions.Item>
+                <Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorAbout}} to="/about_us">{props.aboutText}</Link>
+                </Descriptions.Item>
             </Descriptions>)
 
 
+    } else {
 
-
-    }else{
-
-         return(
-            <Descriptions  column={5} style={{ width:'45%', position:'relative', left:'30%'}}>
+        return (
+            <Descriptions column={5} style={{width: '45%', position: 'relative', left: '30%'}}>
                 <Descriptions.Item>
-                   <Link className="header_menu" style = {{color:colorMembers}}  to="/members/list">{props.membersText}</Link>
-               </Descriptions.Item>
-               <Descriptions.Item>
-                   <Link className="header_menu" style = {{color:colorAdd}} to="/addons">{props.addonsText}</Link>
-               </Descriptions.Item>
-               <Descriptions.Item>
-                   <Link className="header_menu" style = {{color:colorCrafts}} to="/crafts">{props.craftText}</Link>
-               </Descriptions.Item>
-               <Descriptions.Item>
-                   <Link className="header_menu" style = {{color:colorAbout}} to="/about_us">{props.aboutText}</Link>
-               </Descriptions.Item>
-               <Descriptions.Item >
-                   <Link className="header_menu" style = {{color:colorAdmin}} to="/admin">{props.adminText}</Link>
-               </Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorMembers}}
+                          to="/members/list">{props.membersText}</Link>
+                </Descriptions.Item>
+                <Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorAdd}} to="/addons">{props.addonsText}</Link>
+                </Descriptions.Item>
+                <Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorCrafts}} to="/crafts">{props.craftText}</Link>
+                </Descriptions.Item>
+                <Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorAbout}} to="/about_us">{props.aboutText}</Link>
+                </Descriptions.Item>
+                <Descriptions.Item>
+                    <Link className="header_menu" style={{color: colorAdmin}} to="/admin">{props.adminText}</Link>
+                </Descriptions.Item>
             </Descriptions>
         )
 
@@ -283,10 +298,9 @@ const Menu = (props) =>{
 }
 
 
-
-function NavBar(props){
+function NavBar(props) {
     const history = useHistory();
-    const Back = () =>{
+    const Back = () => {
         history.goBack();
     }
     const [user, setUser] = useState("null");
@@ -301,7 +315,6 @@ function NavBar(props){
     const [adminText, setAdminText] = useState("");
 
 
-
     const StyledPageHeader = styled(PageHeader)`
           position:relative;
           height:3%;
@@ -310,64 +323,68 @@ function NavBar(props){
           background-color:rgb(0, 0, 0);
         `
 
-     const setData =(data)=>{
+    const setData = (data) => {
         setUser(data);
         localStorage.setItem("user", JSON.stringify(data));
-        localStorage.setItem("language",data.language);
+        localStorage.setItem("language", data.language);
         setLanguage(data.language);
-     }
+    }
     useEffect(() => {
 
 
         fetch("/get_user")
-            .then(response=>response.json())
-            .then(data=>setData(data[0]));
+            .then(response => response.json())
+            .then(data => setData(data[0]));
 
     }, []);
 
-    if(user === null){
-         window.location.href = "/login_in";
-        }else{
-           return  (<StyledPageHeader
-             className="site-page-header"
-             title=<Logo logoText = {logoText} setLogoText={setLogoText}  language = {language} />
-             extra = {[<UserButton key='0' {... user}
-                            userTittle = {userTittle}
-                            setUserTittle = {setUserTittle}
-                            language = {language}
-                       />,
-                       <LogOutButton key='1'
-                              logOutText = {logOutText}
-                              setLogOutText = {setLogOutText}
-                              language = {language}
-                       />,
-                       <Language setCurrentDifficulty = {props.setCurrentDifficulty} language = {language} setLanguage={setLanguage} setFunction={props.setFunction}/>
-                       ]}
-             >
+    if (user === null) {
+        window.location.href = "/login_in";
+    } else {
+        return (<StyledPageHeader
+            className="site-page-header"
+            title=<Logo logoText={logoText} setLogoText={setLogoText} language={language}/>
+        extra = {
+            [<UserButton key='0' {...user}
+                         userTittle={userTittle}
+                         setUserTittle={setUserTittle}
+                         language={language}
+            />,
+        <LogOutButton key='1'
+                      logOutText={logOutText}
+                      setLogOutText={setLogOutText}
+                      language={language}
+        />,
+            <Language setCurrentDifficulty={props.setCurrentDifficulty} language={language} setLanguage={setLanguage}
+                      setFunction={props.setFunction}/>
+    ]
+    }
+    >
 
-             <Menu
-                language = {language}
-                aboutText = {aboutText}
-                setAboutText = {setAboutText}
-                membersText = {membersText}
-                setMembersText = {setMembersText}
-                addonsText = {addonsText}
-                setAddonsText = {setAddonsText}
-                craftText = {craftText}
-                setCraftText = {setCraftText}
-                user = {user}
-                setAdminText = {setAdminText}
-                adminText = {adminText}
-                patchName = {props.patchName}
-             />
+    <
+        Menu
+        language = {language}
+        aboutText = {aboutText}
+        setAboutText = {setAboutText}
+        membersText = {membersText}
+        setMembersText = {setMembersText}
+        addonsText = {addonsText}
+        setAddonsText = {setAddonsText}
+        craftText = {craftText}
+        setCraftText = {setCraftText}
+        user = {user}
+        setAdminText = {setAdminText}
+        adminText = {adminText}
+        patchName = {props.patchName}
+        />
 
 
-             </StyledPageHeader>)
-        }
+    </StyledPageHeader>)
+    }
 }
 
 
-export default function AppNavBar(props){
+export default function AppNavBar(props) {
 
-  return <NavBar {... props}/>;
+    return <NavBar {...props}/>;
 }

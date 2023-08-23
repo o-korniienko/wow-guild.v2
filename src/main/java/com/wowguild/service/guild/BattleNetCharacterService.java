@@ -4,7 +4,7 @@ import com.wowguild.model.UpdateStatus;
 import com.wowguild.model.blizzard_character.CharacterImageData;
 import com.wowguild.entity.Character;
 import com.wowguild.sender.HttpSender;
-import com.wowguild.service.entity.CharacterService;
+import com.wowguild.service.entity.impl.CharacterService;
 import com.wowguild.service.token.TokenManager;
 import com.wowguild.tool.LogHandler;
 import com.google.gson.Gson;

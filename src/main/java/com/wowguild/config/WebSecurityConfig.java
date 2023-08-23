@@ -1,56 +1,97 @@
 package com.wowguild.config;
 
-import com.wowguild.service.UserService;
+import com.wowguild.controller.CSRFTokenController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-
-    @Bean
-    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
-        DefaultHttpFirewall firewall = new DefaultHttpFirewall();
-        return firewall;
-    }
-
 
     @Autowired
     public LoginFailHandler failHandler;
 
     @Bean
+    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+        return new DefaultHttpFirewall();
+    }
+
+    @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                //.cors(AbstractHttpConfigurer::disable)
+                //.csrf(AbstractHttpConfigurer::disable)
+                .cors()
+                .and()
+                .csrf(csrf->csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers(
+                                "/perform_login",
+                                "/registration"
+                                /*antMatcher(HttpMethod.POST),
+                                antMatcher(HttpMethod.PUT),
+                                antMatcher(HttpMethod.DELETE)*/
+                        ))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/index*")
+                        .requestMatchers(
+                                "/index*",
+                                "/*/*.js",
+                                "/*/*.html",
+                                "/*/*.css",
+                                "/static/**",
+                                "/*.js",
+                                "/*.json",
+                                "/*.ico",
+                                "/*.jsx",
+                                "/error")
                         .permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(formLogin -> formLogin.failureHandler(failHandler)
+                        .requestMatchers(
+                              //  antMatcher(HttpMethod.POST, "/save_greeting"),
+                                antMatcher(HttpMethod.POST, "/registration"),
+                                antMatcher(HttpMethod.GET, "/get_about_us_messages"),
+                                antMatcher(HttpMethod.GET, "/get_user"),
+                                antMatcher(HttpMethod.GET, "/get_greeting_message"))
+                        .permitAll()
+                        .anyRequest().authenticated());
+        http
+                .formLogin(formLogin -> formLogin
+                        .failureHandler(failHandler)
                         //.loginPage("/login_in")
                         .loginProcessingUrl("/perform_login")
-                        .successHandler(new SessionTimeoutAuthSuccessHandler(Duration.ofHours(6))).permitAll()
-                        .permitAll()).cors(AbstractHttpConfigurer::disable);
+                        .successHandler(new SuccessHandler(Duration.ofHours(6)))
+                        .permitAll());
+        http
+                .logout(LogoutConfigurer::permitAll);
 
         return http.build();
     }
@@ -59,21 +100,57 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> {
             web.debug(false)
-                    .ignoring().requestMatchers("/*/*.js", "/*/*.html", "/*/*.css", "/static/**", "/*.js", "/*.json", "/*.ico", "/*.jsx",
-                            "/get_about_us_messages", "/get_user", "/get_greeting_message*", "/save_greeting*", "/registration*");
+                    /*.ignoring()
+                    .requestMatchers("/perform_login")*/;
         };
     }
 
     @Bean
-    protected UserDetailsService userDetailsService() {
-        /*try {
-            auth.userDetailsService(userService)
-                    .passwordEncoder(passwordEncoder);
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        List<String> settings = new ArrayList<>();
+        settings.add("Access-Control-Allow-Origin");
+        settings.add("Access-Control-Allow-Methods");
+        settings.add("Access-Control-Allow-Headers");
+        settings.add("Access-Control-Max-Age");
+        settings.add("Access-Control-Request-Headers");
+        settings.add("Access-Control-Request-Method");
 
-        return userService;
+        configuration.setExposedHeaders(settings);
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
+
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setCookieName("my_guild_session_id");
+        return serializer;
+    }
+
+    @Bean
+    public PasswordEncoder getPasswordEncoder() {
+        return new BCryptPasswordEncoder(8);
+    }
+
+    /*@Bean
+    protected UserDetailsService userDetailsService() {
+*//*        UserDetails user =
+                User.withDefaultPasswordEncoder()
+                        .username("alex")
+                        .password("123")
+                        .roles("USER")
+                        .build();
+        return new InMemoryUserDetailsManager(user);*//*
+        return userService;
+    }*/
 }

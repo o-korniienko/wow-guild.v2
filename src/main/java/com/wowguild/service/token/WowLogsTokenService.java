@@ -17,9 +17,9 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class WowLogsTokenService implements TokenService {
 
-    @Value("${spring.wow_logs_id}")
+    @Value("${wow_logs_id}")
     private String WOW_LOGS_ID;
-    @Value("${spring.wow_logs_secret}")
+    @Value("${wow_logs_secret}")
     private String WOW_LOGS_SECRET;
     private final Gson gson;
 

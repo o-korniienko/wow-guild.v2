@@ -1,7 +1,8 @@
-package com.wowguild.service.entity;
+package com.wowguild.service.entity.impl;
 
 import com.wowguild.entity.rank.Zone;
 import com.wowguild.repos.ZoneRepo;
+import com.wowguild.service.entity.EntityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

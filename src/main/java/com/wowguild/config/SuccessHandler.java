@@ -1,5 +1,6 @@
 package com.wowguild.config;
 
+import com.wowguild.controller.CSRFTokenController;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,11 +12,12 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import java.io.IOException;
 import java.time.Duration;
 
-public class SessionTimeoutAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+public class SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     public final Duration sessionTimeout;
 
-    public SessionTimeoutAuthSuccessHandler(Duration sessionTimeout) {
+    public SuccessHandler(Duration sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
     }
 
