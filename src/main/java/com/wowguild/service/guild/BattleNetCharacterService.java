@@ -1,14 +1,15 @@
 package com.wowguild.service.guild;
 
+import com.google.gson.Gson;
+import com.wowguild.entity.Character;
 import com.wowguild.model.UpdateStatus;
 import com.wowguild.model.blizzard_character.CharacterImageData;
-import com.wowguild.entity.Character;
 import com.wowguild.sender.HttpSender;
 import com.wowguild.service.entity.impl.CharacterService;
 import com.wowguild.service.token.TokenManager;
 import com.wowguild.tool.LogHandler;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,12 @@ import java.util.List;
 public class BattleNetCharacterService {
 
 
-    private final Gson gson;
+    @Value("${battle.net.namespace}")
+    private String namespace;
+    @Value("${battle.net.locale}")
+    private String locale;
 
+    private final Gson gson;
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
     private final LogHandler logHandler;
@@ -173,7 +178,8 @@ public class BattleNetCharacterService {
         if (token != null) {
             try {
                 String encodedName = encodeValue(characterName);
-                String url = "https://eu.api.blizzard.com/profile/wow/character/" + realm + "/" + encodedName + "/character-media?namespace=profile-eu&locale=eu-EU";
+                String url = "https://eu.api.blizzard.com/profile/wow/character/" + realm + "/" + encodedName
+                        + "/character-media?namespace=" + namespace + "&locale=" + locale;
                 response = httpSender.sendRequest(url, HttpMethod.GET, token);
                 if (response != null && !response.isEmpty()) {
                     CharacterImageData imageData = gson.fromJson(response, CharacterImageData.class);

@@ -1,12 +1,12 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.model.UpdateStatus;
 import com.wowguild.entity.Character;
 import com.wowguild.entity.rank.Boss;
+import com.wowguild.model.UpdateStatus;
 import com.wowguild.sender.HttpSender;
 import com.wowguild.service.token.TokenManager;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -19,8 +19,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BattleNetGuildService {
 
-
-    private final Gson gson;
+    @Value("${battle.net.realm}")
+    private String realm;
+    @Value("${battle.net.guild.name}")
+    private String guildName;
+    @Value("${battle.net.namespace}")
+    private String namespace;
+    @Value("${battle.net.locale}")
+    private String locale;
 
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
@@ -32,7 +38,8 @@ public class BattleNetGuildService {
         String stringPosts = "";
         String token = tokenManager.getTokenByTag("blizzard");
         if (token != null) {
-            String url = "https://eu.api.blizzard.com/data/wow/guild//tarren-mill/tauren-milfs/roster?namespace=profile-eu&locale=eu_EU";
+            String url = "https://eu.api.blizzard.com/data/wow/guild/" + realm + "/" + guildName +
+                    "/roster?namespace=" + namespace + "&locale=" + locale;
             try {
                 stringPosts = httpSender.sendRequest(url, HttpMethod.GET, token);
             } catch (RestClientException e) {

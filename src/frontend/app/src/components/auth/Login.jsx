@@ -12,6 +12,7 @@ const XSRFToken = cookies.get('XSRF-TOKEN')
 let language = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
 const getLogin = (data, language) => {
+    console.log("here")
     let mess = cookies.get("message");
     if (mess === "DoesNotExist") {
         if (language == "UA") {
@@ -60,7 +61,8 @@ const LoginForm = (props) => {
                 'X-XSRF-TOKEN': XSRFToken,
                 credentials: 'include'
             },
-        }).then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+        }).then(response => response.status != 200 ? message.error("Something goes wrooong. status:"
+                + response.status + ", status text:" + response.statusText) :
             getLogin(response, props.currentLanguage));
 
     }

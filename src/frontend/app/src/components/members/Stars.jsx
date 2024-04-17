@@ -80,15 +80,15 @@ const MembersList = (props) =>{
     }
     if(props.currentLanguage === "UA"){
         characterNameTitle = "Персонаж"
-        maxDPSTitle = "Максимальне УЗС"
-        averageDPSTitle = "Середнє УЗС"
+        maxDPSTitle = "Максимальне ПЗС"
+        averageDPSTitle = "Середнє ПЗС"
         totalKillsTitle = "Загальна Кількість Вбивств"
-        dpsTitle = "УЗС"
+        dpsTitle = "Пошодження за секунду"
         killIlvlTitle = "рівень при вбивстві"
         dateTitle = "дата"
-        maxHPSTitle = "Максимальний ВЗС"
-        averageHPSTitle = "Середній ВЗС"
-        hpsTitle = "ВЗС"
+        maxHPSTitle = "Максимальний ЗЗС"
+        averageHPSTitle = "Середній ЗЗС"
+        hpsTitle = "Зцілення за секунду"
 
     }
 
@@ -493,8 +493,8 @@ function MainContent (props){
             difficulties.push(<Option style={{color:"#194d33"}} key={"5"}>Міфічний</Option>)
             difficulties.push(<Option style={{color:"#194d33"}} key={"4"}>Героїчний</Option>)
             difficulties.push(<Option style={{color:"#194d33"}} key={"3"}>Нормал</Option>)
-            criteria.push(<Option style={{color:"#194d33"}} key={"dps"}>УЗС</Option>)
-            criteria.push(<Option style={{color:"#194d33"}} key={"hps"}>ВЗС</Option>)
+            criteria.push(<Option title="пошкодження за секунду" style={{color:"#194d33"}} key={"dps"}>ПЗС</Option>)
+            criteria.push(<Option title="зцілення за сеунду" style={{color:"#194d33"}} key={"hps"}>ЗЗС</Option>)
 
         }
 

@@ -1,5 +1,7 @@
 package com.wowguild.service.guild;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.wowguild.entity.Character;
 import com.wowguild.entity.rank.Boss;
 import com.wowguild.entity.rank.Report;
@@ -12,9 +14,8 @@ import com.wowguild.service.entity.impl.WowLogsReportService;
 import com.wowguild.service.entity.impl.ZoneService;
 import com.wowguild.service.token.TokenManager;
 import com.wowguild.tool.JsonParser;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,16 @@ import java.util.*;
 @Service
 public class WowLogsGuildService {
 
+    @Value("${wow.logs.api}")
+    private String wowLogsApi;
+    @Value("${wow.logs.realm}")
+    private String realm;
+    @Value("${wow.logs.guild.name}")
+    private String guildName;
+    @Value("${wow.logs.server.region}")
+    private String serverRegion;
+
     private final Gson gson;
-
-
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
     private final WowLogsCharacterService wowLogsCharacterService;
@@ -44,18 +52,20 @@ public class WowLogsGuildService {
 
         try {
             Map<String, String> body = new HashMap<>();
-            body.put("query", "{reportData {reports(guildName:\"Tauren Milfs\", guildServerSlug:\"tarren-mill\", guildServerRegion:\"EU\") {data{code,endTime}}}}");
-            String url = "https://www.warcraftlogs.com/api/v2/client";
-            String response = httpSender.sendRequest(url, body, HttpMethod.POST, token);
+            body.put("query", "{reportData {reports(guildName:\"" + guildName
+                    + "\", guildServerSlug:\"" + realm + "\", guildServerRegion:\"" + serverRegion
+                    + "\") {data{code,endTime}}}}");
+
+            String response = httpSender.sendRequest(wowLogsApi, body, HttpMethod.POST, token);
             if (!response.isEmpty()) {
                 if (response.contains("429 Too Many Requests")) {
                     return report;
                 }
-                String reportJson = jsonParser.parse(response,"reports");
+                String reportJson = jsonParser.parse(response, "reports");
                 //String reportsData = response.split("\"reports\":")[1];
                 //reportsData = reportsData.substring(0, reportsData.length() - 3);
                 report = gson.fromJson(reportJson, WOWLogsReportData.class);
-                if (report == null){
+                if (report == null) {
                     report = new WOWLogsReportData();
                 }
             }
@@ -96,9 +106,7 @@ public class WowLogsGuildService {
         String requestString = "{reportData {report(code:\"" + code + "\" ){fights(killType:Encounters){kill,name, difficulty, encounterID, gameZone{name,id}}zone{name,expansion{name},brackets{type,bucket,min,max}}rankedCharacters{name, canonicalID, server{slug}}}}}";
         body.put("query", requestString);
 
-        String url = "https://www.warcraftlogs.com/api/v2/client";
-
-        String response = httpSender.sendRequest(url, body, HttpMethod.POST, token);
+        String response = httpSender.sendRequest(wowLogsApi, body, HttpMethod.POST, token);
 
         try {
             if (!response.isEmpty()) {

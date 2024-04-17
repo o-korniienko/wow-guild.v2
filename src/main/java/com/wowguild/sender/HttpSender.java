@@ -2,6 +2,7 @@ package com.wowguild.sender;
 
 import com.wowguild.tool.LogHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class HttpSender implements Sender {
 
     private final LogHandler logHandler;
@@ -42,6 +44,8 @@ public class HttpSender implements Sender {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 result = response.getBody();
+            } else {
+                log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
             System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest1 got error: " + e.getMessage());
@@ -65,6 +69,8 @@ public class HttpSender implements Sender {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 result = response.getBody();
+            } else {
+                log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
             String log = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest2 got error: " + e.getMessage() +
@@ -90,13 +96,15 @@ public class HttpSender implements Sender {
             ResponseEntity<String> response = template.exchange(url, method, request, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 result = response.getBody();
+            } else {
+                log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
             System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest3 got error: " + e.getMessage());
             System.out.println("URL: " + url);
             System.out.println("body: " + body);
 
-            if (Objects.requireNonNull(e.getMessage()).contains("429 Too Many Requests")){
+            if (Objects.requireNonNull(e.getMessage()).contains("429 Too Many Requests")) {
                 result = "429 Too Many Requests";
             }
         }
