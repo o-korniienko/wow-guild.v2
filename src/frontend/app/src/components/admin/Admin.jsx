@@ -204,7 +204,7 @@ const UserList = (props) => {
                                 )
                                 }
                         />
-                        <Column id='is_active' title={props.activeColumnName} dataIndex="enabled" key="is_active"
+                        <Column id='is_active' title={props.activeColumnName} dataIndex="active" key="is_active"
                                 accessor={d => d.toString()}
                                 filters={userActiveFilter}
                                 onFilter={(value, record) => record.enabled.toString().indexOf(value) === 0}

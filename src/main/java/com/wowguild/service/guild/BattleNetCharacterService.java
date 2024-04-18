@@ -9,6 +9,7 @@ import com.wowguild.service.entity.impl.CharacterService;
 import com.wowguild.service.token.TokenManager;
 import com.wowguild.tool.LogHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class BattleNetCharacterService {
@@ -216,7 +218,7 @@ public class BattleNetCharacterService {
         try {
             return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " encodeValue got error: " + e.getMessage());
+            log.error("Could not encode a String {}, error {}", value, e.getMessage());
             return value;
         }
     }

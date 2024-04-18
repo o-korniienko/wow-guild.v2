@@ -1,19 +1,20 @@
 package com.wowguild.service.token;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.wowguild.entity.Token;
 import com.wowguild.model.TokenResponse;
 import com.wowguild.sender.HttpSender;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class WowLogsTokenService implements TokenService {
 
@@ -40,7 +41,7 @@ public class WowLogsTokenService implements TokenService {
                 token.setCreateTime(LocalDateTime.now());
             }
         } catch (JsonSyntaxException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - getTokenFromWOWLogs got error: " + e.getMessage());
+            log.error("Could not get WOWLogs token, error {}", e.getMessage());
         }
         return token;
     }

@@ -70,6 +70,10 @@ const OnEditing = (className, id, text) => {
 
 }
 
+const showError = (response) =>{
+    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
+}
+
 const updateGeneralText = (text, tag) => {
     text = text.trim()
     var generalMessage = {
@@ -224,9 +228,8 @@ const Content = (props) => {
     }
 
     const setUserData = (data) => {
-        console.log(data)
-        if (typeof data !== "boolean" && data !== undefined && data !== null && data[0] !== null) {
-            user = data[0]
+        if (data !== undefined && data !== null) {
+            user = data
             var isAdmin = false;
             var editBtns;
             for (var i = 0; i < user.roles.length; i++) {
@@ -257,8 +260,7 @@ const Content = (props) => {
     useEffect(() => {
 
         fetch('/get_user', {})
-            .then(response => response.status != 200 ? message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText) :
-                response.json())
+            .then(response=> response.status !== 200 ? showError(response) : response.json())
             .then(data => setUserData(data));
 
         fetch('/get_about_us_messages', {})
@@ -332,15 +334,15 @@ const Main = () => {
     const [user, setUser] = useState(null);
 
     const setData = (data) => {
-        if (data[0] != null) {
-            setUser(data[0]);
+        if (data != null) {
+            setUser(data);
         }
 
     }
 
     useEffect(() => {
         fetch('/get_user', {})
-            .then(response => response.json())
+            .then(response=> response.status !== 200 ? showError(response) : response.json())
             .then(data => setData(data));
     }, []);
 

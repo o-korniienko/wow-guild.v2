@@ -3,6 +3,7 @@ package com.wowguild.tool;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class JsonParser {
 
@@ -26,9 +28,7 @@ public class JsonParser {
                 return nodeObject.toString();
             }
         } catch (IOException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - parse got error: " + e.getMessage());
-            System.out.println("income Json: " + jsonIn);
-            System.out.println("key: " + key);
+            log.error("Coule not parse JSON {}, with key {}. Error: {}", jsonIn, key, e.getMessage());
         }
         return result;
     }

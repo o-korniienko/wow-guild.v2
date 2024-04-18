@@ -23,9 +23,6 @@ public class Character {
     private String regionEn;
     private String blizzardID;
     private long canonicalID;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
     @OneToMany
     @JoinColumn(name = "character_id")
     private List<CharacterRank> ranks;
@@ -69,14 +66,6 @@ public class Character {
 
     public void setRank(Rank rank) {
         this.rank = rank;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getRace() {
@@ -204,7 +193,6 @@ public class Character {
                 ", regionEn='" + regionEn + '\'' +
                 ", blizzardID=" + blizzardID +
                 ", cannonicalID=" + canonicalID +
-                ", user=" + user +
                 ", ranks=" + ranks +
                 '}';
     }

@@ -15,14 +15,14 @@ import com.wowguild.service.entity.impl.ZoneService;
 import com.wowguild.service.token.TokenManager;
 import com.wowguild.tool.JsonParser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class WowLogsGuildService {
@@ -70,7 +70,7 @@ public class WowLogsGuildService {
                 }
             }
         } catch (JsonSyntaxException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - getReportData got error: " + e.getMessage());
+            log.error("Could not get report data from WOWLogs, error {}", e.getMessage());
         }
 
         return report;
@@ -119,7 +119,7 @@ public class WowLogsGuildService {
                 fight = gson.fromJson(fightJson, WOWLogsFightData.class);
             }
         } catch (JsonSyntaxException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - getReportFightData got error: " + e.getMessage());
+            log.error("Could not get report fight data from WOWLogs, error {}", e.getMessage());
         }
 
         return fight;
@@ -151,7 +151,7 @@ public class WowLogsGuildService {
                         }
                     }*/
                 } catch (Exception e) {
-                    System.out.println(rankedCharacter.getName());
+                    log.error("Could not parse report fight data, error {}", e.getMessage());
                     isThereNoErrors = false;
                 }
                 if (character != null) {
@@ -167,8 +167,7 @@ public class WowLogsGuildService {
                         characters.add(character);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println(character);
+                    log.error("Could not parse report fight data, error {}", e.getMessage());
                     isThereNoErrors = false;
                 }
             }

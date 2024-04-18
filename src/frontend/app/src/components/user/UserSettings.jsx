@@ -80,6 +80,9 @@ const result = (data, language) =>{
 
 }
 
+const showError = (response) =>{
+    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
+}
 
 const EditForm = (props) =>{
 
@@ -127,8 +130,8 @@ const EditForm = (props) =>{
 
      const getUser = ()=>{
          fetch('/get_user')
-             .then(response => response.json())
-             .then(data => setUser(data[0]));
+             .then(response=> response.status !== 200 ? showError(response) : response.json())
+             .then(data => setUser(data));
      }
      if(user === null ){
         getUser();

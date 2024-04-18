@@ -124,6 +124,7 @@ const EditForm = (props) => {
     if (user === null) {
         getUser();
     } else {
+        console.log(user)
         form.setFieldsValue({user_name: user.username});
         form.setFieldsValue({email: user.email});
         form.setFieldsValue({user_role: user.roles});

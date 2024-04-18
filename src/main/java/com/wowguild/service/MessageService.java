@@ -2,6 +2,7 @@ package com.wowguild.service;
 
 import com.wowguild.entity.InformingMessage;
 import com.wowguild.repos.InfMessageRepos;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class MessageService {
 
     @Autowired
@@ -18,12 +20,10 @@ public class MessageService {
 
     public List<InformingMessage> getGreetingMessage() {
         List<InformingMessage> greetingMessages = new ArrayList<>();
-        greetingMessages =   infMessageRepos.findByTag("greeting");
+        greetingMessages = infMessageRepos.findByTag("greeting");
         if (greetingMessages != null && greetingMessages.size() > 0) {
             return greetingMessages;
         }
-        System.out.println(greetingMessages);
-
         return greetingMessages;
     }
 
@@ -42,15 +42,14 @@ public class MessageService {
                 result.add("Successful");
                 return result;
             } else {
-              InformingMessage  messageFromDB = messages.get(0);
-              messageFromDB.setMessage(message.getMessage());
+                InformingMessage messageFromDB = messages.get(0);
+                messageFromDB.setMessage(message.getMessage());
                 infMessageRepos.save(messageFromDB);
                 result.add("Successful");
                 return result;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(LocalDateTime.now() + ": " + message);
+            log.error("Could not save greeting message {}, error: {}", message, e.getMessage());
             result.add("an internal server error");
             return result;
         }
@@ -69,15 +68,14 @@ public class MessageService {
                 result.add("Successful");
                 return result;
             } else {
-                InformingMessage  messageFromDB = messages.get(0);
+                InformingMessage messageFromDB = messages.get(0);
                 messageFromDB.setMessage(message.getMessage());
                 infMessageRepos.save(messageFromDB);
                 result.add("Successful");
                 return result;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(LocalDateTime.now() + ": " + message);
+            log.error("Could not update message {}, error: {}", message, e.getMessage());
             result.add("an internal server error");
             return result;
         }
@@ -87,15 +85,15 @@ public class MessageService {
         List<InformingMessage> allMessages = new ArrayList<>();
         List<InformingMessage> messages = new ArrayList<>();
         messages = infMessageRepos.findByTag("general");
-        if (messages != null && messages.size() >0){
+        if (messages != null && messages.size() > 0) {
             allMessages.add(messages.get(0));
         }
         messages = infMessageRepos.findByTag("about");
-        if (messages != null && messages.size() >0){
+        if (messages != null && messages.size() > 0) {
             allMessages.add(messages.get(0));
         }
         messages = infMessageRepos.findByTag("contacts");
-        if (messages != null && messages.size() >0){
+        if (messages != null && messages.size() > 0) {
             allMessages.add(messages.get(0));
         }
 

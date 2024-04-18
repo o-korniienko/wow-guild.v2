@@ -223,7 +223,7 @@ const Menu = (props) => {
     if (language === "UA") {
         props.setCraftText("Ремесла")
         props.setAddonsText("Аддони")
-        props.setMembersText("Склад")
+        props.setMembersText("Учасники")
         props.setAboutText("Про нас")
         props.setAdminText("Адмін")
     }
@@ -316,30 +316,46 @@ function NavBar(props) {
 
 
     const StyledPageHeader = styled(PageHeader)`
-          position:relative;
-          height:3%;
-          minWidth:100%;
-          border: 1px solid rgb(0, 0, 0);
-          background-color:rgb(0, 0, 0);
-        `
+      position: relative;
+      height: 3%;
+      minWidth: 100%;
+      border: 1px solid rgb(0, 0, 0);
+      background-color: rgb(0, 0, 0);
+    `
 
     const setData = (data) => {
-        setUser(data);
-        localStorage.setItem("user", JSON.stringify(data));
-        localStorage.setItem("language", data.language);
-        setLanguage(data.language);
+        try {
+            console.log(data)
+            setUser(data);
+            if (data != null) {
+                localStorage.setItem("user", JSON.stringify(data));
+                localStorage.setItem("language", data.language);
+                setLanguage(data.language);
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
+
     useEffect(() => {
-
-
         fetch("/get_user")
-            .then(response => response.json())
-            .then(data => setData(data[0]));
+            .then(response => {
+                try {
+                    if (response.ok) {
+                        return response.json()
+                    }
+                    return null
+                } catch (err) {
+                    return null
+                    console.log(err)
+                }
+            })
+            .then(data => setData(data));
 
     }, []);
 
     if (user === null) {
-        window.location.href = "/login_in";
+        //window.location.href = "/login_in";
     } else {
         return (<StyledPageHeader
             className="site-page-header"

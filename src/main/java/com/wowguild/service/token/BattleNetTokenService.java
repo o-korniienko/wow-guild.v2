@@ -1,19 +1,20 @@
 package com.wowguild.service.token;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.wowguild.entity.Token;
 import com.wowguild.model.TokenResponse;
 import com.wowguild.sender.HttpSender;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class BattleNetTokenService implements TokenService {
 
@@ -42,7 +43,7 @@ public class BattleNetTokenService implements TokenService {
                 return tokenToSave;
             }
         } catch (JsonSyntaxException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - getTokenFromBlizzard got error: " + e.getMessage());
+            log.error("Could not get Blizzard token, error {}", e.getMessage());
         }
         return null;
     }

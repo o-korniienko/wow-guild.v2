@@ -11,8 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.login.AccountException;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -41,24 +39,18 @@ public class UserService implements UserDetailsService {
             user.setLanguage(language);
             userRepos.save(user);
         } catch (Exception e) {
-            e.printStackTrace();
-            result.add("an internal server error");
+            log.error("Could not update user UI language, error {}", e.getMessage());
             return result;
         }
-
         result.add("Success");
         return result;
     }
 
-    public Collection<User> getUserByUserName(UserDetails user) {
-        List<User> users = new ArrayList<>();
+    public User getUserByUserName(UserDetails user) {
         if (user != null && user.getUsername() != null) {
-            User userFromDB = userRepos.findByUsername(user.getUsername());
-            users.add(userFromDB);
-        } else {
-            users.add(null);
+            return userRepos.findByUsername(user.getUsername());
         }
-        return users;
+        return null;
     }
 
     public List<String> registration(String userName, String password, String language) {
@@ -83,9 +75,7 @@ public class UserService implements UserDetailsService {
             result.add(userName);
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(LocalDateTime.now() + ": username - " + userName + "; pas - " + password + "; language - " + language);
-            System.out.println(LocalDateTime.now() + ": user - " + user);
+            log.error("Could not register a new user, error {}", e.getMessage());
             result.add("an internal server error");
             return result;
         }
@@ -98,8 +88,7 @@ public class UserService implements UserDetailsService {
             result.put("Deleted", findAll());
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(LocalDateTime.now() + ": " + user);
+            log.error("Could not delete user, error {}", e.getMessage());
             result.put("an internal server error", findAll());
             return result;
         }
@@ -139,8 +128,7 @@ public class UserService implements UserDetailsService {
             result.add("Saved");
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(LocalDateTime.now() + ": " + user);
+            log.error("Could not update user, error {}", e.getMessage());
             result.add("an internal server error");
             return result;
         }

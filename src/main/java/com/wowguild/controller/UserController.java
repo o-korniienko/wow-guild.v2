@@ -1,8 +1,12 @@
 package com.wowguild.controller;
 
+import com.wowguild.converter.Converter;
+import com.wowguild.dto.UserDto;
 import com.wowguild.entity.User;
 import com.wowguild.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -11,16 +15,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService service;
+    private final UserService service;
+    private final Converter<User, UserDto> userConverter;
 
     @GetMapping("/get_user")
-    public Collection<User> getUser(@AuthenticationPrincipal User user) {
-        return service.getUserByUserName(user);
+    public ResponseEntity<?> getUser(@AuthenticationPrincipal User user) {
+        UserDto userDto = userConverter.convertToDto(service.getUserByUserName(user));
+        return userDto != null ? ResponseEntity.ok(userDto) : ResponseEntity.notFound().build();
     }
 
     @PostMapping("/update_language")
@@ -41,8 +48,10 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/get_users")
-    public Collection<User> getUsers() {
-        return service.findAll();
+    public Collection<UserDto> getUsers() {
+        return service.findAll().stream()
+                .map(userConverter::convertToDto)
+                .collect(Collectors.toList());
     }
 
 
@@ -53,8 +62,8 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/get_user/{id}")
-    public User getUser2(@PathVariable("id") User user) {
-        return user;
+    public UserDto getUser2(@PathVariable("id") User user) {
+        return userConverter.convertToDto(user);
     }
 
 }

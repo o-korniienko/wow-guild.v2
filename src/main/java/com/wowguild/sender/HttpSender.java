@@ -48,8 +48,7 @@ public class HttpSender implements Sender {
                 log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest1 got error: " + e.getMessage());
-            System.out.println("URL: " + url);
+            log.error("Http request(1) sending error {} to URL {}", e.getMessage(), url);
         }
         return result;
     }
@@ -73,11 +72,12 @@ public class HttpSender implements Sender {
                 log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
-            String log = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest2 got error: " + e.getMessage() +
+            log.error("Http request(2) sending error {} to URL {}", e.getMessage(), url);
+            String logT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest2 got error: " + e.getMessage() +
                     "; URL: " + url + "; http method: " + method;
-            logHandler.saveLog(log, "http requests");
+            logHandler.saveLog(logT, "http requests");
         } catch (URISyntaxException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest2 got error: " + e.getMessage());
+            log.error("Http request(2) sending error {} to URL {}", e.getMessage(), url);
         }
         return result;
     }
@@ -100,9 +100,7 @@ public class HttpSender implements Sender {
                 log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
-            System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - sendRequest3 got error: " + e.getMessage());
-            System.out.println("URL: " + url);
-            System.out.println("body: " + body);
+            log.error("Http request(3) sending error {} to URL {} with body {}", e.getMessage(), url, body);
 
             if (Objects.requireNonNull(e.getMessage()).contains("429 Too Many Requests")) {
                 result = "429 Too Many Requests";

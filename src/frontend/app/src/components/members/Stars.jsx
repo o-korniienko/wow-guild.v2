@@ -574,7 +574,7 @@ function MainContent (props){
 
     const setUserData = (data) =>{
         if (data !== null && data !== undefined){
-            setUser(data[0])
+            setUser(data)
         }
     }
 

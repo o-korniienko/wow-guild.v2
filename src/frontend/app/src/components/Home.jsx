@@ -19,8 +19,18 @@ function Home (){
      const XSRFToken  = cookies.get('XSRF-TOKEN')
       useEffect(() => {
         fetch("/get_user")
-        .then(response=>response.json())
-        .then(data=>setUser(data[0]));
+        .then(response => {
+            try {
+                if (response.ok){
+                    return response.json()
+                }
+                return null
+            } catch (err) {
+                return null
+                console.log(err)
+            }
+        })
+        .then(data=>setUser(data));
     }, []);
 
 

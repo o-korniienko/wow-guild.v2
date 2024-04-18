@@ -54,7 +54,7 @@ const MenuComponent = (props) => {
     if (language === "UA") {
         updateText = "Оновити Blizzard Дані";
         starsText = "Рейтинг";
-        memberListText = "Склад"
+        memberListText = "Учасники"
         listText = "Список"
         updateRankText = "Оновити WOWLogs Дані"
     }
@@ -370,7 +370,7 @@ function Members(props) {
                 window.location.href = "/forbidden403"
             }else{
             } */
-            setUser(data[0])
+            setUser(data)
         }
     }
 

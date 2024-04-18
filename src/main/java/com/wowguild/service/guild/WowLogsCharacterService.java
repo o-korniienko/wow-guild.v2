@@ -13,6 +13,7 @@ import com.wowguild.service.entity.impl.RankService;
 import com.wowguild.service.token.TokenManager;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -23,6 +24,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class WowLogsCharacterService {
@@ -139,8 +141,7 @@ public class WowLogsCharacterService {
             try {
                 result = response.split("\"encounterRankings\":")[1];
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println(response);
+                log.error("Could not parse WOWLogs character data, error {}", e.getMessage());
             }
 
             String metric = null;
@@ -223,9 +224,7 @@ public class WowLogsCharacterService {
                         ranks.add(characterRank);
 
                     } catch (Exception e) {
-                        System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - parseCharacterWOWLogsData got error: " + e.getMessage());
-                        System.out.println("wowLogsRankData: " + wowLogsRankData);
-                        System.out.println("result: " + result);
+                        log.error("Could not parse WOWLogs character data, error {}", e.getMessage());
                     }
                 }
             }
@@ -252,14 +251,14 @@ public class WowLogsCharacterService {
                 if (!result.isEmpty()) {
 
                     if (result.contains("Invalid difficulty\\/size specified") || result.contains("429 Too Many Requests")) {
-                        System.out.println(requestString);
-                        System.out.println(difficulty);
+                        log.info("request string: {}",requestString);
+                        log.info("difficulty: {}",difficulty);
 
                         result = null;
                     }
                 }
             } catch (RestClientException e) {
-                System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - getCharacterData got error: " + e.getMessage());
+                log.error("Could not get character data from WOWLogs, error {}", e.getMessage());
                 if (e.getMessage().contains("429")) {
                     result = e.getMessage();
                 }
