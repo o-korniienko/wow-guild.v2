@@ -6,12 +6,13 @@ import React, {useEffect, useState} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import {ArrowLeftOutlined, UserOutlined} from '@ant-design/icons';
-import logo from './../logo/TM.png';
+import logo from './../logo/logo.jpg';
+import properties from './../../properties.js';
 
 
 const cookies = new Cookies();
 const {Option} = Select;
-
+const guildName = properties.guildName
 let languages = []
 let languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
@@ -93,11 +94,11 @@ const BackIcon = () => {
 const Logo = (props) => {
     let language = props.language;
     if (language === "UA") {
-        props.setLogoText("Tauren Milfs");
+        props.setLogoText(guildName);
     }
 
     if (language === "EN") {
-        props.setLogoText("Tauren Milfs");
+        props.setLogoText(guildName);
     }
 
     return (<Link className="logo" to="/"><img alt="here must be a logo" style={{maxWidth: '20%', height: 'auto'}}
@@ -325,7 +326,6 @@ function NavBar(props) {
 
     const setData = (data) => {
         try {
-            console.log(data)
             setUser(data);
             if (data != null) {
                 localStorage.setItem("user", JSON.stringify(data));
@@ -355,7 +355,7 @@ function NavBar(props) {
     }, []);
 
     if (user === null) {
-        //window.location.href = "/login_in";
+        window.location.href = "/login_in";
     } else {
         return (<StyledPageHeader
             className="site-page-header"

@@ -1,5 +1,4 @@
 /target/
-/src/main/resources/
 
 /.idea/
 /character_icon_request_parse_error
@@ -27,3 +26,4 @@
 /src/frontendnpm-debug.log*
 /src/frontendyarn-debug.log*
 /src/frontendyarn-error.log*
+/for_tests.txt

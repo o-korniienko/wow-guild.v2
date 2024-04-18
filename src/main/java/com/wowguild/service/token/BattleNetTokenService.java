@@ -18,9 +18,9 @@ import java.time.LocalDateTime;
 @Service
 public class BattleNetTokenService implements TokenService {
 
-    @Value("${battle_net_id}")
+    @Value("${battle.net.id}")
     private String BNET_ID;
-    @Value("${battle_net_secret}")
+    @Value("${battle.net.secret}")
     private String BNET_SECRET;
     private final Gson gson;
 

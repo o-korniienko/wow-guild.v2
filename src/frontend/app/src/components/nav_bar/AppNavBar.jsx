@@ -4,10 +4,12 @@ import React, { useState, useEffect} from 'react';
 import styled from 'styled-components'
 import  './NavBar.css';
 import { Link } from 'react-router-dom';
-import logo from './../logo/TM.png';
+import logo from './../logo/logo.jpg';
+import properties from './../../properties.js';
 
 
 const { Option } = Select;
+const guildName = properties.guildName
 let languages = []
 let languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
@@ -79,11 +81,11 @@ const Language = (props) =>{
 const Logo = (props) =>{
      let language = props.language;
      if(language === "UA"){
-         props.setLogoText("Tauren Milfs");
+         props.setLogoText(guildName);
      }
 
      if(language === "EN"){
-         props.setLogoText("Tauren Milfs");
+         props.setLogoText(guildName);
      }
      return (<Link className="logo" to="/" ><img alt = "here must be a logo" style={{maxWidth:'20%', height:'auto'}} src={logo} />{props.logoText}</Link>
      )

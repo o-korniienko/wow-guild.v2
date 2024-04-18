@@ -115,7 +115,6 @@ const MembersList = (props) => {
             });
         /* setTimeout(function(){
             props.setLoading(false)
-            console.log("Hello World");
         }, 2000); */
 
 

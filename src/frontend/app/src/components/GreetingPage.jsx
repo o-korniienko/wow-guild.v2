@@ -6,24 +6,25 @@ import Cookies from 'universal-cookie';
 import  './Greeting.css';
 import AppNavbar from './nav_bar/AppNavBar.jsx';
 import { Link } from 'react-router-dom';
+import properties from '../properties';
 
 const { Text, Title, Paragraph  } = Typography;
 const cookies = new Cookies();
 const XSRFToken  = cookies.get('XSRF-TOKEN')
+const guildName = properties.guildName;
 let language = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
 
 const GreetingText = (props) =>{
      let greeting = '';
      if(props.currentLanguage === "EN"){
-        greeting = "       Greeting in guild Tauren Milfs";
-        props.setGreetingText(greeting);
+        props.setGreetingText("       Greeting in guild " + guildName);
         props.setJoinText("to get more information about us. Or, just  ");
         props.setJoinText2("Join ");
         props.setLogInText("log in");
      }
      if(props.currentLanguage === "UA"){
-        props.setGreetingText("Вітаємо в гільдії Tauren Milfs");
+        props.setGreetingText("Вітаємо в гільдії " + guildName);
         props.setJoinText(", щоб отримати більше інформації про нас. \nАбо, просто ");
         props.setJoinText2("Приєднуйтесь ");
         props.setLogInText("увійдіть");

@@ -643,7 +643,6 @@ function MainContent (props){
         setMembersData(ALLRANKEDCHARACTERS);
     }
     const setDifficulty = (data) =>{
-        console.log(data);
         if(data != null && data != undefined){
             setDifficultyText(data) ;
             currentDifficultyNumber = data;

@@ -18,9 +18,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class WowLogsTokenService implements TokenService {
 
-    @Value("${wow_logs_id}")
+    @Value("${wow.logs.id}")
     private String WOW_LOGS_ID;
-    @Value("${wow_logs_secret}")
+    @Value("${wow.logs.secret}")
     private String WOW_LOGS_SECRET;
     private final Gson gson;
 
