@@ -33,9 +33,6 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class WebSecurityConfig {
 
 
-    @Autowired
-    public LoginFailHandler failHandler;
-
     @Bean
     public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
         return new DefaultHttpFirewall();
@@ -79,7 +76,7 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated());
         http
                 .formLogin(formLogin -> formLogin
-                        .failureHandler(failHandler)
+                        .failureHandler(new LoginFailHandler())
                         //.loginPage("/login_in")
                         .loginProcessingUrl("/perform_login")
                         .successHandler(new SuccessHandler(Duration.ofHours(6)))

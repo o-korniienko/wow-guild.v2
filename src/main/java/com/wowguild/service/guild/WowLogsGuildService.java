@@ -2,18 +2,19 @@ package com.wowguild.service.guild;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.wowguild.converter.Converter;
 import com.wowguild.entity.Character;
 import com.wowguild.entity.rank.Boss;
 import com.wowguild.entity.rank.Report;
 import com.wowguild.entity.rank.Zone;
-import com.wowguild.model.wow_logs_models.WOWLogsFightData;
-import com.wowguild.model.wow_logs_models.WOWLogsReportData;
+import com.wowguild.model.wow_logs.WOWLogsFightData;
+import com.wowguild.model.wow_logs.WOWLogsReportData;
 import com.wowguild.sender.HttpSender;
 import com.wowguild.service.entity.impl.CharacterService;
 import com.wowguild.service.entity.impl.WowLogsReportService;
 import com.wowguild.service.entity.impl.ZoneService;
 import com.wowguild.service.token.TokenManager;
-import com.wowguild.tool.JsonParser;
+import com.wowguild.tool.parser.ReportDataParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,8 @@ public class WowLogsGuildService {
     private final CharacterService characterService;
     private final WowLogsReportService reportService;
     private final ZoneService zoneService;
-    private final JsonParser jsonParser;
+    private final ReportDataParser reportDataParser;
+    private final Converter<Report, WOWLogsReportData.ReportDto> reportConverter;
 
 
     public WOWLogsReportData getReportData() {
@@ -61,10 +63,8 @@ public class WowLogsGuildService {
                 if (response.contains("429 Too Many Requests")) {
                     return report;
                 }
-                String reportJson = jsonParser.parse(response, "reports");
-                //String reportsData = response.split("\"reports\":")[1];
-                //reportsData = reportsData.substring(0, reportsData.length() - 3);
-                report = gson.fromJson(reportJson, WOWLogsReportData.class);
+
+                report = reportDataParser.parseTo(response);
                 if (report == null) {
                     report = new WOWLogsReportData();
                 }
@@ -77,7 +77,9 @@ public class WowLogsGuildService {
     }
 
     public boolean updateReportData(WOWLogsReportData reportData) {
-        List<Report> reports = reportData.getData();
+        List<Report> reports = reportData.getData().stream()
+                .map(reportConverter::convertToEntity)
+                .toList();
         List<WOWLogsFightData> fightData = new ArrayList<>();
         WOWLogsFightData ftData = null;
         if (reports != null) {
@@ -113,10 +115,8 @@ public class WowLogsGuildService {
                 if (response.contains("429 Too Many Requests")) {
                     return fight;
                 }
-                String fightJson = jsonParser.parse(response, "report");
-                //String reportsData = response.split("\"report\":")[1];
-                //reportsData = reportsData.substring(0, reportsData.length() - 3);
-                fight = gson.fromJson(fightJson, WOWLogsFightData.class);
+
+                fight = reportDataParser.parseToFightData(response);
             }
         } catch (JsonSyntaxException e) {
             log.error("Could not get report fight data from WOWLogs, error {}", e.getMessage());

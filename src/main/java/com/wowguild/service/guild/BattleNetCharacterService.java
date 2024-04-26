@@ -1,13 +1,15 @@
 package com.wowguild.service.guild;
 
-import com.google.gson.Gson;
 import com.wowguild.entity.Character;
 import com.wowguild.model.UpdateStatus;
-import com.wowguild.model.blizzard_character.CharacterImageData;
+import com.wowguild.model.blizzard.CharacterImageData;
+import com.wowguild.model.blizzard.CharacterProfile;
+import com.wowguild.model.blizzard.GuildProfile;
 import com.wowguild.sender.HttpSender;
 import com.wowguild.service.entity.impl.CharacterService;
 import com.wowguild.service.token.TokenManager;
 import com.wowguild.tool.LogHandler;
+import com.wowguild.tool.parser.Parser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,12 +34,49 @@ public class BattleNetCharacterService {
     @Value("${battle.net.locale}")
     private String locale;
 
-    private final Gson gson;
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
     private final LogHandler logHandler;
     private final CharacterService characterService;
+    private final Parser<CharacterProfile> characterProfileParser;
+    private final Parser<GuildProfile> guildProfileParser;
+    private final Parser<CharacterImageData> characterImageDataParser;
 
+
+    public UpdateStatus<Character> updateCharacter(Character character, String guildData) {
+        UpdateStatus<Character> result = new UpdateStatus<>();
+        if (guildData != null && !guildData.isEmpty()) {
+            GuildProfile guildProfile = guildProfileParser.parseTo(guildData);
+            if (guildProfile != null) {
+                List<GuildProfile.Member> members = guildProfile.getMembers();
+                for (GuildProfile.Member member : members) {
+                    if (String.valueOf(member.getCharacter().getId()).equals(character.getBlizzardID())) {
+                        String characterName = member.getCharacter().getName();
+                        String characterLink = member.getCharacter().getKey().getHref();
+                        String characterRank = String.valueOf(member.getRank());
+
+                        result = getCharacterData(characterLink, Integer.parseInt(characterRank), characterName, character);
+                        if (result.getStatus().equalsIgnoreCase("Successful")) {
+                            character = result.getResult();
+                            characterService.save(character);
+                            result.setStatus("Successful");
+                            result.setResult(character);
+                        } else {
+                            return result;
+                        }
+                        break;
+                    }
+                }
+            } else {
+                result.setStatus("there were errors during character data updating");
+                result.setResult(character);
+            }
+        } else {
+            result.setStatus("there were errors during character data updating");
+            result.setResult(character);
+        }
+        return result;
+    }
 
     public UpdateStatus<Character> getCharacterData(String url, int rank, String characterName, Character characterDB) {
         UpdateStatus<Character> status = new UpdateStatus<>();
@@ -53,57 +92,53 @@ public class BattleNetCharacterService {
                 status.setResult(characterDB);
             } else {
                 try {
-                    String name;
-                    int lvl;
-                    String classRuID;
-                    String blizzardID;
-                    String race;
-                    String iconURL;
-                    String realmEN;
-                    race = response.split("race")[2].split(",\"id\":")[1].split("},\"")[0];
+                    CharacterProfile characterProfile = characterProfileParser.parseTo(response);
+                    if (characterProfile != null) {
+                        String name = characterProfile.getName();
+                        int lvl = characterProfile.getLevel();
+                        int classID = characterProfile.getCharacter_class().getId();
+                        String blizzardID = String.valueOf(characterProfile.getId());
+                        int race = characterProfile.getRace().getId();
+                        String realmEN = characterProfile.getRealm().getSlug();
+                        String iconURL = getIconURL(characterName, realmEN);
 
-                    String[] characterArray = response.split("\"name\"");
+                        if (characterDB != null) {
+                            characterDB.setName(name);
+                            characterDB.setClassEnByInt(classID);
+                            characterDB.setRankByInt(rank);
+                            characterDB.setLevel(lvl);
+                            characterDB.setRaceByID(race);
+                            characterDB.setIconURL(iconURL);
+                            characterDB.setRegionEn(realmEN);
+                            characterDB.setBlizzardID(blizzardID);
 
-                    name = characterArray[1].split(",")[0].substring(2).replace("\"", "");
-                    blizzardID = characterArray[0].split("\"id\":")[1].replace(",", "");
-                    classRuID = characterArray[5].split(",")[1].substring(5).replace("}", "");
-                    lvl = Integer.parseInt(response.split("\"level\":")[1].split(",")[0]);
-                    realmEN = response.split("\"realm\"")[1].split("\"slug\":\"")[1].split("\"")[0];
+                            status.setStatus("Successful");
+                            status.setResult(characterDB);
+                        } else {
+                            Character character = new Character();
+                            character.setName(name);
+                            character.setClassEnByInt(classID);
+                            character.setRankByInt(rank);
+                            character.setLevel(lvl);
+                            character.setRaceByID(race);
+                            character.setIconURL(iconURL);
+                            character.setRegionEn(realmEN);
+                            character.setBlizzardID(blizzardID);
 
-                    iconURL = getIconURL(characterName, realmEN);
-
-                    if (characterDB != null) {
-                        characterDB.setName(name);
-                        characterDB.setClassEnByInt(Integer.parseInt(classRuID));
-                        characterDB.setRankByInt(rank);
-                        characterDB.setLevel(lvl);
-                        characterDB.setRaceByID(Integer.parseInt(race));
-                        characterDB.setIconURL(iconURL);
-                        characterDB.setRegionEn(realmEN);
-                        characterDB.setBlizzardID(blizzardID);
-
-                        status.setStatus("Successful");
-                        status.setResult(characterDB);
-                    } else {
-                        Character character = new Character();
-                        character.setName(name);
-                        character.setClassEnByInt(Integer.parseInt(classRuID));
-                        character.setRankByInt(rank);
-                        character.setLevel(lvl);
-                        character.setRaceByID(Integer.parseInt(race));
-                        character.setIconURL(iconURL);
-                        character.setRegionEn(realmEN);
-                        character.setBlizzardID(blizzardID);
-
-                        status.setStatus("Successful");
-                        status.setResult(character);
+                            status.setStatus("Successful");
+                            status.setResult(character);
+                        }
+                        return status;
                     }
-                    return status;
+                    String log = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " " + characterName + " - error request for character : " + url + "\nresponse : " + response;
+                    logHandler.saveLog(log, "character_parser_error");
+                    status.setStatus("there were errors during character data updating");
+                    status.setResult(characterDB);
 
                 } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                     String log = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " " + characterName + " - error request for character : " + url + "\nresponse : " + response;
                     logHandler.saveLog(log, "character_parser_error");
                     status.setStatus("there were errors during character data updating");
@@ -118,57 +153,13 @@ public class BattleNetCharacterService {
         return status;
     }
 
-
-    public UpdateStatus<Character> updateCharacter(Character character, String guildData) {
-        UpdateStatus<Character> result = new UpdateStatus<>();
-        if (guildData != null && !guildData.isEmpty()) {
-            String[] charactersStrings = guildData.split("\"character\"");
-            for (int i = 1; i < charactersStrings.length; i++) {
-                String blizzardID = charactersStrings[i].split("\"id\":")[1].split(",")[0];
-                if (blizzardID != null && blizzardID.equalsIgnoreCase(character.getBlizzardID())) {
-                    String characterLink = charactersStrings[i];
-                    characterLink = characterLink.substring(17);
-                    String[] characterNameArray = characterLink.split("\"name\":\"");
-                    String[] characterLinkArray = characterLink.split("\"}");
-                    String[] characterRankArray = characterLink.split("\"rank\"");
-                    String characterRank = characterRankArray[1];
-                    characterRank = characterRank.substring(1, 2);
-                    characterLink = characterLinkArray[0];
-                    String characterName = characterNameArray[1].split("\"")[0];
-                    result = getCharacterData(characterLink, Integer.parseInt(characterRank), characterName, character);
-
-                    if (result.getStatus().equalsIgnoreCase("Successful")) {
-                        character = result.getResult();
-
-                        characterService.save(character);
-                        result.setStatus("Successful");
-                        result.setResult(character);
-                    } else {
-                        return result;
-                    }
-
-
-                    break;
-                }
-            }
-        } else {
-            result.setStatus("there were errors during character data updating");
-            result.setResult(character);
-        }
-
-        return result;
-    }
-
-
     public boolean isContains(Character character, List<Character> characters) {
-        boolean check = false;
         for (Character character_db : characters) {
             if (character.getBlizzardID().equalsIgnoreCase(character_db.getBlizzardID())) {
-                check = true;
-                break;
+                return true;
             }
         }
-        return check;
+        return false;
     }
 
     private String getIconURL(String characterName, String realm) {
@@ -184,7 +175,7 @@ public class BattleNetCharacterService {
                         + "/character-media?namespace=" + namespace + "&locale=" + locale;
                 response = httpSender.sendRequest(url, HttpMethod.GET, token);
                 if (response != null && !response.isEmpty()) {
-                    CharacterImageData imageData = gson.fromJson(response, CharacterImageData.class);
+                    CharacterImageData imageData = characterImageDataParser.parseTo(response);
                     if (imageData != null && !imageData.getAssets().isEmpty()) {
                         List<CharacterImageData.AssetItem> assets = imageData.getAssets();
                         boolean isContainMain = false;

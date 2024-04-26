@@ -4,7 +4,7 @@ import com.wowguild.entity.Character;
 import com.wowguild.entity.rank.Boss;
 import com.wowguild.entity.rank.Zone;
 import com.wowguild.model.UpdateStatus;
-import com.wowguild.model.wow_logs_models.WOWLogsReportData;
+import com.wowguild.model.wow_logs.WOWLogsReportData;
 import com.wowguild.service.entity.impl.BossService;
 import com.wowguild.service.entity.impl.CharacterService;
 import lombok.RequiredArgsConstructor;

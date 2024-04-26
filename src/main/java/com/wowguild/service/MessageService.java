@@ -2,20 +2,19 @@ package com.wowguild.service;
 
 import com.wowguild.entity.InformingMessage;
 import com.wowguild.repos.InfMessageRepos;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MessageService {
 
-    @Autowired
-    private InfMessageRepos infMessageRepos;
+    private final InfMessageRepos infMessageRepos;
 
 
     public List<InformingMessage> getGreetingMessage() {

@@ -1,27 +1,27 @@
 package com.wowguild.service.guild;
 
+import com.google.gson.Gson;
 import com.wowguild.entity.Character;
 import com.wowguild.entity.rank.Boss;
 import com.wowguild.entity.rank.CharacterRank;
 import com.wowguild.entity.rank.Rank;
-import com.wowguild.model.wow_logs_models.WOWLogsCharacterRankData;
+import com.wowguild.model.wow_logs.WOWLogsCharacterRankData;
 import com.wowguild.sender.HttpSender;
 import com.wowguild.service.entity.impl.BossService;
 import com.wowguild.service.entity.impl.CharacterRankService;
 import com.wowguild.service.entity.impl.CharacterService;
 import com.wowguild.service.entity.impl.RankService;
 import com.wowguild.service.token.TokenManager;
-import com.google.gson.Gson;
+import com.wowguild.tool.parser.Parser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -29,14 +29,17 @@ import java.util.*;
 @Service
 public class WowLogsCharacterService {
 
-    private final Gson gson;
+    @Value("${wow.logs.api}")
+    private String wowLogsApi;
 
+    private final Gson gson;
     private final CharacterService characterService;
     private final BossService bossService;
     private final CharacterRankService characterRankService;
     private final RankService rankService;
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
+    private final Parser<WOWLogsCharacterRankData> characterRankDataParser;
 
     public boolean updateCharacters(Set<Character> characters, Set<Boss> bosses) {
         boolean is429Error = false;
@@ -89,11 +92,8 @@ public class WowLogsCharacterService {
         boolean is429Error = false;
         boolean isThereNoErrors = true;
         if (bosses != null && bosses.size() > 0) {
-            List<CharacterRank> ranks = character.getRanks();
+            List<CharacterRank> ranks = new ArrayList<>();
 
-            ranks = new ArrayList<>();
-            if (ranks == null) {
-            }
             String response = "";
             for (int i = 0; i < 2; i++) {
                 if (is429Error) {
@@ -134,100 +134,95 @@ public class WowLogsCharacterService {
     }
 
     private List<CharacterRank> parseCharacterWOWLogsData(String response, Character character, Boss boss, List<CharacterRank> ranks) {
-        WOWLogsCharacterRankData wowLogsRankData = null;
         if (response != null && !response.isEmpty()) {
+            WOWLogsCharacterRankData wowLogsRankData = characterRankDataParser.parseTo(response);
+            String metric = wowLogsRankData.getEncounterRankings().getMetric();
 
-            String result = null;
-            try {
-                result = response.split("\"encounterRankings\":")[1];
-            } catch (Exception e) {
-                log.error("Could not parse WOWLogs character data, error {}", e.getMessage());
-            }
+            if (wowLogsRankData != null) {
+                List<WOWLogsCharacterRankData.CharacterRankings.Rank> wowLogsRanks = wowLogsRankData
+                        .getEncounterRankings().getRanks();
+                List<Rank> fightRanks = new ArrayList<>();
+                try {
+                    for (WOWLogsCharacterRankData.CharacterRankings.Rank logsRank : wowLogsRanks) {
 
-            String metric = null;
-
-            result = result.substring(0, result.length() - 4);
-            if (!result.contains("\"ranks\":[]")) {
-                wowLogsRankData = gson.fromJson(result, WOWLogsCharacterRankData.class);
-                if (wowLogsRankData != null) {
-                    List<WOWLogsCharacterRankData.WOWLogsRank> wowLogsRanks = wowLogsRankData.getRanks();
-                    List<Rank> fightRanks = new ArrayList<>();
-                    try {
-                        for (WOWLogsCharacterRankData.WOWLogsRank logsRank : wowLogsRanks) {
-
-                            if (!isRankInOurDBAlready(logsRank, character, wowLogsRankData.getMetric())) {
-                                Rank rank = new Rank();
-                                rank.setDate(Instant.ofEpochMilli(logsRank.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDateTime());
-                                rank.setAmount((long) logsRank.getAmount());
-                                rank.setKillIlvl(logsRank.getBracketData());
-                                rank.setFightID(String.valueOf(logsRank.getReport().getFightID()));
-                                rank.setReportCode(logsRank.getReport().getCode());
-                                rank.setMetric(wowLogsRankData.getMetric());
-                                fightRanks.add(rank);
-                            }
+                        if (!isRankInOurDBAlready(logsRank, character,
+                                wowLogsRankData.getEncounterRankings().getMetric())) {
+                            Rank rank = new Rank();
+                            rank.setDate(Instant.ofEpochMilli(
+                                    logsRank.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDateTime());
+                            rank.setAmount((long) logsRank.getAmount());
+                            rank.setKillIlvl(logsRank.getBracketData());
+                            rank.setFightID(String.valueOf(logsRank.getReport().getFightID()));
+                            rank.setReportCode(logsRank.getReport().getCode());
+                            rank.setMetric(wowLogsRankData.getEncounterRankings().getMetric());
+                            fightRanks.add(rank);
                         }
-
-                        CharacterRank characterRank = null;
-                        List<CharacterRank> currentCharacterRanks = character.getRanks();
-                        if (currentCharacterRanks != null) {
-                            for (CharacterRank rank : currentCharacterRanks) {
-                                Boss boss1 = rank.getBoss();
-                                if (boss1 != null) {
-                                    if (boss1.getDifficulty() == boss.getDifficulty() && boss1.getName().equalsIgnoreCase(boss.getName()) && boss1.getEncounterID() == boss.getEncounterID() && rank.getMetric().equalsIgnoreCase(metric)) {
-                                        characterRank = rank;
-                                    }
-                                }
-                            }
-                        }
-                        if (characterRank == null) {
-                            characterRank = new CharacterRank();
-                            List<Boss> bossList = this.bossService.findByEncounterID(boss.getEncounterID());
-                            Boss bossFromDB = null;
-                            if (bossList != null && bossList.size() > 0) {
-                                for (Boss boss1 : bossList) {
-                                    if (boss1.getDifficulty() == boss.getDifficulty()) {
-                                        bossFromDB = boss1;
-                                    }
-                                }
-                            }
-                            if (bossFromDB == null) {
-                                this.bossService.save(boss);
-                                characterRank.setBoss(boss);
-                            } else {
-                                characterRank.setBoss(bossFromDB);
-                            }
-                            characterRank.setRanks(fightRanks);
-                            characterRank.setTotalKills(wowLogsRankData.getTotalKills());
-                            characterRank.setMaxAmount((long) wowLogsRankData.getBestAmount());
-                            characterRank.setAverage((long) getAverageDPS(fightRanks));
-                            characterRank.setMetric(wowLogsRankData.getMetric());
-                            rankService.saveAll(fightRanks);
-                            characterRankService.save(characterRank);
-                        } else {
-                            List<Rank> ranksFromDB = characterRank.getRanks();
-                            List<Rank> updatedRanks = new ArrayList<>();
-                            if (ranksFromDB == null || ranksFromDB.size() == 0) {
-                                updatedRanks = fightRanks;
-                            } else {
-                                updatedRanks = ranksFromDB;
-                                for (Rank rank : fightRanks) {
-                                    updatedRanks.add(rank);
-                                }
-                            }
-                            characterRank.setRanks(updatedRanks);
-                            characterRank.setMaxAmount((long) wowLogsRankData.getBestAmount());
-                            characterRank.setAverage((long) getAverageDPS(updatedRanks));
-                            characterRank.setMetric(wowLogsRankData.getMetric());
-                            rankService.saveAll(updatedRanks);
-                            characterRankService.save(characterRank);
-                        }
-                        ranks.add(characterRank);
-
-                    } catch (Exception e) {
-                        log.error("Could not parse WOWLogs character data, error {}", e.getMessage());
                     }
+
+                    CharacterRank characterRank = null;
+                    List<CharacterRank> currentCharacterRanks = character.getRanks();
+                    if (currentCharacterRanks != null) {
+                        for (CharacterRank rank : currentCharacterRanks) {
+                            Boss boss1 = rank.getBoss();
+                            if (boss1 != null) {
+                                if (boss1.getDifficulty() == boss.getDifficulty()
+                                        && boss1.getName().equalsIgnoreCase(boss.getName())
+                                        && boss1.getEncounterID() == boss.getEncounterID()
+                                        && rank.getMetric().equalsIgnoreCase(metric)) {
+                                    characterRank = rank;
+                                }
+                            }
+                        }
+                    }
+                    if (characterRank == null) {
+                        characterRank = new CharacterRank();
+                        List<Boss> bossList = this.bossService.findByEncounterID(boss.getEncounterID());
+                        Boss bossFromDB = null;
+                        if (bossList != null && bossList.size() > 0) {
+                            for (Boss boss1 : bossList) {
+                                if (boss1.getDifficulty() == boss.getDifficulty()) {
+                                    bossFromDB = boss1;
+                                }
+                            }
+                        }
+                        if (bossFromDB == null) {
+                            this.bossService.save(boss);
+                            characterRank.setBoss(boss);
+                        } else {
+                            characterRank.setBoss(bossFromDB);
+                        }
+                        characterRank.setRanks(fightRanks);
+                        characterRank.setTotalKills(wowLogsRankData.getEncounterRankings().getTotalKills());
+                        characterRank.setMaxAmount((long) wowLogsRankData.getEncounterRankings().getBestAmount());
+                        characterRank.setAverage((long) getAverageDPS(fightRanks));
+                        characterRank.setMetric(wowLogsRankData.getEncounterRankings().getMetric());
+                        rankService.saveAll(fightRanks);
+                        characterRankService.save(characterRank);
+                    } else {
+                        List<Rank> ranksFromDB = characterRank.getRanks();
+                        List<Rank> updatedRanks = new ArrayList<>();
+                        if (ranksFromDB == null || ranksFromDB.size() == 0) {
+                            updatedRanks = fightRanks;
+                        } else {
+                            updatedRanks = ranksFromDB;
+                            for (Rank rank : fightRanks) {
+                                updatedRanks.add(rank);
+                            }
+                        }
+                        characterRank.setRanks(updatedRanks);
+                        characterRank.setMaxAmount((long) wowLogsRankData.getEncounterRankings().getBestAmount());
+                        characterRank.setAverage((long) getAverageDPS(updatedRanks));
+                        characterRank.setMetric(wowLogsRankData.getEncounterRankings().getMetric());
+                        rankService.saveAll(updatedRanks);
+                        characterRankService.save(characterRank);
+                    }
+                    ranks.add(characterRank);
+
+                } catch (Exception e) {
+                    log.error("Could not parse WOWLogs character data, error {}", e.getMessage());
                 }
             }
+
         }
         return ranks;
     }
@@ -245,14 +240,14 @@ public class WowLogsCharacterService {
             Map<String, String> body = new HashMap<>();
             String requestString = "{characterData{character(name:\"" + characterName + "\", serverSlug:\"" + server + "\", serverRegion:\"EU\"){encounterRankings(encounterID:" + encounterId + ", difficulty:" + difficulty + ", metric:" + metric + ")}}}";
             body.put("query", requestString);
-            String url = "https://www.warcraftlogs.com/api/v2/client";
+
             try {
-                result = httpSender.sendRequest(url, body, HttpMethod.POST, token);
+                result = httpSender.sendRequest(wowLogsApi, body, HttpMethod.POST, token);
                 if (!result.isEmpty()) {
 
                     if (result.contains("Invalid difficulty\\/size specified") || result.contains("429 Too Many Requests")) {
-                        log.info("request string: {}",requestString);
-                        log.info("difficulty: {}",difficulty);
+                        log.info("request string: {}", requestString);
+                        log.info("difficulty: {}", difficulty);
 
                         result = null;
                     }
@@ -267,13 +262,13 @@ public class WowLogsCharacterService {
         return result;
     }
 
-    private boolean isRankInOurDBAlready(WOWLogsCharacterRankData.WOWLogsRank logsRank, Character character, String metric) {
+    private boolean isRankInOurDBAlready(WOWLogsCharacterRankData.CharacterRankings.Rank logsRank, Character character, String metric) {
         boolean result = false;
         if (logsRank.getReport().getCode() == null) {
             return true;
         }
         List<CharacterRank> characterRankList = character.getRanks();
-        if (characterRankList != null && characterRankList.size() > 0) {
+        if (characterRankList != null && !characterRankList.isEmpty()) {
             for (CharacterRank characterRank : characterRankList) {
                 List<Rank> ranks = characterRank.getRanks();
                 if (ranks != null) {

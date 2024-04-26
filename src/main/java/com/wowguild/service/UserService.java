@@ -4,8 +4,8 @@ import com.wowguild.entity.User;
 import com.wowguild.enums.user.Role;
 import com.wowguild.repos.UserRepos;
 import com.wowguild.utils.Encoder;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,12 +15,11 @@ import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepos userRepos;
-    @Autowired
-    private Encoder encoder;
+    private final UserRepos userRepos;
+    private final Encoder encoder;
 
 
     @Override
