@@ -3,18 +3,21 @@ package com.wowguild.service.guild;
 import com.wowguild.entity.Character;
 import com.wowguild.entity.rank.Boss;
 import com.wowguild.model.UpdateStatus;
+import com.wowguild.model.blizzard.GuildProfile;
 import com.wowguild.sender.HttpSender;
 import com.wowguild.service.token.TokenManager;
+import com.wowguild.tool.parser.Parser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BattleNetGuildService {
@@ -31,6 +34,7 @@ public class BattleNetGuildService {
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
     private final BattleNetCharacterService battleNetCharacterService;
+    private final Parser<GuildProfile> guildProfileParser;
 
     private static final Comparator<Boss> BY_ID = (o1, o2) -> (int) (o1.getId() - o2.getId());
 
@@ -40,11 +44,8 @@ public class BattleNetGuildService {
         if (token != null) {
             String url = "https://eu.api.blizzard.com/data/wow/guild/" + realm + "/" + guildName +
                     "/roster?namespace=" + namespace + "&locale=" + locale;
-            try {
-                stringPosts = httpSender.sendRequest(url, HttpMethod.GET, token);
-            } catch (RestClientException e) {
-                e.printStackTrace();
-            }
+
+            stringPosts = httpSender.sendRequest(url, HttpMethod.GET, token);
         }
         return stringPosts;
     }
@@ -52,39 +53,32 @@ public class BattleNetGuildService {
     public List<Character> parseGuildData(String response) {
         List<Character> characterList = new ArrayList<>();
         Character character;
-        String characterName;
         if (response != null && !response.isEmpty()) {
             try {
-                String[] charactersStrings = response.split("\"character\"");
-                for (int r = 1; r < charactersStrings.length; r++) {
-                    character = null;
-                    characterName = "";
-                    try {
-                        Thread.sleep(300);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                GuildProfile guildProfile = guildProfileParser.parseTo(response);
+                if (guildProfile != null) {
+                    List<GuildProfile.Member> members = guildProfile.getMembers();
+                    for (GuildProfile.Member member : members) {
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            log.error(e.getMessage());
+                        }
+                        String characterName = member.getCharacter().getName();
+                        String characterLink = member.getCharacter().getKey().getHref();
+                        String characterRank = String.valueOf(member.getRank());
 
-                    String characterLink = charactersStrings[r];
-                    characterLink = characterLink.substring(17);
-                    String[] characterNameArray = characterLink.split("\"name\":\"");
-                    String[] characterLinkArray = characterLink.split("\"}");
-                    String[] characterRankArray = characterLink.split("\"rank\"");
-                    String characterRank = characterRankArray[1];
-                    characterRank = characterRank.substring(1, 2);
-                    characterLink = characterLinkArray[0];
-                    characterName = characterNameArray[1].split("\"")[0];
+                        UpdateStatus<Character> status = battleNetCharacterService.getCharacterData(characterLink,
+                                Integer.parseInt(characterRank), characterName, null);
+                        character = status.getResult();
 
-
-                    UpdateStatus<Character> status = battleNetCharacterService.getCharacterData(characterLink, Integer.parseInt(characterRank), characterName, null);
-                    character = status.getResult();
-
-                    if (character != null) {
-                        characterList.add(character);
+                        if (character != null) {
+                            characterList.add(character);
+                        }
                     }
                 }
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                log.error(e.getMessage());
             }
         }
         return characterList;

@@ -36,9 +36,10 @@ public class CharacterConverter implements Converter<Character, CharacterDto> {
             characterDto.setClassEn(character.getClassEn());
             characterDto.setRegionEn(character.getRegionEn());
             characterDto.setIconURL(character.getIconURL());
-            characterDto.setRanks(character.getRanks().stream()
-                    .map(this::convertToCharacterRankDto).collect(Collectors.toList()));
-
+            if (character.getRanks() != null) {
+                characterDto.setRanks(character.getRanks().stream()
+                        .map(this::convertToCharacterRankDto).collect(Collectors.toList()));
+            }
             return characterDto;
         }
         return null;
@@ -53,8 +54,10 @@ public class CharacterConverter implements Converter<Character, CharacterDto> {
             characterRankDto.setMaxAmount(characterRank.getMaxAmount());
             characterRankDto.setTotalKills(characterRank.getTotalKills());
             characterRankDto.setBoss(bossConverter.convertToDto(characterRank.getBoss()));
-            characterRankDto.setRanks(characterRank.getRanks().stream()
-                    .map(this::convertToRankDto).collect(Collectors.toList()));
+            if (characterRank.getRanks() != null) {
+                characterRankDto.setRanks(characterRank.getRanks().stream()
+                        .map(this::convertToRankDto).collect(Collectors.toList()));
+            }
             return characterRankDto;
         }
         return null;

@@ -33,7 +33,7 @@ public class GuildManager {
 
         //charactersFromOurDB = addAllCharactersToDB(charactersFromBlizzardDB);
 
-        if (charactersFromOurDB == null || charactersFromOurDB.size() == 0) {
+        if (charactersFromOurDB == null || charactersFromOurDB.isEmpty()) {
             charactersFromOurDB = characterService.saveAll(charactersFromBlizzardDB);
         } else {
             for (Character character : charactersFromOurDB) {
