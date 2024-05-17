@@ -17,6 +17,7 @@ import { Link } from 'react-router-dom';
 import wowLogo from './../logo/wow.png';
 import wowLogsLogo from './../logo/wowLogs.png';
 import RaiderIo from './../logo/raiderIo.png';
+import {showErrorAndSetFalse} from './../../common/error-handler.jsx';
 
 const { Search } = Input;
 const { Sider, Content } = Layout;
@@ -394,14 +395,6 @@ const MembersList = (props) =>{
 
 } */
 
-const showError = (response, setLoading) =>{
-    if(setLoading != null && setLoading != undefined){
-        setLoading(false);
-    }
-    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
-}
-
-
 
 const StyledTable = styled(Table)`
     backgroundColor:red !important;
@@ -560,13 +553,8 @@ function MainContent (props){
         setDifficultyText("5");
 
         fetch('/get_user')
-        .then(response=> response.status !== 200 ? showError(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+        .then(response=> response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
         .then(data=>setUserData(data));
-
-        /* fetch('/get_bosses',{
-        })
-            .then(response => response.status !== 200 ? showError(response) : response.json())
-            .then(data => setRaidsData(data,true)) */
 
         setRaidsData(props.bosses, true);
 
@@ -580,7 +568,7 @@ function MainContent (props){
 
     const getRankedMembers = () =>{
         fetch('/get_ranked_members')
-        .then(response=> response.status !== 200 ? showError(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+        .then(response=> response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
         .then(data=>setMembersData(data));
 
     }

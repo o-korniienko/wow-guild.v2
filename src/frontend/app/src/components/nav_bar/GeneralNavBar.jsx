@@ -36,7 +36,7 @@ const Language = (props) => {
 
     const setLanguage = (value) => {
         fetch("/csrf")
-            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+            .then(response => response.status != 200 ? showError(response) :
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
@@ -118,7 +118,7 @@ const Logo = (props) => {
 
 const LogOut = () => {
     fetch("/csrf")
-        .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+        .then(response => response.status != 200 ? showError(response) :
             response.json())
         .then(data => {
             if (data !== undefined && data !== null && data.token != undefined) {
@@ -130,7 +130,7 @@ const LogOut = () => {
                         'Content-Type': 'application/json'
                     },
                     credentials: 'include'
-                }).then(response => response.status === false ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) : getLogOut())
+                }).then(response => response.status === false ? showError(showError) : getLogOut())
             }
         });
 

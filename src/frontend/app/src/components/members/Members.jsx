@@ -117,7 +117,7 @@ const MenuComponent = (props) => {
         }
 
         fetch("/csrf")
-            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+            .then(response => response.status != 200 ? showError(response) :
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
@@ -151,7 +151,7 @@ const MenuComponent = (props) => {
             mainDiv.className = 'main_div_disabled';
         }
         fetch("/csrf")
-            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+            .then(response => response.status != 200 ? showError(response) :
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {

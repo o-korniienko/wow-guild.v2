@@ -6,11 +6,7 @@ import { Input, Form, InputNumber, Select, Button, Tooltip, Space, message } fro
 import {  useHistory } from 'react-router-dom';
 import  './Users.css';
 import styled from 'styled-components'
-
-
-
-
-
+import { showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
 
 const { TextArea } = Input;
 
@@ -80,10 +76,6 @@ const result = (data, language) =>{
 
 }
 
-const showError = (response) =>{
-    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
-}
-
 const EditForm = (props) =>{
 
      let id = props.id;
@@ -120,7 +112,7 @@ const EditForm = (props) =>{
                      credentials: 'include',
                  body:JSON.stringify(userObject)
              })
-             .then(response => response.status != 200 ? message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText) :
+             .then(response => response.status != 200 ? showError(response) :
                 response.json() )
              .then(data => result(data,props.language));
 
