@@ -6,23 +6,14 @@ import wowLogo from './../logo/wow.png';
 import wowLogsLogo from './../logo/wowLogs.png';
 import RaiderIo from './../logo/raiderIo.png';
 import {SyncOutlined} from '@ant-design/icons';
-
+import { showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
 
 const cookies = new Cookies();
 const XSRFToken = cookies.get('XSRF-TOKEN')
 
-
-const showError = (response, setLoading) => {
-    if (setLoading != null && setLoading != undefined) {
-        setLoading(false)
-    }
-    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
-}
-
 let SEARCH = ""
 
 const MembersList = (props) => {
-
     const [pageSize, setPageSize] = useState(15)
     const [members, setMembers] = useState(props.members)
     const [searchText, setSearchText] = useState(SEARCH)
@@ -96,10 +87,10 @@ const MembersList = (props) => {
             mainDiv.className = 'main_div_disabled';
         }
         fetch("/csrf")
-            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+            .then(response => response.status != 200 ? showError(response) :
                 response.json())
             .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
+                if (data !== undefined && data !== null && data.token !== undefined) {
                     fetch('/update_character_data/' + id, {
                         method: 'POST',
                         headers: {
@@ -109,8 +100,10 @@ const MembersList = (props) => {
                         },
                         credentials: 'include'
                     })
-                        .then(response => response.status !== 200 ? showError(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
                         .then(data => props.updateCharacterDataInTable(data, SEARCH));
+                }else{
+                    props.setLoading(false);
                 }
             });
         /* setTimeout(function(){
@@ -119,29 +112,6 @@ const MembersList = (props) => {
 
 
     }
-
-    /*    const updateCharacterDataInTable = (data) =>{
-            props.setLoading(false);
-            let newArray = Object.entries(data)
-            let map = new Map(newArray);
-            if(map.keys().next().value === 'Deleted' || map.keys().next().value === 'Saved' || map.keys().next().value ===  'Successful'){
-                message.success(map.keys().next().value);
-                var updatedCharacter = map.values().next().value
-
-                 for(var i = 0; i < MEMBERS.length; i++){
-                    if(MEMBERS[i].id === updatedCharacter.id){
-                        MEMBERS[i] = updatedCharacter
-                    }
-                }
-            }else{
-                message.error(map.keys().next().value);
-            }
-            let mainDiv = document.getElementById('mainDiv');
-            if(mainDiv != null){
-               mainDiv.className = 'main_div_enabled';
-            }
-            return MEMBERS
-       } */
 
     const onSearch = value => {
         let str = ""

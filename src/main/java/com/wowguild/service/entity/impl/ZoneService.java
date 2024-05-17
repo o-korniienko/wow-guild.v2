@@ -21,8 +21,8 @@ public class ZoneService implements EntityService<Zone> {
     }
 
     @Override
-    public List<Zone> getAll() {
-        return zoneRepo.findAll();
+    public List<Zone> getAllSorted() {
+        return findAll();
     }
 
     @Override

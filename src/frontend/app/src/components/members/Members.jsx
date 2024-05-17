@@ -8,6 +8,7 @@ import {BarChartOutlined, SyncOutlined, TeamOutlined, UnorderedListOutlined} fro
 import React, {useEffect, useState} from 'react';
 import Cookies from 'universal-cookie';
 import {Link} from 'react-router-dom';
+import { showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
 
 const {Search} = Input;
 const {Sider, Content} = Layout;
@@ -130,7 +131,7 @@ const MenuComponent = (props) => {
                         credentials: 'include'
 
                     })
-                        .then(response => response.status !== 200 ? showError(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
                         .then(data => props.setData(data));
                 }
             });
@@ -164,7 +165,7 @@ const MenuComponent = (props) => {
                         credentials: 'include'
 
                     })
-                        .then(response => response.status !== 200 ? showError(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
                         .then(data => setBossesData(data));
                 }
             });
@@ -174,7 +175,7 @@ const MenuComponent = (props) => {
     const setBossesData = (data) => {
         props.setLoading(false);
 
-        let newArray = Object.entries(data)
+        /*let newArray = Object.entries(data)
         let map = new Map(newArray);
 
         if (map.keys().next().value === 'Deleted' || map.keys().next().value === 'Saved' || map.keys().next().value === 'Successful') {
@@ -187,6 +188,19 @@ const MenuComponent = (props) => {
         let mainDiv = document.getElementById('mainDiv');
         if (mainDiv != null) {
             mainDiv.className = 'main_div_enabled';
+        }*/
+
+        if(data !== null && data !== undefined){
+            if (data.message === 'Successful'){
+                message.success(data.message)
+            }else{
+                message.info(data.message)
+            }
+            props.setBosses(data.data);
+            let mainDiv = document.getElementById('mainDiv');
+            if (mainDiv != null) {
+                mainDiv.className = 'main_div_enabled';
+            }
         }
 
     }
@@ -268,16 +282,6 @@ const MenuComponent = (props) => {
 
 }
 
-
-const showError = (response, setLoading) => {
-    if (setLoading != null && setLoading != undefined) {
-        setLoading(false)
-
-    }
-
-    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
-}
-
 function Members(props) {
     languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
     const [collapsed, setCollapsed] = useState(false);
@@ -319,29 +323,32 @@ function Members(props) {
 
     const updateCharacterDataInTable = (data, search) => {
         setLoading(false);
-        let newArray = Object.entries(data)
-        let map = new Map(newArray);
-        if (map.keys().next().value === 'Deleted' || map.keys().next().value === 'Saved' || map.keys().next().value === 'Successful') {
-            message.success(map.keys().next().value);
-            var updatedCharacter = map.values().next().value
+        if (data !== null && data !== undefined){
+            if (data.message === 'Successful'){
+                message.success(data.message)
 
-            for (var i = 0; i < MEMBERS.length; i++) {
-                if (MEMBERS[i].id === updatedCharacter.id) {
-                    MEMBERS[i] = updatedCharacter
+                var updatedCharacter = data.data
+
+                for (var i = 0; i < MEMBERS.length; i++) {
+                    if (MEMBERS[i].id === updatedCharacter.id) {
+                        MEMBERS[i] = updatedCharacter
+                    }
                 }
+            }else{
+                message.info(data.message)
             }
-        } else {
-            message.error(map.keys().next().value);
-        }
-        let mainDiv = document.getElementById('mainDiv');
-        if (mainDiv != null) {
-            mainDiv.className = 'main_div_enabled';
-        }
-        if (search.trim() === "") {
-            setMembers([])
-            setMembers(MEMBERS)
-        } else {
-            onSearch(search)
+            let mainDiv = document.getElementById('mainDiv');
+
+            if (mainDiv != null) {
+                mainDiv.className = 'main_div_enabled';
+            }
+
+            if (search.trim() === "") {
+                setMembers([])
+                setMembers(MEMBERS)
+            } else {
+                onSearch(search)
+            }
         }
     }
 
@@ -350,7 +357,7 @@ function Members(props) {
 
 
         fetch('/get_user')
-            .then(response => response.status !== 200 ? showError(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+            .then(response => response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
             .then(data => setUserData(data));
 
 

@@ -91,7 +91,7 @@ public class WowLogsCharacterService {
         List<Boss> bosses = bossService.findAll();
         boolean is429Error = false;
         boolean isThereNoErrors = true;
-        if (bosses != null && bosses.size() > 0) {
+        if (bosses != null && !bosses.isEmpty()) {
             List<CharacterRank> ranks = new ArrayList<>();
 
             String response = "";

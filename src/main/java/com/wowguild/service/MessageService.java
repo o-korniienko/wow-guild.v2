@@ -27,56 +27,36 @@ public class MessageService {
     }
 
 
-    public List<String> saveGreeting(InformingMessage message) {
-        List<String> result = new ArrayList<>();
+    public String saveGreeting(InformingMessage message) {
+        List<InformingMessage> messages = infMessageRepos.findByTag("greeting");
 
-        try {
-            List<InformingMessage> messages = infMessageRepos.findByTag("greeting");
-
-            if (messages == null || messages.size() == 0) {
-                InformingMessage newMessage = new InformingMessage();
-                newMessage.setTag("greeting");
-                newMessage.setMessage(message.getMessage());
-                infMessageRepos.save(message);
-                result.add("Successful");
-                return result;
-            } else {
-                InformingMessage messageFromDB = messages.get(0);
-                messageFromDB.setMessage(message.getMessage());
-                infMessageRepos.save(messageFromDB);
-                result.add("Successful");
-                return result;
-            }
-        } catch (Exception e) {
-            log.error("Could not save greeting message {}, error: {}", message, e.getMessage());
-            result.add("an internal server error");
-            return result;
+        if (messages == null || messages.isEmpty()) {
+            InformingMessage newMessage = new InformingMessage();
+            newMessage.setTag("greeting");
+            newMessage.setMessage(message.getMessage());
+            infMessageRepos.save(message);
+            return "Successful";
+        } else {
+            InformingMessage messageFromDB = messages.get(0);
+            messageFromDB.setMessage(message.getMessage());
+            infMessageRepos.save(messageFromDB);
+            return "Successful";
         }
     }
 
-    public List<String> updateMessageByTag(InformingMessage message) {
-        List<String> result = new ArrayList<>();
-        try {
-            List<InformingMessage> messages = infMessageRepos.findByTag(message.getTag());
-
-            if (messages == null || messages.size() == 0) {
-                InformingMessage newMessage = new InformingMessage();
-                newMessage.setTag(message.getTag());
-                newMessage.setMessage(message.getMessage());
-                infMessageRepos.save(message);
-                result.add("Successful");
-                return result;
-            } else {
-                InformingMessage messageFromDB = messages.get(0);
-                messageFromDB.setMessage(message.getMessage());
-                infMessageRepos.save(messageFromDB);
-                result.add("Successful");
-                return result;
-            }
-        } catch (Exception e) {
-            log.error("Could not update message {}, error: {}", message, e.getMessage());
-            result.add("an internal server error");
-            return result;
+    public String updateMessageByTag(InformingMessage message) {
+        List<InformingMessage> messages = infMessageRepos.findByTag(message.getTag());
+        if (messages == null || messages.isEmpty()) {
+            InformingMessage newMessage = new InformingMessage();
+            newMessage.setTag(message.getTag());
+            newMessage.setMessage(message.getMessage());
+            infMessageRepos.save(message);
+            return "Successful";
+        } else {
+            InformingMessage messageFromDB = messages.get(0);
+            messageFromDB.setMessage(message.getMessage());
+            infMessageRepos.save(messageFromDB);
+            return "Successful";
         }
     }
 

@@ -1,6 +1,5 @@
 package com.wowguild.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -67,13 +66,17 @@ public class WebSecurityConfig {
                                 "/error")
                         .permitAll()
                         .requestMatchers(
-                                //  antMatcher(HttpMethod.POST, "/save_greeting"),
                                 antMatcher(HttpMethod.POST, "/registration"),
+                                antMatcher(HttpMethod.POST, "/perform_login"))
+                        .permitAll()
+                        .requestMatchers(
+                                //  antMatcher(HttpMethod.POST, "/save_greeting"),
                                 antMatcher(HttpMethod.GET, "/get_about_us_messages"),
                                 antMatcher(HttpMethod.GET, "/get_user"),
                                 antMatcher(HttpMethod.GET, "/get_greeting_message"))
                         .permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated()
+                );
         http
                 .formLogin(formLogin -> formLogin
                         .failureHandler(new LoginFailHandler())

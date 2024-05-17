@@ -8,7 +8,7 @@ import Cookies from 'universal-cookie';
 import {ArrowLeftOutlined, UserOutlined} from '@ant-design/icons';
 import logo from './../logo/logo.jpg';
 import properties from './../../properties.js';
-
+import {showError} from './../../common/error-handler.jsx';
 
 const cookies = new Cookies();
 const {Option} = Select;
@@ -48,10 +48,20 @@ const Language = (props) => {
                             'Content-Type': 'application/json'
                         },
                         credentials: 'include'
-                    }).then(response => response.status === false ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
-                        response.json()).then(data => data[0] != "Success" ? message.error(data[0]) : UpdateData(value));
+                    }).then(response => response.status != 200 ? showError(response) :
+                        response.json()).then(data => checkLanguageChengeApiResponse(data));
                 }
             });
+    }
+
+    const checkLanguageChengeApiResponse = (data) =>{
+        if (data !== null && data !== undefined){
+            if (data.message === 'Success'){
+                UpdateData(data.data)
+            }else{
+                message.error(data.message)
+            }
+        }
     }
 
 

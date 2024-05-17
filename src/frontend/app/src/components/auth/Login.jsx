@@ -5,6 +5,7 @@ import React, {useState} from 'react';
 import Cookies from 'universal-cookie';
 import {Link} from 'react-router-dom';
 import './Auth.css';
+import {showError} from './../../common/error-handler.jsx';
 
 
 const cookies = new Cookies();
@@ -13,27 +14,18 @@ let language = localStorage.getItem("language") != null ? localStorage.getItem("
 
 const getLogin = (data, language) => {
     let mess = cookies.get("message");
-    if (mess === "DoesNotExist") {
+    if (mess === "DoesNotExist" || mess === "WrongPassword") {
         if (language == "UA") {
-            message.warning("Користувач із зазначеним іменем не існує ");
+            message.warning("Логін і пароль не збігаються з жодним з користувачів");
         }
         if (language == "EN") {
-            message.warning("The user with the specified name does not exist");
+            message.warning("UserName and Password do not match any of users");
         }
     } else {
-        if (mess === "WrongPassword") {
-            console.log("here");
-            if (language == "UA") {
-                message.warning("Неправильний пароль");
-            }
-
-            if (language == "EN") {
-                message.warning("Wrong password");
-            }
-        } else {
-            if (mess === "Successful") {
-                window.location.href = "/home";
-            }
+        if (mess === "Successful") {
+            window.location.href = "/home";
+        }else{
+            message.error("unknown error has been occured")
         }
     }
 }
@@ -60,8 +52,7 @@ const LoginForm = (props) => {
                 'X-XSRF-TOKEN': XSRFToken,
                 credentials: 'include'
             },
-        }).then(response => response.status != 200 ? message.error("Something goes wrooong. status:"
-                + response.status + ", status text:" + response.statusText) :
+        }).then(response => response.status !== 200 && response.status !== 401 ? showError(response) :
             getLogin(response, props.currentLanguage));
 
     }

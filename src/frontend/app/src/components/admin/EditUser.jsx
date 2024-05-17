@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import AppNavbar from './../nav_bar/GeneralNavBar.jsx';
 import 'antd/dist/antd.css';
 import Cookies from 'universal-cookie';
 import {Button, Form, Input, message, Select, Space} from 'antd';
 import {useHistory} from 'react-router-dom';
-
+import {showError} from './../../common/error-handler.jsx';
 
 const {TextArea} = Input;
 
@@ -49,9 +49,9 @@ function setUserActivity(value) {
 }
 
 
-const result = (data, language) => {
-    if (data != undefined && data != null) {
-        if (data[0] === "Exist") {
+const processUserEditinApiResponse = (data, language) => {
+    if (data !== undefined && data !== null) {
+        if (data.message === "Exist") {
             if (language == "UA") {
                 message.warning("Користувач із зазначеним іменем вже зареєстрований");
             }
@@ -60,11 +60,9 @@ const result = (data, language) => {
             }
 
         } else {
-            data[0] != "Saved" ? message.error(data[0]) : window.location.href = "/admin";
+            data.message !== "Saved" ? message.error(data.message) : window.location.href = "/admin";
         }
-
     }
-
 }
 
 
@@ -81,12 +79,12 @@ const EditForm = (props) => {
 
     const onFinish = (values) => {
         let isNameChanged = false;
-        if (user2.username.trim() != values.user_name.trim()) {
+        if (user2.username.trim() != values.login.trim()) {
             isNameChanged = true;
         }
         var userObject = {
             id: user2.id,
-            username: values.user_name,
+            username: values.login,
             password: values.password,
             email: values.email,
             active: isActive,
@@ -95,7 +93,7 @@ const EditForm = (props) => {
         }
 
         fetch("/csrf")
-            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+            .then(response => response.status != 200 ? showError(response) :
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
@@ -109,29 +107,33 @@ const EditForm = (props) => {
                         credentials: 'include',
                         body: JSON.stringify(userObject)
                     })
-                        .then(response => response.status != 200 ? message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText) :
+                        .then(response => response.status != 200 ? showError(response) :
                             response.json())
-                        .then(data => result(data, props.language))
+                        .then(data => processUserEditinApiResponse(data, props.language))
                 }
             });
     };
 
-    const getUser = () => {
+    useEffect(() => {
         fetch('/get_user/' + id)
-            .then(response => response.json())
-            .then(data => setUser(data));
+            .then(response => response.status != 200 ? showError(response) : response.json())
+            .then(data => setUserData(data));
+    }, []);
+
+    const setUserData = (data) => {
+        if (data !== null && data !== undefined) {
+            form.setFieldsValue({login: data.username});
+            form.setFieldsValue({email: data.email});
+            form.setFieldsValue({user_role: data.roles});
+            form.setFieldsValue({isActive: data.active.toString()});
+            userRole = data.roles;
+            isActive = data.active;
+
+            setUser(data)
+            user2 = data;
+        }
     }
-    if (user === null) {
-        getUser();
-    } else {
-        form.setFieldsValue({user_name: user.username});
-        form.setFieldsValue({email: user.email});
-        form.setFieldsValue({user_role: user.roles});
-        form.setFieldsValue({isActive: user.active.toString()});
-        userRole = user.roles;
-        isActive = user.active;
-        user2 = user;
-    }
+
     const clickHandler = (event) => {
         if (event.key === 'Enter' && event.target.tagName !== "INPUT") {
             form.submit();
@@ -168,11 +170,11 @@ const EditForm = (props) => {
             <p/>
             <Form form={form}  {...layout} name="nest-messages" onFinish={onFinish}>
                 <Form.Item
-                    name='user_name'
+                    name='login'
                     label={props.loginFieldName}
                     rules={[{required: true, message: props.loginErrorText}]}
                 >
-                    <Input name='user_name' key="name" style={{width: 400}} placeholder={props.loginErrorText}/>
+                    <Input name='login' key="name" style={{width: 400}} placeholder={props.loginErrorText}/>
                 </Form.Item>
                 <Form.Item
                     name="email"

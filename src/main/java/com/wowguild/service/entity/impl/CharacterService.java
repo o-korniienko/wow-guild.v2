@@ -23,8 +23,8 @@ public class CharacterService implements EntityService<Character> {
     }
 
     @Override
-    public List<Character> getAll() {
-        List<Character> characters = characterRepos.findAll();
+    public List<Character> getAllSorted() {
+        List<Character> characters = findAll();
         characters = sort(characters, BY_GUILD_RANK, BY_LEVEL);
         return characters;
     }
@@ -57,5 +57,9 @@ public class CharacterService implements EntityService<Character> {
 
     public Character findByCanonicalID(long canonicalID) {
         return characterRepos.findByCanonicalID(canonicalID);
+    }
+
+    public Character findById(long id) {
+        return characterRepos.findById(id).orElse(null);
     }
 }

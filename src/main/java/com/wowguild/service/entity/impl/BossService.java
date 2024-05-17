@@ -1,13 +1,16 @@
 package com.wowguild.service.entity.impl;
 
 import com.wowguild.entity.rank.Boss;
+import com.wowguild.entity.rank.Zone;
 import com.wowguild.repos.BossRepo;
 import com.wowguild.service.entity.EntityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -23,10 +26,19 @@ public class BossService implements EntityService<Boss> {
     }
 
     @Override
-    public List<Boss> getAll() {
-        List<Boss> bosses = bossRepo.findAll();
+    public List<Boss> getAllSorted() {
+        List<Boss> bosses = findAll();
         bosses = sort(bosses, BY_ENCOUNTER_ID, null);
         return bosses;
+    }
+
+    public Set<Zone> getBossesZones() {
+        Set<Zone> result = new HashSet<>();
+        List<Boss> bosses = findAll();
+        for (Boss boss : bosses) {
+            result.add(boss.getZone());
+        }
+        return result;
     }
 
     @Override

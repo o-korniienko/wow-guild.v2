@@ -21,8 +21,8 @@ public class CharacterRankService implements EntityService<CharacterRank> {
     }
 
     @Override
-    public List<CharacterRank> getAll() {
-        return characterRankRepo.findAll();
+    public List<CharacterRank> getAllSorted() {
+        return findAll();
     }
 
     @Override

@@ -4,7 +4,7 @@ import 'antd/dist/antd.css';
 import React, {useEffect, useState} from 'react';
 import Cookies from 'universal-cookie';
 import {Link} from 'react-router-dom';
-
+import {showError} from './../../common/error-handler.jsx';
 
 const cookies = new Cookies();
 const XSRFToken = cookies.get('XSRF-TOKEN')
@@ -36,10 +36,6 @@ function DeleteButton(props) {
         </Space>
     );
 
-}
-
-const showError = (response) => {
-    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
 }
 
 const testFunction = () => {
@@ -83,17 +79,17 @@ const UserList = (props) => {
     }
 
     const updateUsers = (data) => {
-        let newArray = Object.entries(data)
-        let map = new Map(newArray);
-        if (map.keys().next().value === 'Deleted' || map.keys().next().value === 'Saved' || map.keys().next().value === 'Successful') {
-            message.success(map.keys().next().value);
-        } else {
-            message.error(map.keys().next().value);
+        if(data !== null && data !== undefined){
+            if (data.message === 'Deleted'){
+                message.success(data.message)
+                setUsers(data.data);
+                Users = data.data;
+            }else{
+                message.error(data.message)
+            }
         }
-        setUsers(map.values().next().value);
-        Users = map.values().next().value;
-
     }
+
     const updateUsers2 = (data) => {
         setUsers(data);
         Users = data;
@@ -101,13 +97,13 @@ const UserList = (props) => {
 
     useEffect(() => {
         fetch('/get_users', {})
-            .then(response => response.json())
+            .then(response => response.status != 200 ? showError(response) : response.json())
             .then(data => updateUsers2(data))
 
     }, []);
     const remove = (id) => {
         fetch("/csrf")
-            .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+            .then(response => response.status != 200 ? showError(response) :
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
@@ -121,7 +117,7 @@ const UserList = (props) => {
                         credentials: 'include',
 
                     })
-                        .then(response => response.json())
+                        .then(response => response.status != 200 ? showError(response) : response.json())
                         .then(data => updateUsers(data));
                 }
             });

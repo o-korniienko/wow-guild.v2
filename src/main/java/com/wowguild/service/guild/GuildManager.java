@@ -7,9 +7,9 @@ import com.wowguild.model.UpdateStatus;
 import com.wowguild.model.wow_logs.WOWLogsReportData;
 import com.wowguild.service.entity.impl.BossService;
 import com.wowguild.service.entity.impl.CharacterService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 
 import java.util.*;
 
@@ -68,51 +68,29 @@ public class GuildManager {
     }
 
 
-    public Map<String, List<Boss>> UpdateRankingData() {
-        Map<String, List<Boss>> result = new HashMap<>();
+    public String UpdateRankingData() {
         boolean isThereNoErrors = true;
-
-        try {
-            WOWLogsReportData reportData = wowLogsGuildService.getReportData();
-            isThereNoErrors = wowLogsGuildService.updateReportData(reportData);
-        } catch (RestClientException e) {
-            e.printStackTrace();
-            isThereNoErrors = false;
-        }
-
+        WOWLogsReportData reportData = wowLogsGuildService.getReportData();
+        isThereNoErrors = wowLogsGuildService.updateReportData(reportData);
         if (isThereNoErrors) {
-            result.put("Successful", getBosses());
+            return "Successful";
         } else {
-            result.put("There were errors during updating rank data", getBosses());
+            return "There were errors during updating rank data";
         }
-        return result;
     }
 
-    public Map<String, Character> updateCharacterData(Character character) {
-        Map<String, Character> result = new HashMap<>();
+    public Map<String, Character> updateCharacterData(long id) {
+        Character character = characterService.findById(id);
+        if (character != null) {
+            String guildData = battleNetGuildService.getGuildData();
+            UpdateStatus<Character> updateCharacterStatus = battleNetCharacterService.updateCharacter(character, guildData);
 
-        String guildData = battleNetGuildService.getGuildData();
-        UpdateStatus<Character> updateCharacterStatus = battleNetCharacterService.updateCharacter(character, guildData);
-
-        if (updateCharacterStatus.getResult() != null) {
-            character = updateCharacterStatus.getResult();
+            if (updateCharacterStatus.getResult() != null) {
+                character = updateCharacterStatus.getResult();
+            }
+            return wowLogsCharacterService.updateCharacter(character, updateCharacterStatus.getStatus());
         }
-
-        result = wowLogsCharacterService.updateCharacter(character, updateCharacterStatus.getStatus());
-        return result;
-    }
-
-    public List<Boss> getBosses() {
-        return bossService.getAll();
-    }
-
-    public Set<Zone> getRaids() {
-        Set<Zone> result = new HashSet<>();
-        List<Boss> bosses = bossService.findAll();
-        for (Boss boss : bosses) {
-            result.add(boss.getZone());
-        }
-        return result;
+        throw new EntityNotFoundException();
     }
 
     public List<Character> getRankedMembers() {
@@ -128,6 +106,6 @@ public class GuildManager {
     }
 
     public List<Character> getMembers() {
-        return characterService.getAll();
+        return characterService.getAllSorted();
     }
 }

@@ -6,6 +6,7 @@ import Cookies from 'universal-cookie';
 import AppNavbarGeneral from './../nav_bar/GeneralNavBar.jsx';
 import AppNavbar from './../nav_bar/AppNavBar.jsx';
 import {CheckOutlined, CloseOutlined, EditOutlined} from '@ant-design/icons';
+import {showError} from './../../common/error-handler.jsx';
 
 const {Text, Title, Paragraph} = Typography;
 const {TextArea} = Input;
@@ -70,10 +71,6 @@ const OnEditing = (className, id, text) => {
 
 }
 
-const showError = (response) =>{
-    message.error("Oooops, something goes wrong. \n error: " + response.status + "\n error description: " + response.statusText)
-}
-
 const updateGeneralText = (text, tag) => {
     text = text.trim()
     var generalMessage = {
@@ -81,7 +78,7 @@ const updateGeneralText = (text, tag) => {
         message: text,
     }
     fetch("/csrf")
-        .then(response => response.status != 200 ? message.error("Something goes wrooong. status:" + response.status + ", status text:" + response.statusText) :
+        .then(response => response.status != 200 ? showError(response) :
             response.json())
         .then(data => {
             if (data !== undefined && data !== null && data.token != undefined) {
@@ -95,10 +92,21 @@ const updateGeneralText = (text, tag) => {
                     credentials: 'include',
                     body: JSON.stringify(generalMessage)
                 })
-                    .then(response => response.json())
-                    .then(data => data[0] != "Successful" ? message.error(data[0]) : changeTags(tag + "_section", tag + "_text_area"));
+                    .then(response => response.status != 200 ? showError(response) : response.json())
+                    .then(data => checkMessageUpdatingApiResponse(data, tag));
             }
         });
+}
+
+const checkMessageUpdatingApiResponse = (data, tag) => {
+    if (data !== null && data !== undefined){
+        if (data.message === 'Successful'){
+            message.success(data.message)
+            changeTags(tag + "_section", tag + "_text_area")
+        }else{
+            message.info(data.message)
+        }
+    }
 }
 
 /*
@@ -264,7 +272,7 @@ const Content = (props) => {
             .then(data => setUserData(data));
 
         fetch('/get_about_us_messages', {})
-            .then(response => response.json())
+            .then(response => response.status !== 200 ? showError(response) : response.json())
             .then(data => setData(data));
     }, []);
 

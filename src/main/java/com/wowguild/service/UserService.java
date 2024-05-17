@@ -4,6 +4,7 @@ import com.wowguild.entity.User;
 import com.wowguild.enums.user.Role;
 import com.wowguild.repos.UserRepos;
 import com.wowguild.utils.Encoder;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +12,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -32,104 +36,76 @@ public class UserService implements UserDetailsService {
         return userRepos.findAll();
     }
 
-    public List<String> updateUserLanguage(User user, String language) {
-        List<String> result = new ArrayList<>();
-        try {
-            user.setLanguage(language);
-            userRepos.save(user);
-        } catch (Exception e) {
-            log.error("Could not update user UI language, error {}", e.getMessage());
-            return result;
-        }
-        result.add("Success");
-        return result;
+    public String updateUserLanguage(User user, String language) {
+        user.setLanguage(language);
+        userRepos.save(user);
+        return "Success";
     }
 
     public User getUserByUserName(UserDetails user) {
         if (user != null && user.getUsername() != null) {
             return userRepos.findByUsername(user.getUsername());
         }
-        return null;
+        throw new EntityNotFoundException();
     }
 
-    public List<String> registration(String userName, String password, String language) {
-        List<String> result = new ArrayList<>();
+    public String registration(String userName, String password, String language) {
         User user = userRepos.findByUsername(userName.trim());
         if (user != null) {
-            result.add("Exist");
-            return result;
+            return "Exist";
         }
-
-        try {
-            Set<Role> roles = new HashSet<>();
-            roles.add(Role.USER);
-            user = new User();
-            user.setLanguage(language);
-            user.setActive(true);
-            user.setUsername(userName);
-            user.setRoles(roles);
-            user.setPassword(encoder.encode(password));
-            userRepos.save(user);
-            result.add("Success");
-            result.add(userName);
-            return result;
-        } catch (Exception e) {
-            log.error("Could not register a new user, error {}", e.getMessage());
-            result.add("an internal server error");
-            return result;
-        }
+        Set<Role> roles = new HashSet<>();
+        roles.add(Role.USER);
+        user = new User();
+        user.setLanguage(language);
+        user.setActive(true);
+        user.setUsername(userName);
+        user.setRoles(roles);
+        user.setPassword(encoder.encode(password));
+        userRepos.save(user);
+        return "Success";
     }
 
-    public Map<String, Collection<User>> deleteUser(User user) {
-        Map<String, Collection<User>> result = new HashMap<>();
-        try {
+    public String deleteUser(long id) {
+        User user = userRepos.findById(id).orElse(null);
+        if (user != null) {
             userRepos.delete(user);
-            result.put("Deleted", findAll());
-            return result;
-        } catch (Exception e) {
-            log.error("Could not delete user, error {}", e.getMessage());
-            result.put("an internal server error", findAll());
-            return result;
+            return "Deleted";
         }
+        throw new EntityNotFoundException();
     }
 
-    public List<String> editUser(User user, boolean isNameChanged) {
-        List<String> result = new ArrayList();
+    public String editUser(User user, boolean isNameChanged) {
         Set<Role> roles = new HashSet<>();
         User userFromDB = userRepos.findByUsername(user.getUsername().trim());
         if (userFromDB != null && isNameChanged) {
-            result.add("Exist");
-            return result;
+            return "Exist";
         }
         Optional<User> userFromDB2 = userRepos.findById(user.getId());
         userFromDB = userFromDB2.get();
 
-        try {
-
-            userFromDB.setUsername(user.getUsername().trim());
-            if (user.getEmail() != null) {
-                userFromDB.setEmail(user.getEmail().trim());
-            } else {
-                userFromDB.setEmail("");
-            }
-            userFromDB.setActive(user.isActive());
-            if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
-                userFromDB.setPassword(encoder.encode(user.getPassword().trim()));
-            }
-            if (user.getRoles() == null || user.getRoles().size() == 0) {
-                roles.add(Role.USER);
-                userFromDB.setRoles(roles);
-            } else {
-                userFromDB.setRoles(user.getRoles());
-            }
-            userFromDB.setLanguage(user.getLanguage());
-            userRepos.save(userFromDB);
-            result.add("Saved");
-            return result;
-        } catch (Exception e) {
-            log.error("Could not update user, error {}", e.getMessage());
-            result.add("an internal server error");
-            return result;
+        userFromDB.setUsername(user.getUsername().trim());
+        if (user.getEmail() != null) {
+            userFromDB.setEmail(user.getEmail().trim());
+        } else {
+            userFromDB.setEmail("");
         }
+        userFromDB.setActive(user.isActive());
+        if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+            userFromDB.setPassword(encoder.encode(user.getPassword().trim()));
+        }
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            roles.add(Role.USER);
+            userFromDB.setRoles(roles);
+        } else {
+            userFromDB.setRoles(user.getRoles());
+        }
+        userFromDB.setLanguage(user.getLanguage());
+        userRepos.save(userFromDB);
+        return "Saved";
+    }
+
+    public User findById(long id) {
+        return userRepos.findById(id).orElse(null);
     }
 }
