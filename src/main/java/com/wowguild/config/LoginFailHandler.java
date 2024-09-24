@@ -23,7 +23,7 @@ public class LoginFailHandler extends SimpleUrlAuthenticationFailureHandler {
             response.addCookie(new Cookie("message", "DoesNotExist"));
         }
         if (message.contains("Bad credentials")) {
-            response.addCookie(new Cookie("message", "WrongPassword"));
+            response.addCookie(new Cookie("message", "DoesNotExist"));
         }
 
         //super.setDefaultFailureUrl("http://localhost:3000/login");

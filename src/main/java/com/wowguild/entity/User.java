@@ -1,13 +1,13 @@
 package com.wowguild.entity;
 
-import com.wowguild.enums.user.Role;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wowguild.enums.user.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -117,6 +117,21 @@ public class User implements UserDetails {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id && active == user.active && Objects.equals(username, user.username)
+                && Objects.equals(email, user.email) && Objects.equals(roles, user.roles)
+                && Objects.equals(language, user.language);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, active, email, roles, language);
     }
 
     @Override
