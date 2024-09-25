@@ -1,7 +1,9 @@
 package com.wowguild.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class InformingMessage {
 
@@ -20,39 +22,5 @@ public class InformingMessage {
 
     public InformingMessage() {
 
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-
-    @Override
-    public String toString() {
-        return "InformingMessage{" +
-                "id=" + id +
-                ", tag='" + tag + '\'' +
-                ", message='" + message + '\'' +
-                '}';
     }
 }

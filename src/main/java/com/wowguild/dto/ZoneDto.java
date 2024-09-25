@@ -1,6 +1,5 @@
 package com.wowguild.dto;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data

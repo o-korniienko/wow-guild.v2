@@ -1,13 +1,16 @@
 package com.wowguild.entity;
 
+import com.wowguild.entity.rank.CharacterRank;
 import com.wowguild.enums.ClassEn;
 import com.wowguild.enums.Rank;
-import com.wowguild.entity.rank.CharacterRank;
-
 import jakarta.persistence.*;
-import java.util.List;
-import java.util.Objects;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
+@EqualsAndHashCode(exclude = {"race", "iconURL", "regionEn", "blizzardID", "canonicalID"})
+@Data
 @Entity
 public class Character {
 
@@ -26,96 +29,6 @@ public class Character {
     @OneToMany
     @JoinColumn(name = "character_id")
     private List<CharacterRank> ranks;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ClassEn getClassEn() {
-        return classEn;
-    }
-
-    public void setClassEn(ClassEn classEn) {
-        this.classEn = classEn;
-    }
-
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public Rank getRank() {
-        return rank;
-    }
-
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
-    public String getRace() {
-        return race;
-    }
-
-    public void setRace(String race) {
-        this.race = race;
-    }
-
-    public String getIconURL() {
-        return iconURL;
-    }
-
-    public void setIconURL(String iconURL) {
-        this.iconURL = iconURL;
-    }
-
-    public String getRegionEn() {
-        return regionEn;
-    }
-
-    public void setRegionEn(String regionEn) {
-        this.regionEn = regionEn;
-    }
-
-
-    public long getCanonicalID() {
-        return canonicalID;
-    }
-
-    public void setCanonicalID(long canonicalID) {
-        this.canonicalID = canonicalID;
-    }
-
-    public List<CharacterRank> getRanks() {
-        return ranks;
-    }
-
-    public void setRanks(List<CharacterRank> ranks) {
-        this.ranks = ranks;
-    }
-
-    public String getBlizzardID() {
-        return blizzardID;
-    }
-
-    public void setBlizzardID(String blizzardID) {
-        this.blizzardID = blizzardID;
-    }
 
     public void setClassEnByInt(int classInt) {
         switch (classInt) {
@@ -159,42 +72,6 @@ public class Character {
                 this.classEn = ClassEn.Evoker;
                 break;
         }
-    }
-
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Character character = (Character) o;
-        return id == character.id &&
-                level == character.level &&
-                Objects.equals(name, character.name) &&
-                classEn == character.classEn &&
-                rank == character.rank;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, classEn, level, rank);
-    }
-
-    @Override
-    public String toString() {
-        return "Character{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", classEn=" + classEn +
-                ", level=" + level +
-                ", rank=" + rank +
-                ", race='" + race + '\'' +
-                ", iconURL='" + iconURL + '\'' +
-                ", regionEn='" + regionEn + '\'' +
-                ", blizzardID=" + blizzardID +
-                ", cannonicalID=" + canonicalID +
-                ", ranks=" + ranks +
-                '}';
     }
 
     public void setRankByInt(int parseInt) {
