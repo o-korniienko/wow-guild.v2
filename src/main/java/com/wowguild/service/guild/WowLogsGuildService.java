@@ -59,46 +59,52 @@ public class WowLogsGuildService {
                     + "\") {data{code,endTime}}}}");
 
             String response = httpSender.sendRequest(wowLogsApi, body, HttpMethod.POST, token);
+            System.out.println(response);
             if (!response.isEmpty()) {
                 if (response.contains("429 Too Many Requests")) {
                     return report;
                 }
-
                 report = reportDataParser.parseTo(response);
+                System.out.println(report);
                 if (report == null) {
                     report = new WOWLogsReportData();
                 }
+            }else{
+                log.info("No reports found, empty response");
             }
         } catch (JsonSyntaxException e) {
             log.error("Could not get report data from WOWLogs, error {}", e.getMessage());
         }
-
+//return new WOWLogsReportData();
         return report;
     }
 
     public boolean updateReportData(WOWLogsReportData reportData) {
-        List<Report> reports = reportData.getData().stream()
-                .map(reportConverter::convertToEntity)
-                .toList();
-        List<WOWLogsFightData> fightData = new ArrayList<>();
-        WOWLogsFightData ftData = null;
-        if (reports != null) {
-            for (Report report : reports) {
-                boolean isReportAlreadyInDb = isReportAlreadyInDB(report);
-                if (!isReportAlreadyInDb) {
-                    reportService.save(report);
-                    ftData = getReportFightData(report.getCode());
+        if (reportData.getData() != null) {
+            List<Report> reports = reportData.getData().stream()
+                    .map(reportConverter::convertToEntity)
+                    .toList();
+            List<WOWLogsFightData> fightData = new ArrayList<>();
+            WOWLogsFightData ftData = null;
+            if (reports != null) {
+                for (Report report : reports) {
+                    boolean isReportAlreadyInDb = isReportAlreadyInDB(report);
+                    if (!isReportAlreadyInDb) {
+                        reportService.save(report);
+                        ftData = getReportFightData(report.getCode());
 
-                    if (ftData != null) {
-                        fightData.add(ftData);
+                        if (ftData != null) {
+                            fightData.add(ftData);
+                        }
+
                     }
-
                 }
+            } else {
+                return false;
             }
-        } else {
-            return false;
+            return parsesCharactersAndBosses(fightData);
         }
-        return parsesCharactersAndBosses(fightData);
+        return false;
     }
 
     private WOWLogsFightData getReportFightData(String code) {
@@ -222,15 +228,14 @@ public class WowLogsGuildService {
     }
 
     private boolean isReportAlreadyInDB(Report report) {
-        boolean result = false;
         List<Report> reports = reportService.findAll();
 
         for (Report reportFromDB : reports) {
             if (reportFromDB.getCode().equalsIgnoreCase(report.getCode())) {
-                result = true;
+                return true;
             }
         }
-        return result;
+        return false;
     }
 
     private Set<Boss> checkIfAllDifficultyOfBossesAdded(Boss boss, Set<Boss> bosses) {

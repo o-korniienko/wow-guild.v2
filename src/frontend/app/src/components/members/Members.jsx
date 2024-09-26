@@ -8,7 +8,7 @@ import {BarChartOutlined, SyncOutlined, TeamOutlined, UnorderedListOutlined} fro
 import React, {useEffect, useState} from 'react';
 import Cookies from 'universal-cookie';
 import {Link} from 'react-router-dom';
-import { showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
+import {showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
 
 const {Search} = Input;
 const {Sider, Content} = Layout;
@@ -107,12 +107,19 @@ const MenuComponent = (props) => {
         }
     };
 
+    const proccessError = (response, mainDiv) => {
+        showErrorAndSetFalse(response, props.setLoading);
+
+        if (mainDiv !== null && mainDiv !== undefined){
+            mainDiv.className = 'main_div_enabled';
+        }
+    }
 
     const updateMembersFromBlizzard = () => {
         props.setLoading(true);
 
         let mainDiv = document.getElementById('mainDiv');
-        if (mainDiv != null) {
+        if (mainDiv !== null && mainDiv !== undefined) {
             mainDiv.className = 'main_div_disabled';
         }
 
@@ -131,7 +138,7 @@ const MenuComponent = (props) => {
                         credentials: 'include'
 
                     })
-                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
                         .then(data => props.setData(data));
                 }
             });
@@ -147,7 +154,7 @@ const MenuComponent = (props) => {
         props.setLoading(true);
 
         let mainDiv = document.getElementById('mainDiv');
-        if (mainDiv != null) {
+        if (mainDiv !== null && mainDiv !== undefined) {
             mainDiv.className = 'main_div_disabled';
         }
         fetch("/csrf")
@@ -165,7 +172,7 @@ const MenuComponent = (props) => {
                         credentials: 'include'
 
                     })
-                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
                         .then(data => setBossesData(data));
                 }
             });
@@ -190,10 +197,10 @@ const MenuComponent = (props) => {
             mainDiv.className = 'main_div_enabled';
         }*/
 
-        if(data !== null && data !== undefined){
-            if (data.message === 'Successful'){
+        if (data !== null && data !== undefined) {
+            if (data.message === 'Successful') {
                 message.success(data.message)
-            }else{
+            } else {
                 message.info(data.message)
             }
             props.setBosses(data.data);
@@ -323,8 +330,8 @@ function Members(props) {
 
     const updateCharacterDataInTable = (data, search) => {
         setLoading(false);
-        if (data !== null && data !== undefined){
-            if (data.message === 'Successful'){
+        if (data !== null && data !== undefined) {
+            if (data.message === 'Successful') {
                 message.success(data.message)
 
                 var updatedCharacter = data.data
@@ -334,7 +341,7 @@ function Members(props) {
                         MEMBERS[i] = updatedCharacter
                     }
                 }
-            }else{
+            } else {
                 message.info(data.message)
             }
             let mainDiv = document.getElementById('mainDiv');
