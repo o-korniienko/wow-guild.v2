@@ -38,7 +38,7 @@ public class BattleNetGuildService {
 
     private static final Comparator<Boss> BY_ID = (o1, o2) -> (int) (o1.getId() - o2.getId());
 
-    public String getGuildData() {
+    public GuildProfile getGuildData() {
         String stringPosts = "";
         String token = tokenManager.getTokenByTag("blizzard");
         if (token != null) {
@@ -47,40 +47,38 @@ public class BattleNetGuildService {
 
             stringPosts = httpSender.sendRequest(url, HttpMethod.GET, token);
         }
-        return stringPosts;
+        return guildProfileParser.parseTo(stringPosts);
     }
 
-    public List<Character> parseGuildData(String response) {
+    public List<Character> parseGuildData(GuildProfile guildProfile) {
         List<Character> characterList = new ArrayList<>();
         Character character;
-        if (response != null && !response.isEmpty()) {
-            try {
-                GuildProfile guildProfile = guildProfileParser.parseTo(response);
-                if (guildProfile != null) {
-                    List<GuildProfile.Member> members = guildProfile.getMembers();
-                    for (GuildProfile.Member member : members) {
-                        try {
-                            Thread.sleep(300);
-                        } catch (InterruptedException e) {
-                            log.error(e.getMessage());
-                        }
-                        String characterName = member.getCharacter().getName();
-                        String characterLink = member.getCharacter().getKey().getHref();
-                        String characterRank = String.valueOf(member.getRank());
+        try {
+            if (guildProfile != null) {
+                List<GuildProfile.Member> members = guildProfile.getMembers();
+                for (GuildProfile.Member member : members) {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        log.error(e.getMessage());
+                    }
+                    String characterName = member.getCharacter().getName();
+                    String characterLink = member.getCharacter().getKey().getHref();
+                    String characterRank = String.valueOf(member.getRank());
 
-                        UpdateStatus<Character> status = battleNetCharacterService.getCharacterData(characterLink,
-                                Integer.parseInt(characterRank), characterName, null);
-                        character = status.getResult();
+                    UpdateStatus<Character> status = battleNetCharacterService.getCharacterData(characterLink,
+                            Integer.parseInt(characterRank), characterName, null);
+                    character = status.getResult();
 
-                        if (character != null) {
-                            characterList.add(character);
-                        }
+                    if (character != null) {
+                        characterList.add(character);
                     }
                 }
-            } catch (Exception e) {
-                log.error(e.getMessage());
             }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
+
         return characterList;
     }
 

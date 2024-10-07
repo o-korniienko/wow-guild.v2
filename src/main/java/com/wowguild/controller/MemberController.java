@@ -60,7 +60,7 @@ public class MemberController {
     @PostMapping("/update_ranking")
     public ResponseEntity<?> updateMembersRanks() {
         try {
-            String updatingResult = guildManager.UpdateRankingData();
+            String updatingResult = guildManager.updateRankingData();
 
             return ResponseEntity.ok(new ApiResponse<>(updatingResult, 200, bossService.getAllSorted().stream()
                     .map(bossConverter::convertToDto).collect(Collectors.toList())));

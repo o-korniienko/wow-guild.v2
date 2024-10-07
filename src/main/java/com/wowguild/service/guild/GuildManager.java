@@ -1,17 +1,17 @@
 package com.wowguild.service.guild;
 
 import com.wowguild.entity.Character;
-import com.wowguild.entity.rank.Boss;
-import com.wowguild.entity.rank.Zone;
 import com.wowguild.model.UpdateStatus;
+import com.wowguild.model.blizzard.GuildProfile;
 import com.wowguild.model.wow_logs.WOWLogsReportData;
-import com.wowguild.service.entity.impl.BossService;
 import com.wowguild.service.entity.impl.CharacterService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -22,7 +22,6 @@ public class GuildManager {
     private final BattleNetCharacterService battleNetCharacterService;
     private final WowLogsCharacterService wowLogsCharacterService;
     private final CharacterService characterService;
-    private final BossService bossService;
 
 
     public List<Character> updateMembersFromBlizzardDB() {
@@ -37,13 +36,13 @@ public class GuildManager {
             charactersFromOurDB = characterService.saveAll(charactersFromBlizzardDB);
         } else {
             for (Character character : charactersFromOurDB) {
-                if (!battleNetCharacterService.isContains(character, charactersFromBlizzardDB)) {
+                if (!battleNetCharacterService.isContained(character, charactersFromBlizzardDB)) {
                     characterService.delete(character);
                 }
             }
 
             for (Character character : charactersFromBlizzardDB) {
-                if (!battleNetCharacterService.isContains(character, charactersFromOurDB)) {
+                if (!battleNetCharacterService.isContained(character, charactersFromOurDB)) {
                     characterService.save(character);
                 }
             }
@@ -68,7 +67,7 @@ public class GuildManager {
     }
 
 
-    public String UpdateRankingData() {
+    public String updateRankingData() {
         boolean isThereNoErrors = true;
         WOWLogsReportData reportData = wowLogsGuildService.getReportData();
         isThereNoErrors = wowLogsGuildService.updateReportData(reportData);
@@ -80,10 +79,10 @@ public class GuildManager {
     }
 
     public Map<String, Character> updateCharacterData(long id) {
-        Character character = characterService.findById(id);
+        Character character = characterService.findById(id);;
         if (character != null) {
-            String guildData = battleNetGuildService.getGuildData();
-            UpdateStatus<Character> updateCharacterStatus = battleNetCharacterService.updateCharacter(character, guildData);
+            GuildProfile guildProfile = battleNetGuildService.getGuildData();
+            UpdateStatus<Character> updateCharacterStatus = battleNetCharacterService.updateCharacter(character, guildProfile);
 
             if (updateCharacterStatus.getResult() != null) {
                 character = updateCharacterStatus.getResult();

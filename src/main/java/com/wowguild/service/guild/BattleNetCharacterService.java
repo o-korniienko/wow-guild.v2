@@ -12,11 +12,11 @@ import com.wowguild.tool.LogHandler;
 import com.wowguild.tool.parser.Parser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -38,38 +38,33 @@ public class BattleNetCharacterService {
     private final HttpSender httpSender;
     private final LogHandler logHandler;
     private final CharacterService characterService;
+    @Qualifier("characterProfileParser")
     private final Parser<CharacterProfile> characterProfileParser;
-    private final Parser<GuildProfile> guildProfileParser;
+    @Qualifier("characterImageDataParser")
     private final Parser<CharacterImageData> characterImageDataParser;
 
 
-    public UpdateStatus<Character> updateCharacter(Character character, String guildData) {
+    public UpdateStatus<Character> updateCharacter(Character character, GuildProfile guildProfile) {
         UpdateStatus<Character> result = new UpdateStatus<>();
-        if (guildData != null && !guildData.isEmpty()) {
-            GuildProfile guildProfile = guildProfileParser.parseTo(guildData);
-            if (guildProfile != null) {
-                List<GuildProfile.Member> members = guildProfile.getMembers();
-                for (GuildProfile.Member member : members) {
-                    if (String.valueOf(member.getCharacter().getId()).equals(character.getBlizzardID())) {
-                        String characterName = member.getCharacter().getName();
-                        String characterLink = member.getCharacter().getKey().getHref();
-                        String characterRank = String.valueOf(member.getRank());
+        if (guildProfile != null) {
+            List<GuildProfile.Member> members = guildProfile.getMembers();
+            for (GuildProfile.Member member : members) {
+                if (String.valueOf(member.getCharacter().getId()).equals(character.getBlizzardID())) {
+                    String characterName = member.getCharacter().getName();
+                    String characterLink = member.getCharacter().getKey().getHref();
+                    String characterRank = String.valueOf(member.getRank());
 
-                        result = getCharacterData(characterLink, Integer.parseInt(characterRank), characterName, character);
-                        if (result.getStatus().equalsIgnoreCase("Successful")) {
-                            character = result.getResult();
-                            characterService.save(character);
-                            result.setStatus("Successful");
-                            result.setResult(character);
-                        } else {
-                            return result;
-                        }
-                        break;
+                    result = getCharacterData(characterLink, Integer.parseInt(characterRank), characterName, character);
+                    if (result.getStatus().equalsIgnoreCase("Successful")) {
+                        character = result.getResult();
+                        characterService.save(character);
+                        result.setStatus("Successful");
+                        result.setResult(character);
+                    } else {
+                        return result;
                     }
+                    break;
                 }
-            } else {
-                result.setStatus("there were errors during character data updating");
-                result.setResult(character);
             }
         } else {
             result.setStatus("there were errors during character data updating");
@@ -92,7 +87,10 @@ public class BattleNetCharacterService {
                 status.setResult(characterDB);
             } else {
                 try {
+                    System.out.println(response);
+                    System.out.println("characterProfileParser is " + characterProfileParser);
                     CharacterProfile characterProfile = characterProfileParser.parseTo(response);
+                    System.out.println(characterProfile);
                     if (characterProfile != null) {
                         String name = characterProfile.getName();
                         int lvl = characterProfile.getLevel();
@@ -153,7 +151,7 @@ public class BattleNetCharacterService {
         return status;
     }
 
-    public boolean isContains(Character character, List<Character> characters) {
+    public boolean isContained(Character character, List<Character> characters) {
         for (Character character_db : characters) {
             if (character.getBlizzardID().equalsIgnoreCase(character_db.getBlizzardID())) {
                 return true;
@@ -206,11 +204,6 @@ public class BattleNetCharacterService {
 
 
     private String encodeValue(String value) {
-        try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            log.error("Could not encode a String {}, error {}", value, e.getMessage());
-            return value;
-        }
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }
