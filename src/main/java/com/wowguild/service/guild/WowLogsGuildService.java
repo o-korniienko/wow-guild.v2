@@ -1,6 +1,5 @@
 package com.wowguild.service.guild;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.wowguild.converter.Converter;
 import com.wowguild.entity.Character;
@@ -37,7 +36,6 @@ public class WowLogsGuildService {
     @Value("${wow.logs.server.region}")
     private String serverRegion;
 
-    private final Gson gson;
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
     private final WowLogsCharacterService wowLogsCharacterService;
@@ -57,25 +55,23 @@ public class WowLogsGuildService {
             body.put("query", "{reportData {reports(guildName:\"" + guildName
                     + "\", guildServerSlug:\"" + realm + "\", guildServerRegion:\"" + serverRegion
                     + "\") {data{code,endTime}}}}");
-
             String response = httpSender.sendRequest(wowLogsApi, body, HttpMethod.POST, token);
-            System.out.println(response);
+
             if (!response.isEmpty()) {
                 if (response.contains("429 Too Many Requests")) {
                     return report;
                 }
                 report = reportDataParser.parseTo(response);
-                System.out.println(report);
+
                 if (report == null) {
                     report = new WOWLogsReportData();
                 }
-            }else{
+            } else {
                 log.info("No reports found, empty response");
             }
         } catch (JsonSyntaxException e) {
             log.error("Could not get report data from WOWLogs, error {}", e.getMessage());
         }
-//return new WOWLogsReportData();
         return report;
     }
 

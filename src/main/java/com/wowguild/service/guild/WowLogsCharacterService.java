@@ -1,10 +1,10 @@
 package com.wowguild.service.guild;
 
-import com.google.gson.Gson;
 import com.wowguild.entity.Character;
 import com.wowguild.entity.rank.Boss;
 import com.wowguild.entity.rank.CharacterRank;
 import com.wowguild.entity.rank.Rank;
+import com.wowguild.model.UpdateStatus;
 import com.wowguild.model.wow_logs.WOWLogsCharacterRankData;
 import com.wowguild.sender.HttpSender;
 import com.wowguild.service.entity.impl.BossService;
@@ -32,7 +32,6 @@ public class WowLogsCharacterService {
     @Value("${wow.logs.api}")
     private String wowLogsApi;
 
-    private final Gson gson;
     private final CharacterService characterService;
     private final BossService bossService;
     private final CharacterRankService characterRankService;
@@ -67,7 +66,7 @@ public class WowLogsCharacterService {
                     for (Boss boss : bosses) {
                         String response = "";
                         response = getCharacterData(boss, character, metric);
-                        if (response == null) {
+                        if (response == null || response.isEmpty()) {
                             isThereNoErrors = false;
                         } else {
                             if (response.contains("429 Too Many Requests")) {
@@ -86,8 +85,8 @@ public class WowLogsCharacterService {
         return isThereNoErrors;
     }
 
-    public Map<String, Character> updateCharacter(Character character, String status) {
-        Map<String, Character> result = new HashMap<>();
+    public UpdateStatus<Character> updateCharacter(Character character, String status) {
+        UpdateStatus<Character> result = new UpdateStatus<>();
         List<Boss> bosses = bossService.findAll();
         boolean is429Error = false;
         boolean isThereNoErrors = true;
@@ -107,7 +106,7 @@ public class WowLogsCharacterService {
                 }
                 for (Boss boss : bosses) {
                     response = getCharacterData(boss, character, metric);
-                    if (response == null) {
+                    if (response == null || response.isEmpty()) {
                         isThereNoErrors = false;
                     } else {
                         if (response.contains("429 Too Many Requests")) {
@@ -121,14 +120,18 @@ public class WowLogsCharacterService {
             }
             character.setRanks(ranks);
         }
+
         if (status == null || status.equalsIgnoreCase("Successful")) {
             if (isThereNoErrors) {
-                result.put("Successful", character);
+                result.setStatus("Successful");
+                result.setResult(character);
             } else {
-                result.put("there were errors during character data updating", character);
+                result.setStatus("there were errors during character data updating");
+                result.setResult(character);
             }
         } else {
-            result.put("there were errors during character data updating", character);
+            result.setStatus("there were errors during character data updating");
+            result.setResult(character);
         }
         return result;
     }

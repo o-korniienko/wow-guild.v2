@@ -78,8 +78,8 @@ public class GuildManager {
         }
     }
 
-    public Map<String, Character> updateCharacterData(long id) {
-        Character character = characterService.findById(id);;
+    public UpdateStatus<Character> updateCharacterData(long id) {
+        Character character = characterService.findById(id);
         if (character != null) {
             GuildProfile guildProfile = battleNetGuildService.getGuildData();
             UpdateStatus<Character> updateCharacterStatus = battleNetCharacterService.updateCharacter(character, guildProfile);

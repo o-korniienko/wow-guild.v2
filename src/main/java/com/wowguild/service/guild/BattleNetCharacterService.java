@@ -87,10 +87,8 @@ public class BattleNetCharacterService {
                 status.setResult(characterDB);
             } else {
                 try {
-                    System.out.println(response);
-                    System.out.println("characterProfileParser is " + characterProfileParser);
                     CharacterProfile characterProfile = characterProfileParser.parseTo(response);
-                    System.out.println(characterProfile);
+
                     if (characterProfile != null) {
                         String name = characterProfile.getName();
                         int lvl = characterProfile.getLevel();

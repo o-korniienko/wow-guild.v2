@@ -40,11 +40,10 @@ public class BattleNetTokenService implements TokenService {
                 tokenToSave.setExpires_in(tokenResponse.getExpires_in());
                 tokenToSave.setCreateTime(LocalDateTime.now());
                 tokenToSave.setTag("blizzard");
-                return tokenToSave;
             }
         } catch (JsonSyntaxException e) {
             log.error("Could not get Blizzard token, error {}", e.getMessage());
         }
-        return null;
+        return tokenToSave;
     }
 }

@@ -4,6 +4,7 @@ import com.wowguild.converter.BossConverter;
 import com.wowguild.converter.CharacterConverter;
 import com.wowguild.dto.api.ApiResponse;
 import com.wowguild.entity.Character;
+import com.wowguild.model.UpdateStatus;
 import com.wowguild.service.entity.impl.BossService;
 import com.wowguild.service.guild.GuildManager;
 import lombok.RequiredArgsConstructor;
@@ -86,13 +87,11 @@ public class MemberController {
     @PostMapping("/update_character_data/{id}")
     public ResponseEntity<?> updateCharacterData(@PathVariable(value = "id") long id) {
         try {
-            Map<String, Character> updatingResult = guildManager.updateCharacterData(id);
+            UpdateStatus<Character> updatingResult = guildManager.updateCharacterData(id);
             ApiResponse<Character> apiResponse = new ApiResponse<>();
-            for (Map.Entry<String, Character> entry : updatingResult.entrySet()) {
-                apiResponse.setMessage(entry.getKey());
-                apiResponse.setData(entry.getValue());
-                apiResponse.setStatus(200);
-            }
+            apiResponse.setData(updatingResult.getResult());
+            apiResponse.setMessage(updatingResult.getStatus());
+            apiResponse.setStatus(200);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             log.error("Could not update character {} data. Error: {}", id, e.getMessage());
