@@ -33,6 +33,8 @@ public class BattleNetCharacterService {
     private String namespace;
     @Value("${battle.net.locale}")
     private String locale;
+    @Value("${battle.net.character.profile.api}")
+    private String characterProfileApi;
 
     private final TokenManager tokenManager;
     private final HttpSender httpSender;
@@ -167,7 +169,7 @@ public class BattleNetCharacterService {
         if (token != null) {
             try {
                 String encodedName = encodeValue(characterName);
-                String url = "https://eu.api.blizzard.com/profile/wow/character/" + realm + "/" + encodedName
+                String url = characterProfileApi + realm + "/" + encodedName
                         + "/character-media?namespace=" + namespace + "&locale=" + locale;
                 response = httpSender.sendRequest(url, HttpMethod.GET, token);
                 if (response != null && !response.isEmpty()) {

@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @RequiredArgsConstructor
 @Slf4j
 @Service
@@ -28,7 +26,7 @@ public class ReportDataParser implements Parser<WOWLogsReportData> {
             if (nodeObject != null) {
                 return nodeObject.toString();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Coule not parse JSON {}, with key {}. Error: {}", jsonIn, key, e.getMessage());
         }
         return result;
@@ -44,6 +42,7 @@ public class ReportDataParser implements Parser<WOWLogsReportData> {
         }
         return null;
     }
+
     public WOWLogsFightData parseToFightData(String json) {
         try {
             String fightJson = parseByKey(json, "report");

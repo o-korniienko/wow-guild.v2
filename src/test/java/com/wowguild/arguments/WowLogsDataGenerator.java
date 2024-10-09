@@ -12,36 +12,42 @@ public class WowLogsDataGenerator {
     public static String getWowLogsReportsJson() {
         return """
                 {
-                  "data": [
-                    {
-                      "code": "ABC123",
-                      "endTime": 1633024800000
-                    },
-                    {
-                      "code": "DEF456",
-                      "endTime": 1633111200000
-                    },
-                    {
-                      "code": "GHI789",
-                      "endTime": 1633197600000
-                    },
-                    {
-                      "code": "JKL012",
-                      "endTime": 1633284000000
-                    },
-                    {
-                      "code": "MNO345",
-                      "endTime": 1633370400000
-                    },
-                    {
-                      "code": "PQR678",
-                      "endTime": 1633456800000
-                    },
-                    {
-                      "code": "STU901",
-                      "endTime": 1633543200000
+                  "data": {
+                    "reportData": {
+                        "reports": {
+                            "data": [
+                              {
+                                "code": "ABC123",
+                                "endTime": 1633024800000
+                              },
+                              {
+                                "code": "DEF456",
+                                "endTime": 1633111200000
+                              },
+                              {
+                                "code": "GHI789",
+                                "endTime": 1633197600000
+                              },
+                              {
+                                "code": "JKL012",
+                                "endTime": 1633284000000
+                              },
+                              {
+                                "code": "MNO345",
+                                "endTime": 1633370400000
+                              },
+                              {
+                                "code": "PQR678",
+                                "endTime": 1633456800000
+                              },
+                              {
+                                "code": "STU901",
+                                "endTime": 1633543200000
+                              }
+                            ]
+                        }
                     }
-                  ]
+                  }
                 }
                 """;
     }
@@ -93,122 +99,128 @@ public class WowLogsDataGenerator {
     public static String getFightReportDataJson() {
         return """
                 {
-                  "fights": [
-                    {
-                      "kill": true,
-                      "name": "Fight 1",
-                      "difficulty": 3,
-                      "encounterID": 1001,
-                      "gameZone": {
-                        "name": "Zone A",
-                        "id": 201
-                      }
-                    },
-                    {
-                      "kill": false,
-                      "name": "Fight 2",
-                      "difficulty": 4,
-                      "encounterID": 1002,
-                      "gameZone": {
-                        "name": "Zone B",
-                        "id": 202
-                      }
-                    },
-                    {
-                      "kill": true,
-                      "name": "Fight 3",
-                      "difficulty": 5,
-                      "encounterID": 1003,
-                      "gameZone": {
-                        "name": "Zone C",
-                        "id": 203
-                      }
+                    "data": {
+                        "reportData": {
+                            "report": {
+                                "fights": [
+                                    {
+                                      "kill": true,
+                                      "name": "Fight 1",
+                                      "difficulty": 3,
+                                      "encounterID": 1001,
+                                      "gameZone": {
+                                        "name": "Zone A",
+                                        "id": 201
+                                      }
+                                    },
+                                    {
+                                      "kill": false,
+                                      "name": "Fight 2",
+                                      "difficulty": 4,
+                                      "encounterID": 1002,
+                                      "gameZone": {
+                                        "name": "Zone B",
+                                        "id": 202
+                                      }
+                                    },
+                                    {
+                                      "kill": true,
+                                      "name": "Fight 3",
+                                      "difficulty": 5,
+                                      "encounterID": 1003,
+                                      "gameZone": {
+                                        "name": "Zone C",
+                                        "id": 203
+                                      }
+                                    }
+                                ],
+                                "zone": {
+                                  "name": "Mythic Dungeon",
+                                  "expansion": {
+                                    "name": "Shadowlands"
+                                  },
+                                  "brackets": {
+                                    "type": "Mythic",
+                                    "bucket": 1,
+                                    "min": 10,
+                                    "max": 15
+                                  }
+                                },
+                                "rankedCharacters": [
+                                  {
+                                    "name": "Character1",
+                                    "canonicalID": 3001,
+                                    "server": {
+                                      "slug": "server-1"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character2",
+                                    "canonicalID": 3002,
+                                    "server": {
+                                      "slug": "server-2"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character3",
+                                    "canonicalID": 3003,
+                                    "server": {
+                                      "slug": "server-3"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character4",
+                                    "canonicalID": 3004,
+                                    "server": {
+                                      "slug": "server-4"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character5",
+                                    "canonicalID": 3005,
+                                    "server": {
+                                      "slug": "server-5"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character6",
+                                    "canonicalID": 3006,
+                                    "server": {
+                                      "slug": "server-6"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character7",
+                                    "canonicalID": 3007,
+                                    "server": {
+                                      "slug": "server-7"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character8",
+                                    "canonicalID": 3008,
+                                    "server": {
+                                      "slug": "server-8"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character9",
+                                    "canonicalID": 3009,
+                                    "server": {
+                                      "slug": "server-9"
+                                    }
+                                  },
+                                  {
+                                    "name": "Character10",
+                                    "canonicalID": 3010,
+                                    "server": {
+                                      "slug": "server-10"
+                                    }
+                                  }
+                                ]
+                            }
+                        }
                     }
-                  ],
-                  "zone": {
-                    "name": "Mythic Dungeon",
-                    "expansion": {
-                      "name": "Shadowlands"
-                    },
-                    "brackets": {
-                      "type": "Mythic",
-                      "bucket": 1,
-                      "min": 10,
-                      "max": 15
-                    }
-                  },
-                  "rankedCharacters": [
-                    {
-                      "name": "Character1",
-                      "canonicalID": 3001,
-                      "server": {
-                        "slug": "server-1"
-                      }
-                    },
-                    {
-                      "name": "Character2",
-                      "canonicalID": 3002,
-                      "server": {
-                        "slug": "server-2"
-                      }
-                    },
-                    {
-                      "name": "Character3",
-                      "canonicalID": 3003,
-                      "server": {
-                        "slug": "server-3"
-                      }
-                    },
-                    {
-                      "name": "Character4",
-                      "canonicalID": 3004,
-                      "server": {
-                        "slug": "server-4"
-                      }
-                    },
-                    {
-                      "name": "Character5",
-                      "canonicalID": 3005,
-                      "server": {
-                        "slug": "server-5"
-                      }
-                    },
-                    {
-                      "name": "Character6",
-                      "canonicalID": 3006,
-                      "server": {
-                        "slug": "server-6"
-                      }
-                    },
-                    {
-                      "name": "Character7",
-                      "canonicalID": 3007,
-                      "server": {
-                        "slug": "server-7"
-                      }
-                    },
-                    {
-                      "name": "Character8",
-                      "canonicalID": 3008,
-                      "server": {
-                        "slug": "server-8"
-                      }
-                    },
-                    {
-                      "name": "Character9",
-                      "canonicalID": 3009,
-                      "server": {
-                        "slug": "server-9"
-                      }
-                    },
-                    {
-                      "name": "Character10",
-                      "canonicalID": 3010,
-                      "server": {
-                        "slug": "server-10"
-                      }
-                    }
-                  ]
                 }
                 """;
     }
@@ -293,81 +305,87 @@ public class WowLogsDataGenerator {
         return wowLogsFightData;
     }
 
-    public static String getCharacterRankDataJson(){
+    public static String getCharacterRankDataJson() {
         return """
                 {
-                  "encounterRankings": {
-                    "bestAmount": 500.5,
-                    "medianPerformance": 85.3,
-                    "averagePerformance": 90.7,
-                    "totalKills": 25,
-                    "fastestKill": 300,
-                    "difficulty": 5,
-                    "metric": "dps",
-                    "partition": 2,
-                    "zone": 123,
-                    "ranks": [
-                      {
-                        "lockedIn": true,
-                        "rankPercent": 95.6,
-                        "historicalPercent": 92.4,
-                        "todayPercent": 88.2,
-                        "rankTotalParses": 1000,
-                        "historicalTotalParses": 900,
-                        "todayTotalParses": 800,
-                        "guild": {
-                          "id": 1,
-                          "name": "Warriors of Light",
-                          "faction": 0
-                        },
-                        "report": {
-                          "code": "ABC123",
-                          "startTime": 1617970800000,
-                          "fightID": 5678
-                        },
-                        "duration": 1200,
-                        "startTime": 1617970800000,
-                        "amount": 450.2,
-                        "bracketData": 3,
-                        "spec": "Arms",
-                        "bestSpec": "Arms",
-                        "classType": 1,
-                        "faction": 0
-                      },
-                      {
-                        "lockedIn": false,
-                        "rankPercent": 85.9,
-                        "historicalPercent": 84.1,
-                        "todayPercent": 79.5,
-                        "rankTotalParses": 1100,
-                        "historicalTotalParses": 950,
-                        "todayTotalParses": 820,
-                        "guild": {
-                          "id": 2,
-                          "name": "Shadow Council",
-                          "faction": 1
-                        },
-                        "report": {
-                          "code": "DEF456",
-                          "startTime": 1617973800000,
-                          "fightID": 5679
-                        },
-                        "duration": 1400,
-                        "startTime": 1617973800000,
-                        "amount": 400.7,
-                        "bracketData": 2,
-                        "spec": "Protection",
-                        "bestSpec": "Protection",
-                        "classType": 1,
-                        "faction": 1
-                      }
-                    ]
-                  }
+                    "data": {
+                        "characterData": {
+                            "character": {
+                                "encounterRankings": {
+                                  "bestAmount": 500.5,
+                                  "medianPerformance": 85.3,
+                                  "averagePerformance": 90.7,
+                                  "totalKills": 25,
+                                  "fastestKill": 300,
+                                  "difficulty": 5,
+                                  "metric": "dps",
+                                  "partition": 2,
+                                  "zone": 123,
+                                  "ranks": [
+                                    {
+                                      "lockedIn": true,
+                                      "rankPercent": 95.6,
+                                      "historicalPercent": 92.4,
+                                      "todayPercent": 88.2,
+                                      "rankTotalParses": 1000,
+                                      "historicalTotalParses": 900,
+                                      "todayTotalParses": 800,
+                                      "guild": {
+                                        "id": 1,
+                                        "name": "Warriors of Light",
+                                        "faction": 0
+                                      },
+                                      "report": {
+                                        "code": "ABC123",
+                                        "startTime": 1617970800000,
+                                        "fightID": 5678
+                                      },
+                                      "duration": 1200,
+                                      "startTime": 1617970800000,
+                                      "amount": 450.2,
+                                      "bracketData": 3,
+                                      "spec": "Arms",
+                                      "bestSpec": "Arms",
+                                      "classType": 1,
+                                      "faction": 0
+                                    },
+                                    {
+                                      "lockedIn": false,
+                                      "rankPercent": 85.9,
+                                      "historicalPercent": 84.1,
+                                      "todayPercent": 79.5,
+                                      "rankTotalParses": 1100,
+                                      "historicalTotalParses": 950,
+                                      "todayTotalParses": 820,
+                                      "guild": {
+                                        "id": 2,
+                                        "name": "Shadow Council",
+                                        "faction": 1
+                                      },
+                                      "report": {
+                                        "code": "DEF456",
+                                        "startTime": 1617973800000,
+                                        "fightID": 5679
+                                      },
+                                      "duration": 1400,
+                                      "startTime": 1617973800000,
+                                      "amount": 400.7,
+                                      "bracketData": 2,
+                                      "spec": "Protection",
+                                      "bestSpec": "Protection",
+                                      "classType": 1,
+                                      "faction": 1
+                                    }
+                                  ]
+                                }
+                            }
+                        }
+                    }
                 }
                 """;
     }
 
-    public static WOWLogsCharacterRankData getCharacterRankDataObject(){
+    public static WOWLogsCharacterRankData getCharacterRankDataObject() {
         WOWLogsCharacterRankData rankData = new WOWLogsCharacterRankData();
         WOWLogsCharacterRankData.CharacterRankings encounterRankings = new WOWLogsCharacterRankData.CharacterRankings();
 

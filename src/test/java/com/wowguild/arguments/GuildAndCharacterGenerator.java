@@ -1,10 +1,14 @@
 package com.wowguild.arguments;
 
 import com.wowguild.entity.Character;
+import com.wowguild.model.blizzard.CharacterImageData;
+import com.wowguild.model.blizzard.CharacterProfile;
 import com.wowguild.model.blizzard.GuildProfile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GuildAndCharacterGenerator {
 
@@ -196,7 +200,7 @@ public class GuildAndCharacterGenerator {
                 """;
     }
 
-    public static GuildProfile getBattleNetGuildProfileObject(){
+    public static GuildProfile getBattleNetGuildProfileObject() {
         // Create the Links
         GuildProfile.Links links = new GuildProfile.Links();
         GuildProfile.Self self = new GuildProfile.Self();
@@ -367,5 +371,136 @@ public class GuildAndCharacterGenerator {
         member.setRank(rank);
 
         return member;
+    }
+
+    public static String generateCharacterProfileJson() {
+        return """
+                {
+                  "id": 123456789,
+                  "name": "Thrall",
+                  "race": {
+                    "key": {
+                      "href": "https://example.com/race/2"
+                    },
+                    "name": "Orc",
+                    "id": 2
+                  },
+                  "character_class": {
+                    "key": {
+                      "href": "https://example.com/class/7"
+                    },
+                    "name": "Shaman",
+                    "id": 7
+                  },
+                  "realm": {
+                    "key": {
+                      "href": "https://example.com/realm/1"
+                    },
+                    "name": "Durotar",
+                    "id": 1,
+                    "slug": "durotar"
+                  },
+                  "level": 60
+                }
+                """;
+    }
+
+    public static CharacterProfile generateCharacterProfileObject() {
+        CharacterProfile characterProfile = new CharacterProfile();
+        characterProfile.setId(123456789);
+        characterProfile.setName("Thrall");
+        characterProfile.setLevel(60);
+
+        CharacterProfile.Race race = new CharacterProfile.Race();
+        race.setId(2);
+        race.setName("Orc");
+        Map<String, String> keys = new HashMap<>();
+        keys.put("href", "https://example.com/race/2");
+        race.setKey(keys);
+        characterProfile.setRace(race);
+
+        CharacterProfile.CharacterClass characterClass = new CharacterProfile.CharacterClass();
+        characterClass.setId(7);
+        characterClass.setName("Shaman");
+        Map<String, String> keys2 = new HashMap<>();
+        keys2.put("href", "https://example.com/class/7");
+        characterClass.setKey(keys2);
+        characterProfile.setCharacter_class(characterClass);
+
+        CharacterProfile.Realm realm = new CharacterProfile.Realm();
+        realm.setId(1);
+        realm.setName("Durotar");
+        realm.setSlug("durotar");
+        Map<String, String> keys3 = new HashMap<>();
+        keys3.put("href", "https://example.com/realm/1");
+        realm.setKey(keys3);
+        characterProfile.setRealm(realm);
+
+        return characterProfile;
+    }
+
+    public static String getCharacterProfileJson() {
+        return """
+                {
+                    "_links": {
+                        "self": {
+                            "href": "https://eu.api.blizzard.com/profile/wow/character/realm/character-name/character-media?namespace=profile-eu"
+                        }
+                    },
+                    "character": {
+                        "key": {
+                            "href": "https://eu.api.blizzard.com/profile/wow/character/realm/character-name?namespace=profile-eu"
+                        },
+                        "name": "character-name",
+                        "id": 987654321,
+                        "realm": {
+                            "key": {
+                                "href": "https://eu.api.blizzard.com/data/wow/realm/123?namespace=dynamic-eu"
+                            },
+                            "name": null,
+                            "id": 123,
+                            "slug": "realm"
+                        }
+                    },
+                    "assets": [
+                        {
+                            "key": "avatar",
+                            "value": "https://render.worldofwarcraft.com/eu/character/realm/444/987654321-avatar.jpg"
+                        },
+                        {
+                            "key": "inset",
+                            "value": "https://render.worldofwarcraft.com/eu/character/realm/444/987654321-inset.jpg"
+                        },
+                        {
+                            "key": "main-raw",
+                            "value": "https://render.worldofwarcraft.com/eu/character/realm/444/987654321-main-raw.png"
+                        }
+                    ]
+                }
+                """;
+    }
+
+    public static CharacterImageData getCharacterImageDataObject() {
+        CharacterImageData imageData = new CharacterImageData();
+        List<CharacterImageData.AssetItem> assetItems = new ArrayList<>();
+
+        CharacterImageData.AssetItem assetItem1 = new CharacterImageData.AssetItem();
+        assetItem1.setKey("avatar");
+        assetItem1.setValue("https://render.worldofwarcraft.com/eu/character/realm/444/987654321-avatar.jpg");
+        assetItems.add(assetItem1);
+
+        CharacterImageData.AssetItem assetItem2 = new CharacterImageData.AssetItem();
+        assetItem2.setKey("inset");
+        assetItem2.setValue("https://render.worldofwarcraft.com/eu/character/realm/444/987654321-inset.jpg");
+        assetItems.add(assetItem2);
+
+        CharacterImageData.AssetItem assetItem3 = new CharacterImageData.AssetItem();
+        assetItem3.setKey("main-raw");
+        assetItem3.setValue("https://render.worldofwarcraft.com/eu/character/realm/444/987654321-main-raw.png");
+        assetItems.add(assetItem3);
+
+        imageData.setAssets(assetItems);
+
+        return imageData;
     }
 }

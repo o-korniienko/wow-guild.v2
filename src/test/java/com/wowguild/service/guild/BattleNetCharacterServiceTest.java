@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.wowguild.arguments.CharacterGenerator.generateCharacter;
-import static com.wowguild.arguments.CharacterGenerator.generateCharacterProfileObject;
-import static com.wowguild.arguments.GuildAndCharacterGenerator.getBattleNetGuildProfileObject;
-import static com.wowguild.arguments.GuildAndCharacterGenerator.getCharacterList;
+import static com.wowguild.arguments.GuildAndCharacterGenerator.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

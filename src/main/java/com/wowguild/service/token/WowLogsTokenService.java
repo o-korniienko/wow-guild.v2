@@ -22,6 +22,8 @@ public class WowLogsTokenService implements TokenService {
     private String WOW_LOGS_ID;
     @Value("${wow.logs.secret}")
     private String WOW_LOGS_SECRET;
+    @Value("${wow.logs.token.api}")
+    private String wowLogsTokenApi;
     private final Gson gson;
 
     private final HttpSender httpSender;
@@ -30,8 +32,7 @@ public class WowLogsTokenService implements TokenService {
     public Token getToken() {
         Token token = new Token();
         try {
-            String url = "https://ru.warcraftlogs.com/oauth/token";
-            String response = httpSender.sendRequest(url, HttpMethod.POST, WOW_LOGS_ID, WOW_LOGS_SECRET);
+            String response = httpSender.sendRequest(wowLogsTokenApi, HttpMethod.POST, WOW_LOGS_ID, WOW_LOGS_SECRET);
 
             if (!response.isEmpty()) {
                 TokenResponse tokenResponse = gson.fromJson(response, TokenResponse.class);

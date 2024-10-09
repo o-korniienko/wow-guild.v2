@@ -3,13 +3,10 @@ package com.wowguild.tool.parser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wowguild.model.blizzard.GuildProfile;
 import com.wowguild.model.wow_logs.WOWLogsCharacterRankData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Slf4j
 @Service
@@ -27,7 +24,7 @@ public class CharacterRankDataParser implements Parser<WOWLogsCharacterRankData>
             if (nodeObject != null) {
                 return nodeObject.toString();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Coule not parse JSON {}, with key {}. Error: {}", jsonIn, key, e.getMessage());
         }
         return result;
