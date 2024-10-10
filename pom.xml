@@ -58,6 +58,7 @@
     <modules>
         <module>web-api</module>
         <module>common</module>
+        <module>push-api</module>
     </modules>
 
 </project>

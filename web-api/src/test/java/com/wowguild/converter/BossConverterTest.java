@@ -1,10 +1,11 @@
 package com.wowguild.converter;
 
 
-import com.wowguild.dto.BossDto;
-import com.wowguild.dto.ZoneDto;
-import com.wowguild.entity.rank.Boss;
-import com.wowguild.entity.rank.Zone;
+import com.wowguild.common.converter.BossConverter;
+import com.wowguild.common.dto.BossDto;
+import com.wowguild.common.dto.ZoneDto;
+import com.wowguild.common.entity.rank.Boss;
+import com.wowguild.common.entity.rank.Zone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

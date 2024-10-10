@@ -1,7 +1,7 @@
 package com.wowguild.arguments;
 
-import com.wowguild.dto.BossDto;
-import com.wowguild.entity.rank.Boss;
+import com.wowguild.common.dto.BossDto;
+import com.wowguild.common.entity.rank.Boss;
 
 public class BossGenerator {
 

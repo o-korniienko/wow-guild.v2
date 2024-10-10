@@ -1,9 +1,9 @@
 package com.wowguild.arguments;
 
-import com.wowguild.entity.Character;
-import com.wowguild.model.blizzard.CharacterImageData;
-import com.wowguild.model.blizzard.CharacterProfile;
-import com.wowguild.model.blizzard.GuildProfile;
+import com.wowguild.common.entity.Character;
+import com.wowguild.common.model.blizzard.CharacterImageData;
+import com.wowguild.common.model.blizzard.CharacterProfile;
+import com.wowguild.common.model.blizzard.GuildProfile;
 
 import java.util.ArrayList;
 import java.util.HashMap;

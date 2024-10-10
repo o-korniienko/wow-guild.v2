@@ -1,15 +1,16 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.entity.Character;
-import com.wowguild.dto.UpdateStatus;
-import com.wowguild.model.blizzard.CharacterProfile;
-import com.wowguild.model.blizzard.GuildProfile;
-import com.wowguild.sender.HttpSender;
-import com.wowguild.service.entity.impl.CharacterService;
-import com.wowguild.service.token.TokenManager;
-import com.wowguild.tool.LogHandler;
-import com.wowguild.tool.parser.CharacterImageDataParser;
-import com.wowguild.tool.parser.CharacterProfileParser;
+import com.wowguild.common.entity.Character;
+import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.common.model.blizzard.CharacterProfile;
+import com.wowguild.common.model.blizzard.GuildProfile;
+import com.wowguild.web_api.sender.HttpSender;
+import com.wowguild.common.service.entity.impl.CharacterService;
+import com.wowguild.web_api.service.guild.BattleNetCharacterService;
+import com.wowguild.web_api.service.token.TokenManager;
+import com.wowguild.web_api.tool.LogHandler;
+import com.wowguild.web_api.tool.parser.CharacterImageDataParser;
+import com.wowguild.web_api.tool.parser.CharacterProfileParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

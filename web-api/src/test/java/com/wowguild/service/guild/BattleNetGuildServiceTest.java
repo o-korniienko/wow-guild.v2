@@ -1,10 +1,12 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.entity.Character;
-import com.wowguild.dto.UpdateStatus;
-import com.wowguild.sender.HttpSender;
-import com.wowguild.service.token.TokenManager;
-import com.wowguild.tool.parser.GuildProfileParser;
+import com.wowguild.common.entity.Character;
+import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.web_api.sender.HttpSender;
+import com.wowguild.web_api.service.guild.BattleNetCharacterService;
+import com.wowguild.web_api.service.guild.BattleNetGuildService;
+import com.wowguild.web_api.service.token.TokenManager;
+import com.wowguild.web_api.tool.parser.GuildProfileParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -1,7 +1,7 @@
 package com.wowguild.arguments;
 
-import com.wowguild.enums.ClassEn;
-import com.wowguild.enums.Rank;
+import com.wowguild.common.enums.ClassEn;
+import com.wowguild.common.enums.Rank;
 import lombok.Data;
 
 import java.util.ArrayList;

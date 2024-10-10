@@ -1,7 +1,9 @@
 package com.wowguild.converter;
 
-import com.wowguild.dto.CharacterDto;
-import com.wowguild.entity.Character;
+import com.wowguild.common.converter.BossConverter;
+import com.wowguild.common.converter.CharacterConverter;
+import com.wowguild.common.dto.CharacterDto;
+import com.wowguild.common.entity.Character;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

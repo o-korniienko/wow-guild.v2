@@ -1,7 +1,9 @@
 package com.wowguild.tool.parser;
 
-import com.wowguild.model.wow_logs.WOWLogsFightData;
-import com.wowguild.model.wow_logs.WOWLogsReportData;
+import com.wowguild.common.model.wow_logs.WOWLogsFightData;
+import com.wowguild.common.model.wow_logs.WOWLogsReportData;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.tool.parser.ReportDataParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,7 +16,7 @@ import java.util.stream.Stream;
 import static com.wowguild.arguments.WowLogsDataGenerator.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
 public class ReportDataParserTest {
 

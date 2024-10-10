@@ -1,7 +1,8 @@
 package com.wowguild.entity;
 
-import com.wowguild.enums.ClassEn;
-import com.wowguild.enums.Rank;
+import com.wowguild.common.entity.Character;
+import com.wowguild.common.enums.ClassEn;
+import com.wowguild.common.enums.Rank;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

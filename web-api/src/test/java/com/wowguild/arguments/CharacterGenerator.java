@@ -1,12 +1,12 @@
 package com.wowguild.arguments;
 
-import com.wowguild.dto.CharacterDto;
-import com.wowguild.dto.CharacterRankDto;
-import com.wowguild.dto.RankDto;
-import com.wowguild.entity.Character;
-import com.wowguild.entity.rank.CharacterRank;
-import com.wowguild.enums.ClassEn;
-import com.wowguild.enums.Rank;
+import com.wowguild.common.entity.rank.Rank;
+import com.wowguild.common.dto.CharacterDto;
+import com.wowguild.common.dto.CharacterRankDto;
+import com.wowguild.common.dto.RankDto;
+import com.wowguild.common.entity.Character;
+import com.wowguild.common.entity.rank.CharacterRank;
+import com.wowguild.common.enums.ClassEn;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -20,7 +20,7 @@ public class CharacterGenerator {
         character.setId(1);
         character.setClassEn(ClassEn.Warrior);
         character.setLevel(80);
-        character.setRank(Rank.Rank3);
+        character.setRank(com.wowguild.common.enums.Rank.Rank3);
         character.setRace("human");
         character.setIconURL("empty_url");
         character.setRegionEn("EU");
@@ -40,14 +40,14 @@ public class CharacterGenerator {
         characterRank.setAverage(5555);
         characterRank.setTotalKills(43);
         characterRank.setMetric("dps");
-        List<com.wowguild.entity.rank.Rank> ranks = Collections.singletonList(generateRank(date));
+        List<Rank> ranks = Collections.singletonList(generateRank(date));
         characterRank.setRanks(ranks);
 
         return characterRank;
     }
 
-    public static com.wowguild.entity.rank.Rank generateRank(LocalDateTime date) {
-        com.wowguild.entity.rank.Rank rank = new com.wowguild.entity.rank.Rank();
+    public static Rank generateRank(LocalDateTime date) {
+        Rank rank = new Rank();
         rank.setId(1);
         rank.setAmount(4444);
         rank.setKillIlvl(608);
@@ -66,7 +66,7 @@ public class CharacterGenerator {
         characterDto.setId(1);
         characterDto.setClassEn(ClassEn.Warrior);
         characterDto.setLevel(80);
-        characterDto.setRank(Rank.Rank3);
+        characterDto.setRank(com.wowguild.common.enums.Rank.Rank3);
         characterDto.setRace("human");
         characterDto.setIconURL("empty_url");
         characterDto.setRegionEn("EU");

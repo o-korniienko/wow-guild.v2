@@ -1,6 +1,8 @@
 package com.wowguild.tool.parser;
 
-import com.wowguild.model.wow_logs.WOWLogsCharacterRankData;
+import com.wowguild.common.model.wow_logs.WOWLogsCharacterRankData;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.tool.parser.CharacterRankDataParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,7 +16,7 @@ import static com.wowguild.arguments.WowLogsDataGenerator.getCharacterRankDataJs
 import static com.wowguild.arguments.WowLogsDataGenerator.getCharacterRankDataObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
 public class CharacterRankDataParserTest {
 

@@ -1,7 +1,8 @@
 package com.wowguild.converter;
 
-import com.wowguild.entity.rank.Report;
-import com.wowguild.model.wow_logs.WOWLogsReportData;
+import com.wowguild.common.converter.ReportConverter;
+import com.wowguild.common.entity.rank.Report;
+import com.wowguild.common.model.wow_logs.WOWLogsReportData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

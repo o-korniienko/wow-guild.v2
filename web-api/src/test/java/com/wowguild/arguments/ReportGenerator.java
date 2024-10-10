@@ -1,7 +1,7 @@
 package com.wowguild.arguments;
 
-import com.wowguild.entity.rank.Report;
-import com.wowguild.model.wow_logs.WOWLogsReportData;
+import com.wowguild.common.entity.rank.Report;
+import com.wowguild.common.model.wow_logs.WOWLogsReportData;
 
 public class ReportGenerator {
 

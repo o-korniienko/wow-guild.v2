@@ -1,6 +1,8 @@
 package com.wowguild.tool.parser;
 
-import com.wowguild.model.blizzard.CharacterProfile;
+import com.wowguild.common.model.blizzard.CharacterProfile;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.tool.parser.CharacterProfileParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,7 +16,7 @@ import static com.wowguild.arguments.GuildAndCharacterGenerator.generateCharacte
 import static com.wowguild.arguments.GuildAndCharacterGenerator.generateCharacterProfileObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
 public class CharacterProfileParserTest {
 

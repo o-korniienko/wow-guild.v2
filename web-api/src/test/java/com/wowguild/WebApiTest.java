@@ -1,6 +1,7 @@
 package com.wowguild;
 
-import com.wowguild.config.WowGuildConfig;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.config.WebApiConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,16 +14,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class WebApiTest {
 
     @Autowired
-    private WowGuildConfig wowGuildConfig;
+    private WebApiConfig webApiConfig;
 
     @Test
     void testGsonBean(){
-        assertNotNull(wowGuildConfig.getGson());
+        assertNotNull(webApiConfig.getGson());
     }
 
     @Test
     void testRestTemplateBean(){
-        assertNotNull(wowGuildConfig.getRest());
+        assertNotNull(webApiConfig.getRest());
     }
 
 

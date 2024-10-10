@@ -1,6 +1,8 @@
 package com.wowguild.tool.parser;
 
-import com.wowguild.model.blizzard.CharacterImageData;
+import com.wowguild.common.model.blizzard.CharacterImageData;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.tool.parser.CharacterImageDataParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,7 +16,7 @@ import static com.wowguild.arguments.GuildAndCharacterGenerator.getCharacterImag
 import static com.wowguild.arguments.GuildAndCharacterGenerator.getCharacterProfileJson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
 public class CharacterImageDataParserTest {
 

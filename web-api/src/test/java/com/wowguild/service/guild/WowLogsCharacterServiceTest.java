@@ -1,16 +1,18 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.entity.Character;
-import com.wowguild.entity.rank.Boss;
-import com.wowguild.dto.UpdateStatus;
-import com.wowguild.model.wow_logs.WOWLogsCharacterRankData;
-import com.wowguild.sender.HttpSender;
-import com.wowguild.service.entity.impl.BossService;
-import com.wowguild.service.entity.impl.CharacterRankService;
-import com.wowguild.service.entity.impl.CharacterService;
-import com.wowguild.service.entity.impl.RankService;
-import com.wowguild.service.token.TokenManager;
-import com.wowguild.tool.parser.Parser;
+import com.wowguild.common.entity.Character;
+import com.wowguild.common.entity.rank.Boss;
+import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.common.model.wow_logs.WOWLogsCharacterRankData;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.sender.HttpSender;
+import com.wowguild.common.service.entity.impl.BossService;
+import com.wowguild.common.service.entity.impl.CharacterRankService;
+import com.wowguild.common.service.entity.impl.CharacterService;
+import com.wowguild.common.service.entity.impl.RankService;
+import com.wowguild.web_api.service.guild.WowLogsCharacterService;
+import com.wowguild.web_api.service.token.TokenManager;
+import com.wowguild.web_api.tool.parser.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class WowLogsCharacterServiceTest {

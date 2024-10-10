@@ -1,15 +1,18 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.converter.Converter;
-import com.wowguild.entity.rank.Report;
-import com.wowguild.model.wow_logs.WOWLogsFightData;
-import com.wowguild.model.wow_logs.WOWLogsReportData;
-import com.wowguild.sender.HttpSender;
-import com.wowguild.service.entity.impl.CharacterService;
-import com.wowguild.service.entity.impl.WowLogsReportService;
-import com.wowguild.service.entity.impl.ZoneService;
-import com.wowguild.service.token.TokenManager;
-import com.wowguild.tool.parser.ReportDataParser;
+import com.wowguild.common.converter.Converter;
+import com.wowguild.common.entity.rank.Report;
+import com.wowguild.common.model.wow_logs.WOWLogsFightData;
+import com.wowguild.common.model.wow_logs.WOWLogsReportData;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.sender.HttpSender;
+import com.wowguild.common.service.entity.impl.CharacterService;
+import com.wowguild.common.service.entity.impl.WowLogsReportService;
+import com.wowguild.common.service.entity.impl.ZoneService;
+import com.wowguild.web_api.service.guild.WowLogsCharacterService;
+import com.wowguild.web_api.service.guild.WowLogsGuildService;
+import com.wowguild.web_api.service.token.TokenManager;
+import com.wowguild.web_api.tool.parser.ReportDataParser;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class WowLogsGuildServiceTest {

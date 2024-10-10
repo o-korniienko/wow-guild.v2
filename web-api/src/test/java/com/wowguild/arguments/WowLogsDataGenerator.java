@@ -1,8 +1,8 @@
 package com.wowguild.arguments;
 
-import com.wowguild.model.wow_logs.WOWLogsCharacterRankData;
-import com.wowguild.model.wow_logs.WOWLogsFightData;
-import com.wowguild.model.wow_logs.WOWLogsReportData;
+import com.wowguild.common.model.wow_logs.WOWLogsCharacterRankData;
+import com.wowguild.common.model.wow_logs.WOWLogsFightData;
+import com.wowguild.common.model.wow_logs.WOWLogsReportData;
 
 import java.util.ArrayList;
 import java.util.List;

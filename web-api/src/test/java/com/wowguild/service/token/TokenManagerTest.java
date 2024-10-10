@@ -1,7 +1,11 @@
 package com.wowguild.service.token;
 
-import com.wowguild.entity.Token;
-import com.wowguild.repos.TokenRepo;
+import com.wowguild.common.entity.Token;
+import com.wowguild.common.repos.TokenRepo;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.service.token.BattleNetTokenService;
+import com.wowguild.web_api.service.token.TokenManagerImpl;
+import com.wowguild.web_api.service.token.WowLogsTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class TokenManagerTest {
