@@ -27,3 +27,7 @@
 /src/frontendyarn-debug.log*
 /src/frontendyarn-error.log*
 /for_tests.txt
+/web-api/src/frontend/app/node_modules/
+/web-api/src/frontend/app/build/
+/web-api/src/frontend/app/node/
+/web-api/target/
