@@ -1,12 +1,12 @@
 package com.wowguild.web_api.service.guild;
 
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.model.blizzard.CharacterImageData;
 import com.wowguild.common.model.blizzard.CharacterProfile;
 import com.wowguild.common.model.blizzard.GuildProfile;
 import com.wowguild.web_api.sender.HttpSender;
-import com.wowguild.common.service.entity.impl.CharacterService;
+import com.wowguild.common.service.impl.CharacterService;
 import com.wowguild.web_api.service.token.TokenManager;
 import com.wowguild.web_api.tool.LogHandler;
 import com.wowguild.web_api.tool.parser.Parser;

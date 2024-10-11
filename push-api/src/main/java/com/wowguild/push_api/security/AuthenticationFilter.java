@@ -1,7 +1,7 @@
 package com.wowguild.push_api.security;
 
-import com.wowguild.common.entity.User;
-import com.wowguild.common.service.entity.UserService;
+import com.wowguild.common.entity.security.User;
+import com.wowguild.common.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

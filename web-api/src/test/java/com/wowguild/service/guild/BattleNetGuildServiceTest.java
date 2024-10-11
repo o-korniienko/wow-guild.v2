@@ -1,7 +1,7 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.web_api.sender.HttpSender;
 import com.wowguild.web_api.service.guild.BattleNetCharacterService;
 import com.wowguild.web_api.service.guild.BattleNetGuildService;

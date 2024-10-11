@@ -1,6 +1,6 @@
 package com.wowguild.common.converter;
 
-import com.wowguild.common.entity.rank.Report;
+import com.wowguild.common.entity.wow.rank.Report;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

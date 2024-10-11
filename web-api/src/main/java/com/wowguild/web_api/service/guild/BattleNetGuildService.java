@@ -1,8 +1,8 @@
 package com.wowguild.web_api.service.guild;
 
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.entity.rank.Boss;
-import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.entity.wow.rank.Boss;
+import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.model.blizzard.GuildProfile;
 import com.wowguild.web_api.sender.HttpSender;
 import com.wowguild.web_api.service.token.TokenManager;

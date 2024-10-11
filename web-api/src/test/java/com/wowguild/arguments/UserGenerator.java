@@ -1,7 +1,7 @@
 package com.wowguild.arguments;
 
-import com.wowguild.common.dto.UserDto;
-import com.wowguild.common.entity.User;
+import com.wowguild.common.dto.security.UserDto;
+import com.wowguild.common.entity.security.User;
 import com.wowguild.common.enums.user.Role;
 
 import java.util.Collections;

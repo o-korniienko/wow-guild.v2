@@ -1,8 +1,8 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.dto.UpdateStatus;
-import com.wowguild.common.service.entity.impl.CharacterService;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.dto.wow.UpdateStatus;
+import com.wowguild.common.service.impl.CharacterService;
 import com.wowguild.web_api.service.guild.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;

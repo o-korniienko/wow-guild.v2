@@ -1,12 +1,12 @@
 package com.wowguild.arguments;
 
-import com.wowguild.common.entity.rank.Rank;
-import com.wowguild.common.dto.CharacterDto;
-import com.wowguild.common.dto.CharacterRankDto;
-import com.wowguild.common.dto.RankDto;
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.entity.rank.CharacterRank;
-import com.wowguild.common.enums.ClassEn;
+import com.wowguild.common.entity.wow.rank.Rank;
+import com.wowguild.common.dto.wow.CharacterDto;
+import com.wowguild.common.dto.wow.CharacterRankDto;
+import com.wowguild.common.dto.wow.RankDto;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.entity.wow.rank.CharacterRank;
+import com.wowguild.common.enums.wow.ClassEn;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -20,7 +20,7 @@ public class CharacterGenerator {
         character.setId(1);
         character.setClassEn(ClassEn.Warrior);
         character.setLevel(80);
-        character.setRank(com.wowguild.common.enums.Rank.Rank3);
+        character.setRank(com.wowguild.common.enums.wow.Rank.Rank3);
         character.setRace("human");
         character.setIconURL("empty_url");
         character.setRegionEn("EU");
@@ -66,7 +66,7 @@ public class CharacterGenerator {
         characterDto.setId(1);
         characterDto.setClassEn(ClassEn.Warrior);
         characterDto.setLevel(80);
-        characterDto.setRank(com.wowguild.common.enums.Rank.Rank3);
+        characterDto.setRank(com.wowguild.common.enums.wow.Rank.Rank3);
         characterDto.setRace("human");
         characterDto.setIconURL("empty_url");
         characterDto.setRegionEn("EU");

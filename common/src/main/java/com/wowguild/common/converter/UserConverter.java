@@ -1,7 +1,7 @@
 package com.wowguild.common.converter;
 
-import com.wowguild.common.dto.UserDto;
-import com.wowguild.common.entity.User;
+import com.wowguild.common.dto.security.UserDto;
+import com.wowguild.common.entity.security.User;
 import org.springframework.stereotype.Service;
 
 @Service

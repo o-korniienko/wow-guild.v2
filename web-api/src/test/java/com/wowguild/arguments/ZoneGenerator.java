@@ -1,7 +1,7 @@
 package com.wowguild.arguments;
 
-import com.wowguild.common.dto.ZoneDto;
-import com.wowguild.common.entity.rank.Zone;
+import com.wowguild.common.dto.wow.ZoneDto;
+import com.wowguild.common.entity.wow.rank.Zone;
 
 public class ZoneGenerator {
 

@@ -1,7 +1,7 @@
 package com.wowguild.push_api.config;
 
 import com.wowguild.push_api.security.AuthenticationFilter;
-import com.wowguild.common.service.entity.UserService;
+import com.wowguild.common.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

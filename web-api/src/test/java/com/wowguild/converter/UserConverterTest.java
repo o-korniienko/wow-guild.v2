@@ -1,8 +1,8 @@
 package com.wowguild.converter;
 
 import com.wowguild.common.converter.UserConverter;
-import com.wowguild.common.dto.UserDto;
-import com.wowguild.common.entity.User;
+import com.wowguild.common.dto.security.UserDto;
+import com.wowguild.common.entity.security.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

@@ -1,9 +1,9 @@
 package com.wowguild.common.converter;
 
-import com.wowguild.common.dto.BossDto;
-import com.wowguild.common.dto.ZoneDto;
-import com.wowguild.common.entity.rank.Boss;
-import com.wowguild.common.entity.rank.Zone;
+import com.wowguild.common.dto.wow.BossDto;
+import com.wowguild.common.dto.wow.ZoneDto;
+import com.wowguild.common.entity.wow.rank.Boss;
+import com.wowguild.common.entity.wow.rank.Zone;
 import org.springframework.stereotype.Service;
 
 @Service

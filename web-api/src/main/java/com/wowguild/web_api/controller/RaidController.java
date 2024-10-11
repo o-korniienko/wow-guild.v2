@@ -1,7 +1,7 @@
 package com.wowguild.web_api.controller;
 
 import com.wowguild.common.converter.BossConverter;
-import com.wowguild.common.service.entity.impl.BossService;
+import com.wowguild.common.service.impl.BossService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

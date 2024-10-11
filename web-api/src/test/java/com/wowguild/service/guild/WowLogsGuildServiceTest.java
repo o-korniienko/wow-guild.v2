@@ -1,14 +1,14 @@
 package com.wowguild.service.guild;
 
 import com.wowguild.common.converter.Converter;
-import com.wowguild.common.entity.rank.Report;
+import com.wowguild.common.entity.wow.rank.Report;
 import com.wowguild.common.model.wow_logs.WOWLogsFightData;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
 import com.wowguild.web_api.WebApi;
 import com.wowguild.web_api.sender.HttpSender;
-import com.wowguild.common.service.entity.impl.CharacterService;
-import com.wowguild.common.service.entity.impl.WowLogsReportService;
-import com.wowguild.common.service.entity.impl.ZoneService;
+import com.wowguild.common.service.impl.CharacterService;
+import com.wowguild.common.service.impl.WowLogsReportService;
+import com.wowguild.common.service.impl.ZoneService;
 import com.wowguild.web_api.service.guild.WowLogsCharacterService;
 import com.wowguild.web_api.service.guild.WowLogsGuildService;
 import com.wowguild.web_api.service.token.TokenManager;

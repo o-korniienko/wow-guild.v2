@@ -1,10 +1,10 @@
 package com.wowguild.web_api.controller;
 
 import com.wowguild.common.converter.Converter;
-import com.wowguild.common.dto.UserDto;
+import com.wowguild.common.dto.security.UserDto;
 import com.wowguild.common.dto.api.ApiResponse;
-import com.wowguild.common.entity.User;
-import com.wowguild.common.service.entity.UserService;
+import com.wowguild.common.entity.security.User;
+import com.wowguild.web_api.service.security.UserDetService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService service;
+    private final UserDetService service;
     private final Converter<User, UserDto> userConverter;
 
     @GetMapping("/get_user")
@@ -56,7 +56,7 @@ public class UserController {
     @DeleteMapping("/delete_user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") long id) {
         try {
-            String resultStatus = service.deleteUser(id);
+            String resultStatus = service.delete(id);
             return ResponseEntity.ok(new ApiResponse<>(resultStatus, 200, service.findAll().stream()
                     .map(userConverter::convertToDto)
                     .collect(Collectors.toList())));

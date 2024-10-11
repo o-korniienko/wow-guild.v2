@@ -1,16 +1,16 @@
 package com.wowguild.web_api.service.guild;
 
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.entity.rank.Boss;
-import com.wowguild.common.entity.rank.CharacterRank;
-import com.wowguild.common.entity.rank.Rank;
-import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.entity.wow.rank.Boss;
+import com.wowguild.common.entity.wow.rank.CharacterRank;
+import com.wowguild.common.entity.wow.rank.Rank;
+import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.model.wow_logs.WOWLogsCharacterRankData;
 import com.wowguild.web_api.sender.HttpSender;
-import com.wowguild.common.service.entity.impl.BossService;
-import com.wowguild.common.service.entity.impl.CharacterRankService;
-import com.wowguild.common.service.entity.impl.CharacterService;
-import com.wowguild.common.service.entity.impl.RankService;
+import com.wowguild.common.service.impl.BossService;
+import com.wowguild.common.service.impl.CharacterRankService;
+import com.wowguild.common.service.impl.CharacterService;
+import com.wowguild.common.service.impl.RankService;
 import com.wowguild.web_api.service.token.TokenManager;
 import com.wowguild.web_api.tool.parser.Parser;
 import lombok.RequiredArgsConstructor;

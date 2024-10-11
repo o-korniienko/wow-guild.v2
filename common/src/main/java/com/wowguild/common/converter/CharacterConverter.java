@@ -1,11 +1,11 @@
 package com.wowguild.common.converter;
 
-import com.wowguild.common.dto.CharacterDto;
-import com.wowguild.common.dto.CharacterRankDto;
-import com.wowguild.common.dto.RankDto;
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.entity.rank.CharacterRank;
-import com.wowguild.common.entity.rank.Rank;
+import com.wowguild.common.dto.wow.CharacterDto;
+import com.wowguild.common.dto.wow.CharacterRankDto;
+import com.wowguild.common.dto.wow.RankDto;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.entity.wow.rank.CharacterRank;
+import com.wowguild.common.entity.wow.rank.Rank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

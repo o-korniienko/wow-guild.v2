@@ -1,10 +1,10 @@
 package com.wowguild.web_api.service.guild;
 
-import com.wowguild.common.entity.Character;
-import com.wowguild.common.dto.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.model.blizzard.GuildProfile;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
-import com.wowguild.common.service.entity.impl.CharacterService;
+import com.wowguild.common.service.impl.CharacterService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

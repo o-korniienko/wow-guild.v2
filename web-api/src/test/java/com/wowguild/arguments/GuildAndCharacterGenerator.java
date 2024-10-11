@@ -1,6 +1,6 @@
 package com.wowguild.arguments;
 
-import com.wowguild.common.entity.Character;
+import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.model.blizzard.CharacterImageData;
 import com.wowguild.common.model.blizzard.CharacterProfile;
 import com.wowguild.common.model.blizzard.GuildProfile;
