@@ -31,3 +31,5 @@
 /web-api/src/frontend/app/build/
 /web-api/src/frontend/app/node/
 /web-api/target/
+/common/target/
+/push-api/target/
