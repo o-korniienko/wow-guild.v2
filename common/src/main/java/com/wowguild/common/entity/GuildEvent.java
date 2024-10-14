@@ -1,10 +1,7 @@
 package com.wowguild.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -21,5 +18,8 @@ public class GuildEvent {
     private String message;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
+    @ElementCollection
+    @CollectionTable(name = "subscriber_id", joinColumns = @JoinColumn(name = "event_id"))
+    @Column(name = "user_id")
     private Set<Long> userIDs;
 }

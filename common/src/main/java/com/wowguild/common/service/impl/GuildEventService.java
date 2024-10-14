@@ -44,4 +44,8 @@ public class GuildEventService implements EntityService<GuildEvent> {
     public List<GuildEvent> sort(List<GuildEvent> entities, Comparator<GuildEvent> comparator1, Comparator<GuildEvent> comparator2) {
         return List.of();
     }
+
+    public GuildEvent findById(long id) {
+        return guildEventRepo.findById(id).orElse(null);
+    }
 }

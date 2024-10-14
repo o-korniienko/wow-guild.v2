@@ -1,8 +1,8 @@
 package com.wowguild.web_api.config;
 
 import com.wowguild.web_api.handler.LoginFailHandler;
-import com.wowguild.web_api.handler.NoRedirectLogoutSuccessHandler;
 import com.wowguild.web_api.handler.LoginSuccessHandler;
+import com.wowguild.web_api.handler.NoRedirectLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

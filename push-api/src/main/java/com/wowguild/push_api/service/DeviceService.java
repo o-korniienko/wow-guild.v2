@@ -6,7 +6,6 @@ import com.wowguild.common.enums.push.OsType;
 import com.wowguild.common.model.push.DeviceModel;
 import com.wowguild.common.service.UserService;
 import com.wowguild.common.service.impl.PushDeviceService;
-import com.wowguild.push_api.scheduler.GuildEventNotificationScheduler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,6 @@ public class DeviceService {
 
     private final UserService userService;
     private final PushDeviceService pushDeviceService;
-    private final GuildEventNotificationScheduler scheduler;
 
     public Mono<ServerResponse> processRegistration(ServerRequest serverRequest) {
         Mono<Authentication> authUserMono = ReactiveSecurityContextHolder.getContext()
