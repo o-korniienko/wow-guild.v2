@@ -1,27 +1,27 @@
 package com.wowguild.push_api.sender;
 
-import com.google.firebase.messaging.AndroidConfig;
-import com.google.firebase.messaging.AndroidNotification;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @Slf4j
-public class AndroidMessageSender implements FirebaseMessageSender {
+public class IOSMessageSender implements FirebaseMessageSender{
 
     @Override
     public void send(String title, String body, String token) {
         try {
-            AndroidNotification notification = AndroidNotification.builder()
-                    .setTitle(title)
-                    .setBody(body)
-                    .build();
             Message message = Message.builder()
-                    .setAndroidConfig(AndroidConfig.builder()
-                            .setNotification(notification)
-                            .setPriority(AndroidConfig.Priority.HIGH)
+                    .setApnsConfig(ApnsConfig.builder()
+                            .setAps(Aps.builder()
+                                    .setAlert(ApsAlert.builder()
+                                            .setTitle(title)
+                                            .setBody(body)
+                                            .build())
+                                    .build())
                             .build())
                     .setToken(token)
                     .build();
