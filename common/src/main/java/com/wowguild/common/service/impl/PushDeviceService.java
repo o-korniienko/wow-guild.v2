@@ -32,11 +32,11 @@ public class PushDeviceService implements EntityService<PushDevice> {
         return pushDeviceRepo.findAll();
     }
 
-    public PushDevice findBiId(long id) {
+    public PushDevice findById(long id) {
         return pushDeviceRepo.findById(id).orElse(null);
     }
 
-    public PushDevice findBiUserId(long id) {
+    public PushDevice findByUserId(long id) {
         return pushDeviceRepo.findByUserId(id);
     }
 

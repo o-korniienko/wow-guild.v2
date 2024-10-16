@@ -19,7 +19,7 @@ public class FirebaseInitializer {
     private String appKeysFile;
 
     @PostConstruct
-    public void initialize() throws IOException {
+    public void initialize() {
         try {
             FileInputStream serviceAccount =
                     new FileInputStream(appKeysFile);

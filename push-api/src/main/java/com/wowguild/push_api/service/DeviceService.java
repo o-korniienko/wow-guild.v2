@@ -57,7 +57,7 @@ public class DeviceService {
 
     private boolean register(DeviceModel deviceModel, User user) {
         try {
-            PushDevice pushDevice = pushDeviceService.findBiUserId(user.getId());
+            PushDevice pushDevice = pushDeviceService.findByUserId(user.getId());
             if (pushDevice == null) {
                 pushDevice = new PushDevice();
                 pushDevice.setDeviceId(deviceModel.getDeviceId());

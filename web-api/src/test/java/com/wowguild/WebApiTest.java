@@ -1,6 +1,7 @@
 package com.wowguild;
 
 import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.config.KafkaConfig;
 import com.wowguild.web_api.config.WebApiConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +16,22 @@ public class WebApiTest {
 
     @Autowired
     private WebApiConfig webApiConfig;
+    @Autowired
+    private KafkaConfig kafkaConfig;
 
     @Test
-    void testGsonBean(){
+    void testGsonBean() {
         assertNotNull(webApiConfig.getGson());
     }
 
     @Test
-    void testRestTemplateBean(){
+    void testRestTemplateBean() {
         assertNotNull(webApiConfig.getRest());
+    }
+
+    @Test
+    void testKafkaTemplateBean() {
+        assertNotNull(kafkaConfig.kafkaTemplate());
     }
 
 
