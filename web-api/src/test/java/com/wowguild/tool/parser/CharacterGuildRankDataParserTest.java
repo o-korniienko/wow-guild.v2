@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = WebApi.class)
 @ActiveProfiles("test")
-public class CharacterRankDataParserTest {
+public class CharacterGuildRankDataParserTest {
 
     @Autowired
     private CharacterRankDataParser characterRankDataParser;

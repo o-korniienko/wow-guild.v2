@@ -3,18 +3,16 @@ package com.wowguild.web_api.controller;
 import com.wowguild.common.converter.BossConverter;
 import com.wowguild.common.converter.CharacterConverter;
 import com.wowguild.common.dto.api.ApiResponse;
-import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.dto.wow.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.model.rank.RankedMembersSearch;
 import com.wowguild.common.service.impl.BossService;
 import com.wowguild.web_api.service.guild.GuildManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,6 +75,16 @@ public class MemberController {
             return ResponseEntity.ok(guildManager.getRankedMembers().stream()
                     .map(characterConverter::convertToDto)
                     .collect(Collectors.toList()));
+        } catch (Exception e) {
+            log.error("Could not get ranked guild members. Error: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Could not get ranked guild members.");
+        }
+    }
+
+    @PostMapping("/get_ranked_members_by")
+    public ResponseEntity<?> getRankedMembersBy(@RequestBody RankedMembersSearch rankedMembersSearch) {
+        try {
+            return ResponseEntity.ok(guildManager.getRankedMembersBy(rankedMembersSearch));
         } catch (Exception e) {
             log.error("Could not get ranked guild members. Error: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Could not get ranked guild members.");

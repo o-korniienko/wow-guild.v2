@@ -336,8 +336,8 @@ function NavBar(props) {
                 localStorage.setItem("language", data.language);
                 setLanguage(data.language);
             }
-        } catch (e) {
-            console.log(e)
+        } catch (err) {
+            console.log(err)
         }
     }
 

@@ -1,6 +1,8 @@
 package com.wowguild.common.service.impl;
 
 import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.model.rank.RankedCharacter;
+import com.wowguild.common.model.rank.RankedMembersSearch;
 import com.wowguild.common.repos.wow.CharacterRepos;
 import com.wowguild.common.service.EntityService;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,10 @@ import java.util.List;
 @Service
 public class CharacterService implements EntityService<Character> {
 
-    public static Comparator<Character> BY_GUILD_RANK = Comparator.comparing(Character::getRank);
+    public static Comparator<Character> BY_GUILD_RANK = Comparator.comparing(Character::getGuildRank);
     public static Comparator<Character> BY_LEVEL = (o1, o2) -> o2.getLevel() - o1.getLevel();
+    public static Comparator<RankedCharacter> BY_MAX = (o1, o2) -> Double.compare(o2.getMax(), o1.getMax());
+
     private final CharacterRepos characterRepos;
 
     @Override
@@ -61,5 +65,10 @@ public class CharacterService implements EntityService<Character> {
 
     public Character findById(long id) {
         return characterRepos.findById(id).orElse(null);
+    }
+
+    public List<Character> getRankedMembersBy(RankedMembersSearch rankedMembersSearch) {
+        return characterRepos.findRankedCharactersBy(rankedMembersSearch.getMetric(), rankedMembersSearch.getBossName(),
+                rankedMembersSearch.getDifficulty(), rankedMembersSearch.getZoneName());
     }
 }

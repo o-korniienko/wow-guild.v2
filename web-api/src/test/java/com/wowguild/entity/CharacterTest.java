@@ -2,7 +2,7 @@ package com.wowguild.entity;
 
 import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.enums.wow.ClassEn;
-import com.wowguild.common.enums.wow.Rank;
+import com.wowguild.common.enums.wow.GuildRank;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,12 +26,12 @@ public class CharacterTest {
 
     @Test
     void setRankByIntTest() {
-        List<Variables<Rank>> characterClassArguments = getCharacterRankArguments();
+        List<Variables<GuildRank>> characterClassArguments = getCharacterRankArguments();
         Character testCharacter = new Character();
-        for (Variables<Rank> characterClassArgument : characterClassArguments) {
+        for (Variables<GuildRank> characterClassArgument : characterClassArguments) {
             testCharacter.setRankByInt(characterClassArgument.getIntValue());
 
-            assertEquals(characterClassArgument.getValue(), testCharacter.getRank());
+            assertEquals(characterClassArgument.getValue(), testCharacter.getGuildRank());
         }
 
     }

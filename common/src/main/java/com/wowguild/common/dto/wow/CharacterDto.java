@@ -1,7 +1,7 @@
 package com.wowguild.common.dto.wow;
 
 import com.wowguild.common.enums.wow.ClassEn;
-import com.wowguild.common.enums.wow.Rank;
+import com.wowguild.common.enums.wow.GuildRank;
 import lombok.Data;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public class CharacterDto {
     private String name;
     private ClassEn classEn;
     private int level;
-    private Rank rank;
+    private GuildRank guildRank;
     private String race;
     private String iconURL;
     private String regionEn;

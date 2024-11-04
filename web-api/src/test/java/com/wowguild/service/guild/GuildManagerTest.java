@@ -1,7 +1,12 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.converter.CharacterConverter;
 import com.wowguild.common.dto.wow.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.entity.wow.rank.Boss;
+import com.wowguild.common.entity.wow.rank.Zone;
+import com.wowguild.common.model.rank.RankedCharacter;
+import com.wowguild.common.model.rank.RankedMembersSearch;
 import com.wowguild.common.service.impl.CharacterService;
 import com.wowguild.web_api.service.guild.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,9 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.wowguild.arguments.BossGenerator.generateBoss;
 import static com.wowguild.arguments.CharacterGenerator.generateCharacter;
+import static com.wowguild.arguments.CharacterGenerator.generateRankedMembersSearch;
 import static com.wowguild.arguments.GuildAndCharacterGenerator.getBattleNetGuildProfileObject;
 import static com.wowguild.arguments.GuildAndCharacterGenerator.getCharacterList;
+import static com.wowguild.arguments.ZoneGenerator.generateZone;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -39,6 +47,8 @@ public class GuildManagerTest {
     private WowLogsCharacterService wowLogsCharacterService;
     @Mock
     private CharacterService characterService;
+    @Mock
+    private CharacterConverter characterConverter;
 
     @InjectMocks
     private GuildManager guildManager;
@@ -106,6 +116,19 @@ public class GuildManagerTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("getRankedMembersByArgs")
+    void getRankedMembersByTest(List<Character> characters, RankedMembersSearch rankedMembersSearch, int resultSize) {
+        when(characterService.getRankedMembersBy(rankedMembersSearch)).thenReturn(characters);
+        if (resultSize > 0) {
+            when(characterConverter.convertToRankDto(any())).thenReturn(null);
+        }
+
+        List<RankedCharacter> rankedMembers = guildManager.getRankedMembersBy(rankedMembersSearch);
+
+        assertEquals(resultSize, rankedMembers.size());
+    }
+
     static Stream<Arguments> updateMembersFromBlizzardDBArgs() {
         Character character = generateCharacter("Liut", LocalDateTime.now());
         Character character2 = generateCharacter("Ted", LocalDateTime.now());
@@ -143,6 +166,47 @@ public class GuildManagerTest {
         return Stream.of(
                 Arguments.of(getCharacterList(), false),
                 Arguments.of(List.of(character, character2, character3), true)
+        );
+    }
+
+    static Stream<Arguments> getRankedMembersByArgs() {
+        Character character1 = generateCharacter("Liut", LocalDateTime.now());
+        Character character2 = generateCharacter("Ted", LocalDateTime.now());
+        Character character3 = generateCharacter("Som", LocalDateTime.now());
+        Character character4 = generateCharacter("Edy", LocalDateTime.now());
+
+        Boss boss1 = generateBoss("Test Boss1", 1L, 5, 1234);
+        Boss boss2 = generateBoss("Test Boss2", 2L, 3, 1234);
+
+        Zone zone1 = generateZone("Zone1", 1L, 123, "Zone1");
+        Zone zone2 = generateZone("Zone2", 2L, 1234, "Zone2");
+        boss1.setZone(zone1);
+        boss2.setZone(zone2);
+
+        character1.getRanks().get(0).setBoss(boss1);
+        character2.getRanks().get(0).setBoss(boss1);
+        character3.getRanks().get(0).setBoss(boss2);
+        character4.getRanks().get(0).setBoss(boss2);
+
+        RankedMembersSearch rankedMembersSearch1 = generateRankedMembersSearch("Test Boss1", "Zone1",
+                5, "dps");
+        RankedMembersSearch rankedMembersSearch2 = generateRankedMembersSearch("Test Boss1", "Zone1",
+                3, "dps");
+        RankedMembersSearch rankedMembersSearch3 = generateRankedMembersSearch("Test Boss1", "Zone1",
+                5, "hps");
+        RankedMembersSearch rankedMembersSearch4 = generateRankedMembersSearch("Test Boss1", "Zone2",
+                5, "dps");
+        RankedMembersSearch rankedMembersSearch5 = generateRankedMembersSearch("Test Boss2", "Zone1",
+                5, "dps");
+
+        return Stream.of(
+                Arguments.of(Collections.emptyList(), null, 0),
+                Arguments.of(List.of(character1, character2, character3), rankedMembersSearch1, 2),
+                Arguments.of(List.of(character3, character4), rankedMembersSearch1, 0),
+                Arguments.of(List.of(character1), rankedMembersSearch2, 0),
+                Arguments.of(List.of(character1), rankedMembersSearch3, 0),
+                Arguments.of(List.of(character1), rankedMembersSearch5, 0),
+                Arguments.of(List.of(character1), rankedMembersSearch4, 0)
         );
     }
 }

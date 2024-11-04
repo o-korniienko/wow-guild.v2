@@ -2,7 +2,7 @@ package com.wowguild.common.entity.wow;
 
 import com.wowguild.common.entity.wow.rank.CharacterRank;
 import com.wowguild.common.enums.wow.ClassEn;
-import com.wowguild.common.enums.wow.Rank;
+import com.wowguild.common.enums.wow.GuildRank;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +20,7 @@ public class Character {
     private String name;
     private ClassEn classEn;
     private int level;
-    private Rank rank;
+    private GuildRank guildRank;
     private String race;
     private String iconURL;
     private String regionEn;
@@ -77,35 +77,35 @@ public class Character {
     public void setRankByInt(int parseInt) {
         switch (parseInt) {
             case 0:
-                this.rank = Rank.Guild_Master;
+                this.guildRank = GuildRank.Guild_Master;
                 break;
             case 1:
-                this.rank = Rank.Rank2;
+                this.guildRank = GuildRank.Rank2;
                 break;
 
             case 2:
-                this.rank = Rank.Rank3;
+                this.guildRank = GuildRank.Rank3;
                 break;
             case 3:
-                this.rank = Rank.Rank4;
+                this.guildRank = GuildRank.Rank4;
                 break;
             case 4:
-                this.rank = Rank.Rank5;
+                this.guildRank = GuildRank.Rank5;
                 break;
             case 5:
-                this.rank = Rank.Rank6;
+                this.guildRank = GuildRank.Rank6;
                 break;
             case 6:
-                this.rank = Rank.Rank7;
+                this.guildRank = GuildRank.Rank7;
                 break;
             case 7:
-                this.rank = Rank.Rank8;
+                this.guildRank = GuildRank.Rank8;
                 break;
             case 8:
-                this.rank = Rank.Rank9;
+                this.guildRank = GuildRank.Rank9;
                 break;
             case 9:
-                this.rank = Rank.Rank10;
+                this.guildRank = GuildRank.Rank10;
                 break;
         }
 

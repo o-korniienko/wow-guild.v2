@@ -1,8 +1,12 @@
 package com.wowguild.web_api.service.guild;
 
-import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.converter.CharacterConverter;
 import com.wowguild.common.dto.wow.UpdateStatus;
+import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.entity.wow.rank.CharacterRank;
 import com.wowguild.common.model.blizzard.GuildProfile;
+import com.wowguild.common.model.rank.RankedCharacter;
+import com.wowguild.common.model.rank.RankedMembersSearch;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
 import com.wowguild.common.service.impl.CharacterService;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,6 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.wowguild.common.service.impl.CharacterService.BY_MAX;
 
 @RequiredArgsConstructor
 @Service
@@ -21,7 +28,7 @@ public class GuildManager {
     private final BattleNetCharacterService battleNetCharacterService;
     private final WowLogsCharacterService wowLogsCharacterService;
     private final CharacterService characterService;
-
+    private final CharacterConverter characterConverter;
 
     public List<Character> updateMembersFromBlizzardDB() {
         List<Character> charactersFromBlizzardDB = battleNetGuildService.parseGuildData(battleNetGuildService.getGuildData());
@@ -56,7 +63,7 @@ public class GuildManager {
                         our_character.setIconURL(blizzard_character.getIconURL());
                         our_character.setName(blizzard_character.getName());
                         our_character.setRace(blizzard_character.getRace());
-                        our_character.setRank(blizzard_character.getRank());
+                        our_character.setGuildRank(blizzard_character.getGuildRank());
                     }
                 }
             }
@@ -95,7 +102,6 @@ public class GuildManager {
         List<Character> rankedCharacters = new ArrayList<>();
         List<Character> charactersFromDB = characterService.findAll();
         for (Character character : charactersFromDB) {
-
             if (character.getRanks() != null && !character.getRanks().isEmpty()) {
                 rankedCharacters.add(character);
             }
@@ -105,5 +111,42 @@ public class GuildManager {
 
     public List<Character> getMembers() {
         return characterService.getAllSorted();
+    }
+
+    public List<RankedCharacter> getRankedMembersBy(RankedMembersSearch rankedMembersSearch) {
+        List<RankedCharacter> result = new ArrayList<>();
+        List<Character> rankedCharacters = characterService.getRankedMembersBy(rankedMembersSearch);
+        if (!rankedCharacters.isEmpty()) {
+            int key = 0;
+            for (Character character : rankedCharacters) {
+                List<CharacterRank> characterRanks = character.getRanks();
+                for (CharacterRank characterRank : characterRanks) {
+                    if (characterRank.getMetric().equals(rankedMembersSearch.getMetric())
+                            && characterRank.getBoss().getName().equals(rankedMembersSearch.getBossName())
+                            && characterRank.getBoss().getDifficulty() == rankedMembersSearch.getDifficulty()
+                            && characterRank.getBoss().getZone().getZoneName().equals(rankedMembersSearch.getZoneName())) {
+                        RankedCharacter rankedCharacter = RankedCharacter.builder()
+                                .key(key)
+                                .id(character.getId())
+                                .name(character.getName())
+                                .classEn(character.getClassEn().name())
+                                .max(characterRank.getMaxAmount())
+                                .average(characterRank.getAverage())
+                                .totalKills(characterRank.getTotalKills())
+                                .ranks(characterRank.getRanks().stream()
+                                        .map(characterConverter::convertToRankDto)
+                                        .collect(Collectors.toList())
+                                )
+                                .build();
+                        result.add(rankedCharacter);
+
+                        key++;
+                    }
+                }
+            }
+        }
+
+        result.sort(BY_MAX);
+        return result;
     }
 }

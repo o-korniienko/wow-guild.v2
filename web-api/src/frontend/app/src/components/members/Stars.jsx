@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom';
 import wowLogo from './../logo/wow.png';
 import wowLogsLogo from './../logo/wowLogs.png';
 import RaiderIo from './../logo/raiderIo.png';
-import {showErrorAndSetFalse} from './../../common/error-handler.jsx';
+import {showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
 
 const { Search } = Input;
 const { Sider, Content } = Layout;
@@ -37,9 +37,6 @@ let criteria  = [];
 let currentDifficultyNumber = 5;
 let currentMetric = "dps";
 let currentBossLocal;
-let ALLRANKEDCHARACTERS = [];
-
-
 
 
 function isAdmin(user){
@@ -308,94 +305,6 @@ const MembersList = (props) =>{
     }
 }
 
-/* const MenuComponent = (props) =>{
-        const [collapsed, setCollapsed] = useState(true);
-        const toggleCollapsed = () => {
-            collapsed ? setCollapsed(false) : setCollapsed(true);
-        };
-        let language = props.language;
-        let updateText2 = "Update Ratings Data"
-
-
-        if(language === "UA"){
-             updateText2 = "Оновити Рейтинги"
-        }
-
-        if(props.user !== null && !isAdmin(props.user) ){
-            let adminMenu = document.getElementById('admin');
-            if(adminMenu != null){
-               adminMenu.style.display = 'none';
-            }
-        }
-
-        const updateRankingData = ()=>{
-            props.setLoading(true);
-            let mainDiv = document.getElementById('mainDiv');
-            if(mainDiv != null){
-               mainDiv.className = 'main_div_disabled';
-            }
-            fetch('/update_ranking', { method: 'POST',
-                headers: {
-                  'X-XSRF-TOKEN': XSRFToken,
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-
-            })
-            .then(response=> response.status !== 200 ? showError(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-            .then(data => setData(data));
-        }
-
-        const setData = (data) =>{
-
-            let mainDiv = document.getElementById('mainDiv');
-            if(mainDiv != null){
-               mainDiv.className = 'main_div_enabled';
-            }
-            var bosses = [];
-            if(data != null && data != undefined){
-                var bossesSet = new Set();
-                for(var i = 0; i < data.length; i++){
-                   var ranks = data[i].ranks;
-                   for(var j = 0; j < ranks.length; j++){
-                        bossesSet.add(ranks[j].boss);
-                   }
-                }
-                for(const value of bossesSet){
-                    bosses.push(value);
-                }
-
-            }
-
-            props.setRaidsData(bosses, false);
-            props.setData(data)
-
-            props.setLoading(false);
-        }
-
-        return (<Sider  collapsible collapsed={collapsed} onCollapse={toggleCollapsed}>
-        <Affix offsetTop ={5}>
-          <Menu
-            defaultSelectedKeys={['1']}
-            mode="inline"
-
-            inlineCollapsed={collapsed}
-            style={{ height: '100%', borderRight: 0 }}
-          >
-            <Menu.Item key="1" icon={<ReloadOutlined style={{color:'#1a854f', fontSize:'150%'}}/>}>
-             <Link style={{color:'#1a854f', fontSize:'100%'}} onClick = {updateRankingData}>
-               {updateText2}
-             </Link>
-             </Menu.Item>
-
-          </Menu>
-          </Affix>
-        </Sider>)
-
-} */
-
-
 const StyledTable = styled(Table)`
     backgroundColor:red !important;
     font-family: "Trebuchet MS";
@@ -405,7 +314,7 @@ const StyledTable = styled(Table)`
 
 
 
-function MainContent (props){
+function MainContent (){
     languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
     const [form] = Form.useForm();
     const [collapsed, setCollapsed] = useState(false);
@@ -421,79 +330,36 @@ function MainContent (props){
     const [difficultyText, setDifficultyText] = useState("");
     const [metricText, setMetricText] = useState("");
 
-
-
     let patchName = window.location.pathname;
 
-
-
     const setMembersData = (value) =>{
-        ALLRANKEDCHARACTERS = value;
-        value = getFilteredMembers(value);
         setMembers(value);
         MEMBERS = value;
 
         setLoading(false);
     }
 
-    const getFilteredMembers = (data) =>{
-        var result = []
-        var key = 0;
-        if(data != null && data != undefined){
-            for(var i = 0; i < data.length; i++){
-                var characterRanks = data[i].ranks;
-                for(var j = 0; j < characterRanks.length; j++){
-                    if(characterRanks[j].boss.name === currentBossLocal && characterRanks[j].boss.difficulty.toString() === currentDifficultyNumber.toString() && characterRanks[j].metric === currentMetric){
+    difficulties = []
+    criteria = []
 
-                        var characterRank = {
-                            key:key,
-                            id:data[i].id,
-                            name:data[i].name,
-                            classEn:data[i].classEn,
-                            max:characterRanks[j].maxAmount,
-                            average:characterRanks[j].average,
-                            totalKills:characterRanks[j].totalKills,
-                            ranks:characterRanks[j].ranks
+    if(currentLanguage === "EN"){
+        difficulties.push(<Option style={{color:"#194d33"}} key={"5"}>Mythic</Option>)
+        difficulties.push(<Option style={{color:"#194d33"}} key={"4"}>Heroic</Option>)
+        difficulties.push(<Option style={{color:"#194d33"}} key={"3"}>Normal</Option>)
+        criteria.push(<Option style={{color:"#194d33"}} key={"dps"}>DPS</Option>)
+        criteria.push(<Option style={{color:"#194d33"}} key={"hps"}>HPS</Option>)
 
-                        }
+    }
+    if(currentLanguage === "UA"){
+        difficulties.push(<Option style={{color:"#194d33"}} key={"5"}>Міфічний</Option>)
+        difficulties.push(<Option style={{color:"#194d33"}} key={"4"}>Героїчний</Option>)
+        difficulties.push(<Option style={{color:"#194d33"}} key={"3"}>Нормал</Option>)
+        criteria.push(<Option title="пошкодження за секунду" style={{color:"#194d33"}} key={"dps"}>ПЗС</Option>)
+        criteria.push(<Option title="зцілення за сеунду" style={{color:"#194d33"}} key={"hps"}>ЗЗС</Option>)
 
-                        result.push(characterRank);
-                        key++;
-                    }
-                }
-            }
-        }
-
-        result.sort(function(a, b) {
-          return b.max - a.max;
-        });
-
-        return result;
     }
 
-        difficulties = []
-        criteria = []
-
-        if(currentLanguage === "EN"){
-            difficulties.push(<Option style={{color:"#194d33"}} key={"5"}>Mythic</Option>)
-            difficulties.push(<Option style={{color:"#194d33"}} key={"4"}>Heroic</Option>)
-            difficulties.push(<Option style={{color:"#194d33"}} key={"3"}>Normal</Option>)
-            criteria.push(<Option style={{color:"#194d33"}} key={"dps"}>DPS</Option>)
-            criteria.push(<Option style={{color:"#194d33"}} key={"hps"}>HPS</Option>)
-
-        }
-        if(currentLanguage === "UA"){
-            difficulties.push(<Option style={{color:"#194d33"}} key={"5"}>Міфічний</Option>)
-            difficulties.push(<Option style={{color:"#194d33"}} key={"4"}>Героїчний</Option>)
-            difficulties.push(<Option style={{color:"#194d33"}} key={"3"}>Нормал</Option>)
-            criteria.push(<Option title="пошкодження за секунду" style={{color:"#194d33"}} key={"dps"}>ПЗС</Option>)
-            criteria.push(<Option title="зцілення за сеунду" style={{color:"#194d33"}} key={"hps"}>ЗЗС</Option>)
-
-        }
-
-
     const setRaidsData = (value, isPageLoading) =>{
-
         if(value != null && value != undefined && value.length > 0){
             setBosses(value);
             let raidsSelections = [];
@@ -507,16 +373,11 @@ function MainContent (props){
             }
             const key = "zoneName"
 
-
-
             var uniqueRaids = [...new Map(Raids.map(item=>[item[key], item])).values()]
 
             uniqueRaids.sort(function(a, b) {
-
               return b.maxLevel - a.maxLevel;
             });
-
-
 
             RAIDS = uniqueRaids;
             setCurrentRaid(uniqueRaids[0].zoneName);
@@ -536,27 +397,25 @@ function MainContent (props){
             setRaids(raidsSelections);
             setBossesByRaid(uniqueRaids[0].zoneName);
 
-            getRankedMembers();
+            getRankedMembers(uniqueRaids[0].zoneName, currentBossLocal, "dps", 5);
 
         }
         setLoading(false);
     }
 
-
-
-
-
     useEffect(() => {
-
         setLoading(true)
         setMetricText("dps");
         setDifficultyText("5");
 
         fetch('/get_user')
-        .then(response=> response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-        .then(data=>setUserData(data));
+            .then(response=> response.status !== 200 ? showErrorAndSetFalse(response, setLoading) :
+                response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+            .then(data=>setUserData(data));
 
-        setRaidsData(props.bosses, true);
+        fetch('/get_bosses', {})
+            .then(response => response.status !== 200 ? showError(response) : response.json())
+            .then(data => setRaidsData(data, true))
 
     }, []);
 
@@ -566,16 +425,38 @@ function MainContent (props){
         }
     }
 
-    const getRankedMembers = () =>{
-        fetch('/get_ranked_members')
-        .then(response=> response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-        .then(data=>setMembersData(data));
+    const getRankedMembers = (zoneName, bossName, metric, difficulty) =>{
+        let body = {
+            zoneName:zoneName,
+            bossName:bossName,
+            difficulty:difficulty,
+            metric:metric
+        }
 
+        fetch("/csrf")
+            .then(response => response.status != 200 ? showError(response) :
+                response.json())
+            .then(data => {
+                if (data !== undefined && data !== null && data.token != undefined) {
+                    fetch('/get_ranked_members_by', {
+                        method: 'POST',
+                        headers: {
+                            'X-XSRF-TOKEN': data.token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(body)
+                    })
+                      .then(response => response.status !== 200 ? showErrorAndSetFalse(response, setLoading) :
+                          response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                      .then(data => setMembersData(data));
+                }
+            })
     }
 
     const onSearch = value => {
         let str = value.currentTarget.value.trim();
-
 
         if(str ===''){
             setMembers(MEMBERS);
@@ -603,17 +484,13 @@ function MainContent (props){
             }
         }
 
-
         for (const value of raidBossesSet){
             raidBossesSelector.push(<Option style={{color:"#194d33"}} key={value}>{value}</Option>)
         }
 
-
-
         setRaidBosses(raidBossesSelector);
         setCurrentBoss(Array.from(raidBossesSet)[0]);
         currentBossLocal = Array.from(raidBossesSet)[0];
-
     }
 
     const handleChange = (value) => {
@@ -623,18 +500,20 @@ function MainContent (props){
     const setRaid = (data) =>{
         setBossesByRaid(data);
         setCurrentRaid(data);
-        setMembersData(ALLRANKEDCHARACTERS);
+        getRankedMembers(data, currentBossLocal, currentMetric, currentDifficultyNumber);
     }
+
     const setBoss = (data) =>{
         setCurrentBoss(data);
         currentBossLocal = data;
-        setMembersData(ALLRANKEDCHARACTERS);
+        getRankedMembers(currentRaid, data, currentMetric, currentDifficultyNumber);
     }
+
     const setDifficulty = (data) =>{
         if(data != null && data != undefined){
             setDifficultyText(data) ;
             currentDifficultyNumber = data;
-            setMembersData(ALLRANKEDCHARACTERS);
+            getRankedMembers(currentRaid, currentBossLocal, currentMetric, data);
         }
     }
 
@@ -642,63 +521,56 @@ function MainContent (props){
         if(data != null && data != undefined){
             setMetricText(data) ;
             currentMetric = data;
-            setMembersData(ALLRANKEDCHARACTERS);
+            getRankedMembers(currentRaid, currentBossLocal, data, currentDifficultyNumber);
         }
     }
 
-
-
    return (
-                    <>
+           <>
+               <Input className = "search_style"  style={{position:" relative", top:'24px', left:"2%", width:'340px'}} placeholder="input search text" onChange={onSearch} enterButton />
 
-                        <Input className = "search_style"  style={{position:" relative", top:'24px', left:"2%", width:'340px'}} placeholder="input search text" onChange={onSearch} enterButton />
+               <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"3%", width:'200px', backgroundColor:"#e7dba2"}}
 
-                        <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"3%", width:'200px', backgroundColor:"#e7dba2"}}
+                  placeholder="Please select"
+                  onChange={setRaid}
+                  value = {currentRaid}
 
-                           placeholder="Please select"
-                           onChange={setRaid}
-                           value = {currentRaid}
+                >
+                  {raids}
+                </Select>
+                <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"6%", width:'200px', backgroundColor:"#e7dba2"}}
+                   placeholder="Please select"
+                   onChange={setBoss}
+                   value = {currentBoss}
+                 >
+                   {raidBosses}
+                 </Select>
 
-                         >
-                           {raids}
-                         </Select>
-                         <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"6%", width:'200px', backgroundColor:"#e7dba2"}}
-                            placeholder="Please select"
-                            onChange={setBoss}
-                            value = {currentBoss}
-                          >
-                            {raidBosses}
-                          </Select>
+                 <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"9%", width:'200px', backgroundColor:"#e7dba2"}}
+                   placeholder="Please select"
+                   onChange={setDifficulty}
+                   value = {difficultyText}
 
-                          <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"9%", width:'200px', backgroundColor:"#e7dba2"}}
-                            placeholder="Please select"
-                            onChange={setDifficulty}
-                            value = {difficultyText}
+                 >
+                   {difficulties}
+                 </Select>
 
-                          >
-                            {difficulties}
-                          </Select>
+                 <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"12%", width:'200px', backgroundColor:"#e7dba2"}}
+                   placeholder="Please select"
+                   onChange={setMetric}
+                   value = {metricText}
 
-                          <Select className = "custom_selector" disabled = {loading} style={{position:" relative", top:'24px', left:"12%", width:'200px', backgroundColor:"#e7dba2"}}
-                            placeholder="Please select"
-                            onChange={setMetric}
-                            value = {metricText}
+                 >
+                   {criteria}
+                 </Select>
 
-                          >
-                            {criteria}
-                          </Select>
-
-                          <MembersList currentLanguage = {currentLanguage} members = {members}/>
-
-
-
-                    </>
+                 <MembersList currentLanguage = {currentLanguage} members = {members}/>
+           </>
          );
 }
 
 
 
-export default function MembersPage(props){
-return <MainContent {... props}/>
-
+export default function MembersPage(){
+    return <MainContent/>
 }

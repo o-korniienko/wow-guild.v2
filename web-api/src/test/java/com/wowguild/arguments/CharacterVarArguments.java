@@ -1,7 +1,7 @@
 package com.wowguild.arguments;
 
 import com.wowguild.common.enums.wow.ClassEn;
-import com.wowguild.common.enums.wow.Rank;
+import com.wowguild.common.enums.wow.GuildRank;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -44,19 +44,19 @@ public class CharacterVarArguments {
         return variablesList;
     }
 
-    public static List<Variables<Rank>> getCharacterRankArguments() {
-        List<Variables<Rank>> variablesList = new ArrayList<>();
+    public static List<Variables<GuildRank>> getCharacterRankArguments() {
+        List<Variables<GuildRank>> variablesList = new ArrayList<>();
 
-        Variables<Rank> variables0 = new Variables<>(0, Rank.Guild_Master);
-        Variables<Rank> variables1 = new Variables<>(1, Rank.Rank2);
-        Variables<Rank> variables2 = new Variables<>(2, Rank.Rank3);
-        Variables<Rank> variables3 = new Variables<>(3, Rank.Rank4);
-        Variables<Rank> variables4 = new Variables<>(4, Rank.Rank5);
-        Variables<Rank> variables5 = new Variables<>(5, Rank.Rank6);
-        Variables<Rank> variables6 = new Variables<>(6, Rank.Rank7);
-        Variables<Rank> variables7 = new Variables<>(7, Rank.Rank8);
-        Variables<Rank> variables8 = new Variables<>(8, Rank.Rank9);
-        Variables<Rank> variables9 = new Variables<>(9, Rank.Rank10);
+        Variables<GuildRank> variables0 = new Variables<>(0, GuildRank.Guild_Master);
+        Variables<GuildRank> variables1 = new Variables<>(1, GuildRank.Rank2);
+        Variables<GuildRank> variables2 = new Variables<>(2, GuildRank.Rank3);
+        Variables<GuildRank> variables3 = new Variables<>(3, GuildRank.Rank4);
+        Variables<GuildRank> variables4 = new Variables<>(4, GuildRank.Rank5);
+        Variables<GuildRank> variables5 = new Variables<>(5, GuildRank.Rank6);
+        Variables<GuildRank> variables6 = new Variables<>(6, GuildRank.Rank7);
+        Variables<GuildRank> variables7 = new Variables<>(7, GuildRank.Rank8);
+        Variables<GuildRank> variables8 = new Variables<>(8, GuildRank.Rank9);
+        Variables<GuildRank> variables9 = new Variables<>(9, GuildRank.Rank10);
 
         variablesList.add(variables0);
         variablesList.add(variables1);

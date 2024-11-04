@@ -67,7 +67,6 @@ const MenuComponent = (props) => {
         }
     }
 
-
     const handleMouseEnter = (index) => {
         switch (index) {
             case 1:
@@ -139,7 +138,7 @@ const MenuComponent = (props) => {
 
                     })
                         .then(response => response.status !== 200 ? proccessError(response, mainDiv) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-                        .then(data => props.setData(data));
+                        .then(data => props.setBzData(data));
                 }
             });
 
@@ -172,30 +171,16 @@ const MenuComponent = (props) => {
                         credentials: 'include'
 
                     })
-                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-                        .then(data => setBossesData(data));
+                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) :
+                            response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(data => rankingUpdateResult(data));
                 }
             });
     }
 
 
-    const setBossesData = (data) => {
+    const rankingUpdateResult = (data) => {
         props.setLoading(false);
-
-        /*let newArray = Object.entries(data)
-        let map = new Map(newArray);
-
-        if (map.keys().next().value === 'Deleted' || map.keys().next().value === 'Saved' || map.keys().next().value === 'Successful') {
-            message.success(map.keys().next().value);
-        } else {
-            message.error(map.keys().next().value);
-        }
-        props.setBosses(map.values().next().value);
-
-        let mainDiv = document.getElementById('mainDiv');
-        if (mainDiv != null) {
-            mainDiv.className = 'main_div_enabled';
-        }*/
 
         if (data !== null && data !== undefined) {
             if (data.message === 'Successful') {
@@ -203,7 +188,6 @@ const MenuComponent = (props) => {
             } else {
                 message.info(data.message)
             }
-            props.setBosses(data.data);
             let mainDiv = document.getElementById('mainDiv');
             if (mainDiv != null) {
                 mainDiv.className = 'main_div_enabled';
@@ -298,22 +282,18 @@ function Members(props) {
     const [members, setMembers] = useState(null)
     const [user, setUser] = useState(null);
     const [contentType, setContentType] = useState(props.match.params.tag);
-    const [bosses, setBosses] = useState([])
     let patchName = window.location.pathname;
 
-    const setData = (value) => {
+    const setBzData = (value) => {
         setMembers(value);
         MEMBERS = value
         setLoading(false);
-
 
         let mainDiv = document.getElementById('mainDiv');
         if (mainDiv != null) {
             mainDiv.className = 'main_div_enabled';
         }
-
     }
-
 
     const ContentDiv = (props) => {
 
@@ -324,7 +304,7 @@ function Members(props) {
                                  language={currentLanguage}/>)
         }
         if (contentType === "stars") {
-            return (<Stars bosses={bosses}/>)
+            return (<Stars/>)
         }
     }
 
@@ -362,19 +342,13 @@ function Members(props) {
     useEffect(() => {
         setLoading(true)
 
-
         fetch('/get_user')
             .then(response => response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
             .then(data => setUserData(data));
 
-
         fetch('/get_members', {})
             .then(response => response.status !== 200 ? showError(response) : response.json())
-            .then(data => setData(data))
-
-        fetch('/get_bosses', {})
-            .then(response => response.status !== 200 ? showError(response) : response.json())
-            .then(data => setBosses(data))
+            .then(data => setBzData(data))
 
     }, []);
 
@@ -435,8 +409,8 @@ function Members(props) {
                     <AppNavbar style={{height: "10%"}} setFunction={setLanguage} patchName={patchName}/>
                 </Spin>
                 <Layout>
-                    <MenuComponent setBosses={setBosses} setContentType={setContentType} user={user} loading={loading}
-                                   setSearchValue={setSearchValue} setLoading={setLoading} setData={setData}
+                    <MenuComponent setContentType={setContentType} user={user} loading={loading}
+                                   setSearchValue={setSearchValue} setLoading={setLoading} setBzData={setBzData}
                                    language={currentLanguage}/>
                     <Layout style={{minHeight: "100%"}}>
                         <Content disabled={true}>

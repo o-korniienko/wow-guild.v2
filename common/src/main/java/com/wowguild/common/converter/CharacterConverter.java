@@ -30,7 +30,7 @@ public class CharacterConverter implements Converter<Character, CharacterDto> {
             characterDto.setId(character.getId());
             characterDto.setRace(character.getRace());
             characterDto.setLevel(character.getLevel());
-            characterDto.setRank(character.getRank());
+            characterDto.setGuildRank(character.getGuildRank());
             characterDto.setBlizzardID(character.getBlizzardID());
             characterDto.setCanonicalID(character.getCanonicalID());
             characterDto.setClassEn(character.getClassEn());
@@ -45,7 +45,7 @@ public class CharacterConverter implements Converter<Character, CharacterDto> {
         return null;
     }
 
-    private CharacterRankDto convertToCharacterRankDto(CharacterRank characterRank) {
+    public CharacterRankDto convertToCharacterRankDto(CharacterRank characterRank) {
         if (characterRank != null) {
             CharacterRankDto characterRankDto = new CharacterRankDto();
             characterRankDto.setId(characterRank.getId());
@@ -63,7 +63,7 @@ public class CharacterConverter implements Converter<Character, CharacterDto> {
         return null;
     }
 
-    private RankDto convertToRankDto(Rank rank) {
+    public RankDto convertToRankDto(Rank rank) {
         if (rank != null) {
             RankDto rankDto = new RankDto();
             rankDto.setId(rank.getId());
