@@ -8,7 +8,7 @@ import com.wowguild.common.entity.wow.rank.Zone;
 import com.wowguild.common.model.rank.RankedCharacter;
 import com.wowguild.common.model.rank.RankedMembersSearch;
 import com.wowguild.common.service.impl.CharacterService;
-import com.wowguild.web_api.service.guild.*;
+import com.wowguild.web_api.service.wow.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.wowguild.arguments.BossGenerator.generateBoss;
@@ -49,6 +50,8 @@ public class GuildManagerTest {
     private CharacterService characterService;
     @Mock
     private CharacterConverter characterConverter;
+    @Mock
+    private WowLogsWorldDataService wowLogsWorldDataService;
 
     @InjectMocks
     private GuildManager guildManager;
@@ -71,12 +74,12 @@ public class GuildManagerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("updateRankingDataArgs")
-    void updateRankingDataTest(boolean noErrors) {
+    @MethodSource("updateWowLogsReportsArgs")
+    void updateWowLogsReportsTest(boolean noErrors) {
         String expectedSuccess = "Successful";
-        when(wowLogsGuildService.updateReportData(any())).thenReturn(noErrors);
+        when(wowLogsGuildService.updateReports(any())).thenReturn(noErrors);
 
-        String result = guildManager.updateRankingData();
+        String result = guildManager.updateWowLogsReports();
 
         if (noErrors) {
             assertEquals(expectedSuccess, result);
@@ -129,6 +132,23 @@ public class GuildManagerTest {
         assertEquals(resultSize, rankedMembers.size());
     }
 
+    @ParameterizedTest
+    @MethodSource("updateRankingArgs")
+    void updateRankingDataTest(Set<Boss> bosses, boolean isSuccess) {
+        when(wowLogsWorldDataService.getRaidsData()).thenReturn(bosses);
+        if (bosses != null && !bosses.isEmpty()) {
+            when(wowLogsCharacterService.updateCharacters(bosses)).thenReturn(isSuccess);
+        }
+
+        String result = guildManager.updateRankingData();
+
+        if (isSuccess) {
+            assertEquals("Successful", result);
+        } else {
+            assertNotEquals("Successful", result);
+        }
+    }
+
     static Stream<Arguments> updateMembersFromBlizzardDBArgs() {
         Character character = generateCharacter("Liut", LocalDateTime.now());
         Character character2 = generateCharacter("Ted", LocalDateTime.now());
@@ -140,7 +160,7 @@ public class GuildManagerTest {
         );
     }
 
-    static Stream<Arguments> updateRankingDataArgs() {
+    static Stream<Arguments> updateWowLogsReportsArgs() {
         return Stream.of(
                 Arguments.of(true),
                 Arguments.of(false)
@@ -207,6 +227,18 @@ public class GuildManagerTest {
                 Arguments.of(List.of(character1), rankedMembersSearch3, 0),
                 Arguments.of(List.of(character1), rankedMembersSearch5, 0),
                 Arguments.of(List.of(character1), rankedMembersSearch4, 0)
+        );
+    }
+
+    static Stream<Arguments> updateRankingArgs() {
+        Boss boss1 = generateBoss("Test Boss1", 1L, 5, 1234);
+        Boss boss2 = generateBoss("Test Boss2", 2L, 3, 1234);
+
+        return Stream.of(
+                Arguments.of(Collections.emptySet(), false),
+                Arguments.of(Set.of(boss1, boss2), true),
+                Arguments.of(Set.of(boss1, boss2), false),
+                Arguments.of(null, false)
         );
     }
 }

@@ -1,8 +1,9 @@
-package com.wowguild.web_api.service.guild;
+package com.wowguild.web_api.service.wow;
 
 import com.wowguild.common.converter.CharacterConverter;
 import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.entity.wow.Character;
+import com.wowguild.common.entity.wow.rank.Boss;
 import com.wowguild.common.entity.wow.rank.CharacterRank;
 import com.wowguild.common.model.blizzard.GuildProfile;
 import com.wowguild.common.model.rank.RankedCharacter;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.wowguild.common.service.impl.CharacterService.BY_MAX;
@@ -29,6 +31,7 @@ public class GuildManager {
     private final WowLogsCharacterService wowLogsCharacterService;
     private final CharacterService characterService;
     private final CharacterConverter characterConverter;
+    private final WowLogsWorldDataService wowLogsWorldDataService;
 
     public List<Character> updateMembersFromBlizzardDB() {
         List<Character> charactersFromBlizzardDB = battleNetGuildService.parseGuildData(battleNetGuildService.getGuildData());
@@ -73,10 +76,10 @@ public class GuildManager {
     }
 
 
-    public String updateRankingData() {
+    public String updateWowLogsReports() {
         boolean isThereNoErrors = true;
-        WOWLogsReportData reportData = wowLogsGuildService.getReportData();
-        isThereNoErrors = wowLogsGuildService.updateReportData(reportData);
+        WOWLogsReportData reportData = wowLogsGuildService.getReports();
+        isThereNoErrors = wowLogsGuildService.updateReports(reportData);
         if (isThereNoErrors) {
             return "Successful";
         } else {
@@ -148,5 +151,14 @@ public class GuildManager {
 
         result.sort(BY_MAX);
         return result;
+    }
+
+    public String updateRankingData() {
+        Set<Boss> bosses = wowLogsWorldDataService.getRaidsData();
+        if (bosses == null || bosses.isEmpty()) {
+            return "Could not update guild members rank data";
+        }
+        return wowLogsCharacterService.updateCharacters(bosses) ? "Successful" :
+                "There were errors during updating of guild members rank data";
     }
 }

@@ -9,8 +9,8 @@ import com.wowguild.web_api.sender.HttpSender;
 import com.wowguild.common.service.impl.CharacterService;
 import com.wowguild.common.service.impl.WowLogsReportService;
 import com.wowguild.common.service.impl.ZoneService;
-import com.wowguild.web_api.service.guild.WowLogsCharacterService;
-import com.wowguild.web_api.service.guild.WowLogsGuildService;
+import com.wowguild.web_api.service.wow.WowLogsCharacterService;
+import com.wowguild.web_api.service.wow.WowLogsGuildService;
 import com.wowguild.web_api.service.token.TokenManager;
 import com.wowguild.web_api.tool.parser.ReportDataParser;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,13 +43,7 @@ public class WowLogsGuildServiceTest {
     @MockBean
     private HttpSender httpSender;
     @MockBean
-    private WowLogsCharacterService wowLogsCharacterService;
-    @MockBean
-    private CharacterService characterService;
-    @MockBean
     private WowLogsReportService reportService;
-    @MockBean
-    private ZoneService zoneService;
     @MockBean
     private ReportDataParser reportDataParser;
     @MockBean
@@ -59,14 +53,14 @@ public class WowLogsGuildServiceTest {
     private WowLogsGuildService wowLogsGuildService;
 
     @ParameterizedTest
-    @MethodSource("getReportDataArgs")
-    void getReportDataTest(String response, boolean isSuccess) {
+    @MethodSource("getReportsArgs")
+    void getReportsTest(String response, boolean isSuccess) {
 
         when(tokenManager.getTokenByTag("wow_logs")).thenReturn("some_token");
         when(httpSender.sendRequest(anyString(), any(HashMap.class), eq(HttpMethod.POST), anyString()))
                 .thenReturn(response);
         when(reportDataParser.parseTo(any())).thenReturn(getWowLogsReportsObject());
-        WOWLogsReportData reportData = wowLogsGuildService.getReportData();
+        WOWLogsReportData reportData = wowLogsGuildService.getReports();
 
         if (isSuccess) {
             assertNotNull(reportData.getData());
@@ -76,21 +70,13 @@ public class WowLogsGuildServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("updateReportDataArgs")
-    public void updateReportDataTest(WOWLogsReportData wowLogsReportsObject, boolean isSuccess,
-                                     WOWLogsFightData wowLogsFightData) {
+    @MethodSource("updateReportsArgs")
+    public void updateReportsTest(WOWLogsReportData wowLogsReportsObject, boolean isSuccess,
+                                  WOWLogsFightData wowLogsFightData) {
         when(reportConverter.convertToEntity(any(WOWLogsReportData.ReportDto.class))).thenReturn(new Report());
-        when(tokenManager.getTokenByTag("wow_logs")).thenReturn("some_token");
-        when(httpSender.sendRequest(anyString(), any(HashMap.class), eq(HttpMethod.POST), anyString()))
-                .thenReturn("some_response");
-        when(reportDataParser.parseToFightData(anyString())).thenReturn(wowLogsFightData);
-
-        when(characterService.findByName(anyString())).thenReturn(new ArrayList<>());
-        when(zoneService.findByCanonicalId(anyInt())).thenReturn(null);
-        when(wowLogsCharacterService.updateCharacters(anySet(), anySet())).thenReturn(true);
 
         int size = 0;
-        boolean result = wowLogsGuildService.updateReportData(wowLogsReportsObject);
+        boolean result = wowLogsGuildService.updateReports(wowLogsReportsObject);
 
         if (isSuccess) {
             size = wowLogsReportsObject.getData().size();
@@ -99,12 +85,9 @@ public class WowLogsGuildServiceTest {
             assertFalse(result);
         }
         verify(reportService, times(size)).save(any(Report.class));
-        verify(tokenManager, times(size)).getTokenByTag("wow_logs");
-        verify(httpSender, times(size)).sendRequest(anyString(), any(), eq(HttpMethod.POST), anyString());
-        verify(reportDataParser, times(size)).parseToFightData(anyString());
     }
 
-    static Stream<Arguments> getReportDataArgs() {
+    static Stream<Arguments> getReportsArgs() {
         return Stream.of(
                 Arguments.of("429 Too Many Requests", false),
                 Arguments.of(getWowLogsReportsJson(), true),
@@ -112,7 +95,7 @@ public class WowLogsGuildServiceTest {
         );
     }
 
-    static Stream<Arguments> updateReportDataArgs() {
+    static Stream<Arguments> updateReportsArgs() {
         return Stream.of(
                 Arguments.of(getWowLogsReportsObject(), true, getFightReportDataObject()),
                 Arguments.of(new WOWLogsReportData(), false, new WOWLogsFightData())

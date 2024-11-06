@@ -1,17 +1,17 @@
 package com.wowguild.service.guild;
 
+import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.entity.wow.rank.Boss;
-import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.model.wow_logs.WOWLogsCharacterRankData;
-import com.wowguild.web_api.WebApi;
-import com.wowguild.web_api.sender.HttpSender;
 import com.wowguild.common.service.impl.BossService;
 import com.wowguild.common.service.impl.CharacterRankService;
 import com.wowguild.common.service.impl.CharacterService;
 import com.wowguild.common.service.impl.RankService;
-import com.wowguild.web_api.service.guild.WowLogsCharacterService;
+import com.wowguild.web_api.WebApi;
+import com.wowguild.web_api.sender.HttpSender;
 import com.wowguild.web_api.service.token.TokenManager;
+import com.wowguild.web_api.service.wow.WowLogsCharacterService;
 import com.wowguild.web_api.tool.parser.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static com.wowguild.arguments.BossGenerator.generateBoss;
@@ -67,15 +70,16 @@ public class WowLogsCharacterServiceTest {
 
     @ParameterizedTest
     @MethodSource("updateCharactersArgs")
-    void updateCharactersTest(Set<Character> characters, WOWLogsCharacterRankData wowLogsCharacterRankData,
+    void updateCharactersTest(List<Character> characters, WOWLogsCharacterRankData wowLogsCharacterRankData,
                               List<Boss> bosses, String httpResponse, boolean isSuccess) {
         when(tokenManager.getTokenByTag("wow_logs")).thenReturn("some_token");
         when(httpSender.sendRequest(anyString(), any(HashMap.class), eq(HttpMethod.POST), anyString()))
                 .thenReturn(httpResponse);
         when(characterRankDataParser.parseTo(anyString())).thenReturn(wowLogsCharacterRankData);
         when(bossService.findByEncounterID(anyLong())).thenReturn(bosses);
+        when(characterService.findAll()).thenReturn(characters);
 
-        boolean result = wowLogsCharacterService.updateCharacters(characters, new HashSet<>(bosses));
+        boolean result = wowLogsCharacterService.updateCharacters(new HashSet<>(bosses));
 
         assertEquals(isSuccess, result);
     }
@@ -83,7 +87,7 @@ public class WowLogsCharacterServiceTest {
     @ParameterizedTest
     @MethodSource("updateCharacterArgs")
     void updateCharacterTest(Character character, WOWLogsCharacterRankData wowLogsCharacterRankData,
-                              List<Boss> bosses, String httpResponse, String status, boolean isSuccess) {
+                             List<Boss> bosses, String httpResponse, String status, boolean isSuccess) {
         when(tokenManager.getTokenByTag("wow_logs")).thenReturn("some_token");
         when(httpSender.sendRequest(anyString(), any(HashMap.class), eq(HttpMethod.POST), anyString()))
                 .thenReturn(httpResponse);
@@ -93,9 +97,9 @@ public class WowLogsCharacterServiceTest {
 
         UpdateStatus<Character> result = wowLogsCharacterService.updateCharacter(character, status);
 
-        if (isSuccess){
+        if (isSuccess) {
             assertEquals(status, result.getStatus());
-        }else{
+        } else {
             assertNotEquals(status, result.getStatus());
         }
 
@@ -111,7 +115,7 @@ public class WowLogsCharacterServiceTest {
         Character character2 = generateCharacter("Tom", LocalDateTime.now());
         Character character3 = generateCharacter("Sem", LocalDateTime.now());
 
-        Set<Character> characters = new HashSet<>();
+        List<Character> characters = new ArrayList<>();
         characters.add(character1);
         characters.add(character2);
         characters.add(character3);
@@ -137,7 +141,7 @@ public class WowLogsCharacterServiceTest {
                 Arguments.of(character, getCharacterRankDataObject(), List.of(boss1, boss2, boss3),
                         "some_response", "Successful", true),
                 Arguments.of(character, getCharacterRankDataObject(), List.of(boss1, boss2, boss3),
-                        "","", false),
+                        "", "", false),
                 Arguments.of(character, getCharacterRankDataObject(), List.of(boss1, boss2, boss3),
                         "429 Too Many Requests", null, false)
         );

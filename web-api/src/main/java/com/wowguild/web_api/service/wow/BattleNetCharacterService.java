@@ -1,4 +1,4 @@
-package com.wowguild.web_api.service.guild;
+package com.wowguild.web_api.service.wow;
 
 import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.dto.wow.UpdateStatus;

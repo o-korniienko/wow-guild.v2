@@ -7,7 +7,7 @@ import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.model.rank.RankedMembersSearch;
 import com.wowguild.common.service.impl.BossService;
-import com.wowguild.web_api.service.guild.GuildManager;
+import com.wowguild.web_api.service.wow.GuildManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -58,10 +58,23 @@ public class MemberController {
     @PostMapping("/update_ranking")
     public ResponseEntity<?> updateMembersRanks() {
         try {
-            String updatingResult = guildManager.updateRankingData();
+            //String result = guildManager.updateRankingData();
+            String result = guildManager.updateRankingData();
 
-            return ResponseEntity.ok(new ApiResponse<>(updatingResult, 200, bossService.getAllSorted().stream()
-                    .map(bossConverter::convertToDto).collect(Collectors.toList())));
+            return ResponseEntity.ok(new ApiResponse<>(result, 200));
+        } catch (Exception e) {
+            log.error("Could not update guild members rank data. Error: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Could not update guild members rank data.");
+        }
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/update_guild_reports")
+    public ResponseEntity<?> updateGuildReportsData() {
+        try {
+            String result = guildManager.updateWowLogsReports();
+
+            return ResponseEntity.ok(new ApiResponse<>(result, 200));
         } catch (Exception e) {
             log.error("Could not update guild members rank data. Error: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Could not update guild members rank data.");

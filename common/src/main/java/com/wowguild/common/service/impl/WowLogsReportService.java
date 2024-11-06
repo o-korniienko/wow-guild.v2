@@ -44,4 +44,8 @@ public class WowLogsReportService implements EntityService<Report> {
     public List<Report> sort(List<Report> reports, Comparator<Report> comparator1, Comparator<Report> comparator2) {
         return null;
     }
+
+    public Report findByCode(String code){
+        return reportRepo.findByCode(code);
+    }
 }

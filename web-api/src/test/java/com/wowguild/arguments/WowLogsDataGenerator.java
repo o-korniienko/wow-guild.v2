@@ -3,8 +3,10 @@ package com.wowguild.arguments;
 import com.wowguild.common.model.wow_logs.WOWLogsCharacterRankData;
 import com.wowguild.common.model.wow_logs.WOWLogsFightData;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
+import com.wowguild.common.model.wow_logs.WowLogsWorldData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class WowLogsDataGenerator {
@@ -482,4 +484,253 @@ public class WowLogsDataGenerator {
         return rankData;
     }
 
+    public static String getWowLogsWorldDataJson() {
+        return """
+                {
+                    "data": {
+                        "worldData": {
+                            "zones": [
+                                {
+                                    "name": "Mythic+ Season 1",
+                                    "id": 39,
+                                    "encounters": [
+                                        {
+                                            "name": "Ara-Kara, City of Echoes",
+                                            "id": 12660
+                                        },
+                                        {
+                                            "name": "City of Threads",
+                                            "id": 12669
+                                        },
+                                        {
+                                            "name": "Grim Batol",
+                                            "id": 60670
+                                        },
+                                        {
+                                            "name": "Mists of Tirna Scithe",
+                                            "id": 62290
+                                        },
+                                        {
+                                            "name": "Siege of Boralus",
+                                            "id": 61822
+                                        },
+                                        {
+                                            "name": "The Dawnbreaker",
+                                            "id": 12662
+                                        },
+                                        {
+                                            "name": "The Necrotic Wake",
+                                            "id": 62286
+                                        },
+                                        {
+                                            "name": "The Stonevault",
+                                            "id": 12652
+                                        }
+                                    ],
+                                    "expansion": {
+                                        "name": "The War Within",
+                                        "id": 6
+                                    }
+                                },
+                                {
+                                    "name": "Mythic+ Season 4",
+                                    "id": 37,
+                                    "encounters": [
+                                        {
+                                            "name": "Algeth'ar Academy",
+                                            "id": 62526
+                                        },
+                                        {
+                                            "name": "Brackenhide Hollow",
+                                            "id": 62520
+                                        },
+                                        {
+                                            "name": "Halls of Infusion",
+                                            "id": 62527
+                                        },
+                                        {
+                                            "name": "Neltharus",
+                                            "id": 62519
+                                        },
+                                        {
+                                            "name": "Ruby Life Pools",
+                                            "id": 62521
+                                        },
+                                        {
+                                            "name": "The Azure Vault",
+                                            "id": 62515
+                                        },
+                                        {
+                                            "name": "The Nokhud Offensive",
+                                            "id": 62516
+                                        },
+                                        {
+                                            "name": "Uldaman: Legacy of Tyr",
+                                            "id": 62451
+                                        }
+                                    ],
+                                    "expansion": {
+                                        "name": "Dragonflight",
+                                        "id": 5
+                                    }
+                                },
+                				{
+                                    "name": "Nerub-ar Palace",
+                                    "id": 38,
+                                    "encounters": [
+                                        {
+                                            "name": "Ulgrax the Devourer",
+                                            "id": 2902
+                                        },
+                                        {
+                                            "name": "The Bloodbound Horror",
+                                            "id": 2917
+                                        },
+                                        {
+                                            "name": "Sikran, Captain of the Sureki",
+                                            "id": 2898
+                                        },
+                                        {
+                                            "name": "Rasha'nan",
+                                            "id": 2918
+                                        },
+                                        {
+                                            "name": "Broodtwister Ovi'nax",
+                                            "id": 2919
+                                        },
+                                        {
+                                            "name": "Nexus-Princess Ky'veza",
+                                            "id": 2920
+                                        },
+                                        {
+                                            "name": "The Silken Court",
+                                            "id": 2921
+                                        },
+                                        {
+                                            "name": "Queen Ansurek",
+                                            "id": 2922
+                                        }
+                                    ],
+                                    "expansion": {
+                                        "name": "The War Within",
+                                        "id": 6
+                                    }
+                                }
+                			]
+                		}
+                	}
+                }
+                """;
+    }
+
+    public static WowLogsWorldData getWowLogsWorldDtaObject() {
+        WowLogsWorldData worldData = new WowLogsWorldData();
+        List<WowLogsWorldData.Zone> zones = new ArrayList<>();
+        WowLogsWorldData.Zone zone = new WowLogsWorldData.Zone();
+        zone.setName("Nerub-ar Palace");
+        zone.setId(38);
+
+        WowLogsWorldData.Expansion expansion = new WowLogsWorldData.Expansion();
+        expansion.setName("The War Within");
+        expansion.setId(6);
+        zone.setExpansion(expansion);
+
+        List<WowLogsWorldData.Encounter> encounters = new ArrayList<>();
+        WowLogsWorldData.Encounter encounter1 = new WowLogsWorldData.Encounter();
+        encounter1.setName("Ulgrax the Devourer");
+        encounter1.setId(2902);
+        encounters.add(encounter1);
+
+        WowLogsWorldData.Encounter encounter2 = new WowLogsWorldData.Encounter();
+        encounter2.setName("The Bloodbound Horror");
+        encounter2.setId(2917);
+        encounters.add(encounter2);
+
+        WowLogsWorldData.Encounter encounter3 = new WowLogsWorldData.Encounter();
+        encounter3.setName("Sikran, Captain of the Sureki");
+        encounter3.setId(2898);
+        encounters.add(encounter3);
+
+        WowLogsWorldData.Encounter encounter4 = new WowLogsWorldData.Encounter();
+        encounter4.setName("Rasha'nan");
+        encounter4.setId(2918);
+        encounters.add(encounter4);
+
+        WowLogsWorldData.Encounter encounter5 = new WowLogsWorldData.Encounter();
+        encounter5.setName("Broodtwister Ovi'nax");
+        encounter5.setId(2919);
+        encounters.add(encounter5);
+
+        WowLogsWorldData.Encounter encounter6 = new WowLogsWorldData.Encounter();
+        encounter6.setName("Nexus-Princess Ky'veza");
+        encounter6.setId(2920);
+        encounters.add(encounter6);
+
+        WowLogsWorldData.Encounter encounter7 = new WowLogsWorldData.Encounter();
+        encounter7.setName("The Silken Court");
+        encounter7.setId(2921);
+        encounters.add(encounter7);
+
+        WowLogsWorldData.Encounter encounter8 = new WowLogsWorldData.Encounter();
+        encounter8.setName("Queen Ansurek");
+        encounter8.setId(2922);
+        encounters.add(encounter8);
+
+        zone.setEncounters(encounters);
+        zones.add(zone);
+
+        worldData.setZones(zones);
+        return worldData;
+    }
+
+    public static WowLogsWorldData getWowLogsWorldDtaObjectForParse() {
+        // Encounters for Mythic+ Season 1
+        WowLogsWorldData.Encounter encounter1_1 = new WowLogsWorldData.Encounter("Ara-Kara, City of Echoes", 12660);
+        WowLogsWorldData.Encounter encounter1_2 = new WowLogsWorldData.Encounter("City of Threads", 12669);
+        WowLogsWorldData.Encounter encounter1_3 = new WowLogsWorldData.Encounter("Grim Batol", 60670);
+        WowLogsWorldData.Encounter encounter1_4 = new WowLogsWorldData.Encounter("Mists of Tirna Scithe", 62290);
+        WowLogsWorldData.Encounter encounter1_5 = new WowLogsWorldData.Encounter("Siege of Boralus", 61822);
+        WowLogsWorldData.Encounter encounter1_6 = new WowLogsWorldData.Encounter("The Dawnbreaker", 12662);
+        WowLogsWorldData.Encounter encounter1_7 = new WowLogsWorldData.Encounter("The Necrotic Wake", 62286);
+        WowLogsWorldData.Encounter encounter1_8 = new WowLogsWorldData.Encounter("The Stonevault", 12652);
+
+        List<WowLogsWorldData.Encounter> encountersSeason1 = Arrays.asList(encounter1_1, encounter1_2, encounter1_3, encounter1_4, encounter1_5, encounter1_6, encounter1_7, encounter1_8);
+        WowLogsWorldData.Expansion expansion1 = new WowLogsWorldData.Expansion("The War Within", 6);
+        WowLogsWorldData.Zone zone1 = new WowLogsWorldData.Zone(39, "Mythic+ Season 1", encountersSeason1, expansion1);
+
+        // Encounters for Mythic+ Season 4
+        WowLogsWorldData.Encounter encounter2_1 = new WowLogsWorldData.Encounter("Algeth'ar Academy", 62526);
+        WowLogsWorldData.Encounter encounter2_2 = new WowLogsWorldData.Encounter("Brackenhide Hollow", 62520);
+        WowLogsWorldData.Encounter encounter2_3 = new WowLogsWorldData.Encounter("Halls of Infusion", 62527);
+        WowLogsWorldData.Encounter encounter2_4 = new WowLogsWorldData.Encounter("Neltharus", 62519);
+        WowLogsWorldData.Encounter encounter2_5 = new WowLogsWorldData.Encounter("Ruby Life Pools", 62521);
+        WowLogsWorldData.Encounter encounter2_6 = new WowLogsWorldData.Encounter("The Azure Vault", 62515);
+        WowLogsWorldData.Encounter encounter2_7 = new WowLogsWorldData.Encounter("The Nokhud Offensive", 62516);
+        WowLogsWorldData.Encounter encounter2_8 = new WowLogsWorldData.Encounter("Uldaman: Legacy of Tyr", 62451);
+
+        List<WowLogsWorldData.Encounter> encountersSeason4 = Arrays.asList(encounter2_1, encounter2_2, encounter2_3, encounter2_4, encounter2_5, encounter2_6, encounter2_7, encounter2_8);
+        WowLogsWorldData.Expansion expansion2 = new WowLogsWorldData.Expansion("Dragonflight", 5);
+        WowLogsWorldData.Zone zone2 = new WowLogsWorldData.Zone(37, "Mythic+ Season 4", encountersSeason4, expansion2);
+
+        // Encounters for Nerub-ar Palace
+        WowLogsWorldData.Encounter encounter3_1 = new WowLogsWorldData.Encounter("Ulgrax the Devourer", 2902);
+        WowLogsWorldData.Encounter encounter3_2 = new WowLogsWorldData.Encounter("The Bloodbound Horror", 2917);
+        WowLogsWorldData.Encounter encounter3_3 = new WowLogsWorldData.Encounter("Sikran, Captain of the Sureki", 2898);
+        WowLogsWorldData.Encounter encounter3_4 = new WowLogsWorldData.Encounter("Rasha'nan", 2918);
+        WowLogsWorldData.Encounter encounter3_5 = new WowLogsWorldData.Encounter("Broodtwister Ovi'nax", 2919);
+        WowLogsWorldData.Encounter encounter3_6 = new WowLogsWorldData.Encounter("Nexus-Princess Ky'veza", 2920);
+        WowLogsWorldData.Encounter encounter3_7 = new WowLogsWorldData.Encounter("The Silken Court", 2921);
+        WowLogsWorldData.Encounter encounter3_8 = new WowLogsWorldData.Encounter("Queen Ansurek", 2922);
+
+        List<WowLogsWorldData.Encounter> encountersPalace = Arrays.asList(encounter3_1, encounter3_2, encounter3_3, encounter3_4, encounter3_5, encounter3_6, encounter3_7, encounter3_8);
+        WowLogsWorldData.Expansion expansion3 = new WowLogsWorldData.Expansion("The War Within", 6);
+        WowLogsWorldData.Zone zone3 = new WowLogsWorldData.Zone(38, "Nerub-ar Palace", encountersPalace, expansion3);
+
+        // Assemble all zones into the WowLogsWorldData object
+        List<WowLogsWorldData.Zone> zones = Arrays.asList(zone1, zone2, zone3);
+        WowLogsWorldData worldData = new WowLogsWorldData();
+        worldData.setZones(zones);
+
+        return worldData;
+    }
 }

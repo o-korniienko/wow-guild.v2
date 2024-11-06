@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WOWLogsReportRepo extends JpaRepository<Report,Long> {
 
+    Report findByCode(String code);
 }

@@ -11,7 +11,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -87,7 +86,7 @@ public class HttpSender implements Sender {
         String result = "";
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("content-type", "application/json");
+            headers.set("content-type", "application/json");
             headers.set("Authorisation", "Bearer");
             headers.setBearerAuth(token);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
@@ -121,8 +120,8 @@ public class HttpSender implements Sender {
     }
 
 
-    private String encodeValue(String value) throws UnsupportedEncodingException {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+    private String encodeValue(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
 }

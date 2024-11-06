@@ -44,8 +44,8 @@ public class WebSecurityConfig {
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                //.cors(AbstractHttpConfigurer::disable)
-                //.csrf(AbstractHttpConfigurer::disable)
+                //.cors(cors -> cors.disable())
+                //.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configure(http))
                 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers(

@@ -1,16 +1,16 @@
-package com.wowguild.web_api.service.guild;
+package com.wowguild.web_api.service.wow;
 
+import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.entity.wow.rank.Boss;
 import com.wowguild.common.entity.wow.rank.CharacterRank;
 import com.wowguild.common.entity.wow.rank.Rank;
-import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.model.wow_logs.WOWLogsCharacterRankData;
-import com.wowguild.web_api.sender.HttpSender;
 import com.wowguild.common.service.impl.BossService;
 import com.wowguild.common.service.impl.CharacterRankService;
 import com.wowguild.common.service.impl.CharacterService;
 import com.wowguild.common.service.impl.RankService;
+import com.wowguild.web_api.sender.HttpSender;
 import com.wowguild.web_api.service.token.TokenManager;
 import com.wowguild.web_api.tool.parser.Parser;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,9 @@ public class WowLogsCharacterService {
     private final HttpSender httpSender;
     private final Parser<WOWLogsCharacterRankData> characterRankDataParser;
 
-    public boolean updateCharacters(Set<Character> characters, Set<Boss> bosses) {
+    public boolean updateCharacters(Set<Boss> bosses) {
+        List<Character> characters = getGuildRaiders();
+        log.info("Rank data updating started for {} characters", characters.size());
         boolean is429Error = false;
         boolean isThereNoErrors = true;
         for (int i = 0; i < 2; i++) {
@@ -83,6 +85,17 @@ public class WowLogsCharacterService {
             }
         }
         return isThereNoErrors;
+    }
+
+    private List<Character> getGuildRaiders() {
+        List<Character> result = new ArrayList<>();
+        List<Character> characterList = characterService.findAll();
+        for (Character character : characterList) {
+            if (character.isRaider()) {
+                result.add(character);
+            }
+        }
+        return result;
     }
 
     public UpdateStatus<Character> updateCharacter(Character character, String status) {
@@ -136,7 +149,8 @@ public class WowLogsCharacterService {
         return result;
     }
 
-    private List<CharacterRank> parseCharacterWOWLogsData(String response, Character character, Boss boss, List<CharacterRank> ranks) {
+    private List<CharacterRank> parseCharacterWOWLogsData(String response, Character character,
+                                                          Boss boss, List<CharacterRank> ranks) {
         if (response != null && !response.isEmpty()) {
             WOWLogsCharacterRankData wowLogsRankData = characterRankDataParser.parseTo(response);
             String metric = wowLogsRankData.getEncounterRankings().getMetric();

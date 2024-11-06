@@ -154,4 +154,12 @@ public class Character {
         }
 
     }
+
+    public boolean isRaider() {
+        return switch (this.guildRank) {
+            case Guild_Master, Rank2, Rank3, Rank4 -> true;
+            default -> false;
+        };
+
+    }
 }
