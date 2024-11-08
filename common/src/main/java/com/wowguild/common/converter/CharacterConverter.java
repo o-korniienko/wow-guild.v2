@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class CharacterConverter implements Converter<Character, CharacterDto> {
 
-    private final BossConverter bossConverter;
+    private final RaidAndBossConverter raidAndBossConverter;
 
     @Override
     public Character convertToEntity(CharacterDto characterDto) {
@@ -53,7 +53,7 @@ public class CharacterConverter implements Converter<Character, CharacterDto> {
             characterRankDto.setAverage(characterRank.getAverage());
             characterRankDto.setMaxAmount(characterRank.getMaxAmount());
             characterRankDto.setTotalKills(characterRank.getTotalKills());
-            characterRankDto.setBoss(bossConverter.convertToDto(characterRank.getBoss()));
+            characterRankDto.setBoss(raidAndBossConverter.convertToDto(characterRank.getBoss()));
             if (characterRank.getRanks() != null) {
                 characterRankDto.setRanks(characterRank.getRanks().stream()
                         .map(this::convertToRankDto).collect(Collectors.toList()));

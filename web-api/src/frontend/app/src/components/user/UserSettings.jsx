@@ -49,8 +49,10 @@ function setUserActivity(value) {
 }
 
 const result = (data, language) =>{
+    console.log(data)
+    console.log(language)
     if(data != undefined && data != null){
-        if(data[0] === "Exist"){
+        if(data.message === "Exist"){
             if(language == "UA"){
                 message.warning("Користувач із зазначеним іменем вже зареєстрований");
             }
@@ -59,7 +61,7 @@ const result = (data, language) =>{
             }
 
         }else{
-            data[0] != "Saved" ? message.error(data[0] ) : window.location.href = "/admin";
+            data.message !== "Saved" ? message.error(data.message) : message.success(data.message);
         }
 
     }
@@ -94,27 +96,31 @@ const EditForm = (props) =>{
              roles:userRole,
              language:localStorage.getItem("language"),
          }
-
-                  const XSRFToken  = cookies.get('XSRF-TOKEN')
-                  fetch("/edit_user?is_name_changed=" + isNameChanged, { method: 'PUT',
+          fetch("/csrf")
+            .then(response => response.status != 200 ? showError(response) :
+                response.json())
+            .then(data => {
+                console.log(data)
+                if (data !== undefined && data !== null && data.token != undefined) {
+                  fetch("/user/edit?is_name_changed=" + isNameChanged, { method: 'PUT',
                      headers: {
-                       'X-XSRF-TOKEN': XSRFToken,
+                       'X-XSRF-TOKEN': data.token,
                        'Accept': 'application/json',
                        'Content-Type': 'application/json'
                      },
                      credentials: 'include',
-                 body:JSON.stringify(userObject)
-             })
-             .then(response => response.status != 200 ? showError(response) :
-                response.json() )
-             .then(data => result(data,props.language));
-
-
+                     body:JSON.stringify(userObject)
+                  })
+                   .then(response => response.status != 200 ? showError(response) :
+                     response.json() )
+                   .then(data => result(data,props.language));
+                }
+            })
 
      };
 
      const getUser = ()=>{
-         fetch('/get_user')
+         fetch('/user/get-active')
              .then(response=> response.status !== 200 ? showError(response) : response.json())
              .then(data => setUser(data));
      }

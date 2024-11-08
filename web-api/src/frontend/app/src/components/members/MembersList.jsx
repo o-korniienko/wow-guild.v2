@@ -91,7 +91,7 @@ const MembersList = (props) => {
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token !== undefined) {
-                    fetch('/update_character_data/' + id, {
+                    fetch('/member/update/' + id, {
                         method: 'POST',
                         headers: {
                             'X-XSRF-TOKEN': data.token,

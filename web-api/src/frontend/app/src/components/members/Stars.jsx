@@ -408,12 +408,12 @@ function MainContent (){
         setMetricText("dps");
         setDifficultyText("5");
 
-        fetch('/get_user')
+        fetch('/user/get-active')
             .then(response=> response.status !== 200 ? showErrorAndSetFalse(response, setLoading) :
                 response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
             .then(data=>setUserData(data));
 
-        fetch('/get_bosses', {})
+        fetch('/boss/get-all', {})
             .then(response => response.status !== 200 ? showError(response) : response.json())
             .then(data => setRaidsData(data, true))
 
@@ -438,7 +438,7 @@ function MainContent (){
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/get_ranked_members_by', {
+                    fetch('/member/get-all-ranked-by', {
                         method: 'POST',
                         headers: {
                             'X-XSRF-TOKEN': data.token,

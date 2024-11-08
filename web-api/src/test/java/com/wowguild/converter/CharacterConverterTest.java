@@ -1,6 +1,6 @@
 package com.wowguild.converter;
 
-import com.wowguild.common.converter.BossConverter;
+import com.wowguild.common.converter.RaidAndBossConverter;
 import com.wowguild.common.converter.CharacterConverter;
 import com.wowguild.common.dto.wow.CharacterDto;
 import com.wowguild.common.entity.wow.Character;
@@ -25,7 +25,7 @@ public class CharacterConverterTest {
 
     @BeforeEach
     void setUp() {
-        converter = new CharacterConverter(new BossConverter());
+        converter = new CharacterConverter(new RaidAndBossConverter());
         characterDtoExpected = generateCharacterDto("Liut", now);
     }
 

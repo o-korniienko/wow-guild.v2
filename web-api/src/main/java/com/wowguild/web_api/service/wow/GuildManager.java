@@ -9,6 +9,7 @@ import com.wowguild.common.model.blizzard.GuildProfile;
 import com.wowguild.common.model.rank.RankedCharacter;
 import com.wowguild.common.model.rank.RankedMembersSearch;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
+import com.wowguild.common.service.impl.BossService;
 import com.wowguild.common.service.impl.CharacterService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class GuildManager {
     private final WowLogsCharacterService wowLogsCharacterService;
     private final CharacterService characterService;
     private final CharacterConverter characterConverter;
-    private final WowLogsWorldDataService wowLogsWorldDataService;
+    private final BossService bossService;
 
     public List<Character> updateMembersFromBlizzardDB() {
         List<Character> charactersFromBlizzardDB = battleNetGuildService.parseGuildData(battleNetGuildService.getGuildData());
@@ -101,12 +102,17 @@ public class GuildManager {
         throw new EntityNotFoundException();
     }
 
-    public List<Character> getRankedMembers() {
-        List<Character> rankedCharacters = new ArrayList<>();
+    public List<RankedCharacter> getAllRankedMembers() {
+        List<RankedCharacter> rankedCharacters = new ArrayList<>();
         List<Character> charactersFromDB = characterService.findAll();
+        int key = 0;
         for (Character character : charactersFromDB) {
             if (character.getRanks() != null && !character.getRanks().isEmpty()) {
-                rankedCharacters.add(character);
+                List<CharacterRank> characterRanks = character.getRanks();
+                for (CharacterRank characterRank : characterRanks) {
+                    rankedCharacters.add(buildRankedCharacter(key, character, characterRank));
+                    key++;
+                }
             }
         }
         return rankedCharacters;
@@ -128,19 +134,7 @@ public class GuildManager {
                             && characterRank.getBoss().getName().equals(rankedMembersSearch.getBossName())
                             && characterRank.getBoss().getDifficulty() == rankedMembersSearch.getDifficulty()
                             && characterRank.getBoss().getZone().getZoneName().equals(rankedMembersSearch.getZoneName())) {
-                        RankedCharacter rankedCharacter = RankedCharacter.builder()
-                                .key(key)
-                                .id(character.getId())
-                                .name(character.getName())
-                                .classEn(character.getClassEn().name())
-                                .max(characterRank.getMaxAmount())
-                                .average(characterRank.getAverage())
-                                .totalKills(characterRank.getTotalKills())
-                                .ranks(characterRank.getRanks().stream()
-                                        .map(characterConverter::convertToRankDto)
-                                        .collect(Collectors.toList())
-                                )
-                                .build();
+                        RankedCharacter rankedCharacter = buildRankedCharacter(key, character, characterRank);
                         result.add(rankedCharacter);
 
                         key++;
@@ -153,12 +147,29 @@ public class GuildManager {
         return result;
     }
 
+    private RankedCharacter buildRankedCharacter(int key, Character character, CharacterRank characterRank){
+        return RankedCharacter.builder()
+                .key(key)
+                .id(character.getId())
+                .name(character.getName())
+                .classEn(character.getClassEn().name())
+                .max(characterRank.getMaxAmount())
+                .average(characterRank.getAverage())
+                .totalKills(characterRank.getTotalKills())
+                .ranks(characterRank.getRanks().stream()
+                        .map(characterConverter::convertToRankDto)
+                        .collect(Collectors.toList())
+                )
+                .build();
+    }
+
+
     public String updateRankingData() {
-        Set<Boss> bosses = wowLogsWorldDataService.getRaidsData();
+        List<Boss> bosses = bossService.findAll();
         if (bosses == null || bosses.isEmpty()) {
-            return "Could not update guild members rank data";
+            return "Could not update guild members rank data. There is no any raid boss in DB";
         }
-        return wowLogsCharacterService.updateCharacters(bosses) ? "Successful" :
+        return wowLogsCharacterService.updateCharacters(Set.copyOf(bosses)) ? "Successful" :
                 "There were errors during updating of guild members rank data";
     }
 }

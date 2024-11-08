@@ -17,13 +17,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/user")
 public class UserController {
 
     private final UserDetService service;
     private final Converter<User, UserDto> userConverter;
 
-    @GetMapping("/get_user")
-    public ResponseEntity<?> getUser(@AuthenticationPrincipal User user) {
+    @GetMapping("/get-active")
+    public ResponseEntity<?> getActiveUser(@AuthenticationPrincipal User user) {
         try {
             UserDto userDto = userConverter.convertToDto(service.getUserByUserName(user));
             return userDto != null ? ResponseEntity.ok(userDto) : ResponseEntity.notFound().build();
@@ -33,7 +34,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/update_language")
+    @PostMapping("/update-language")
     public ResponseEntity<?> updateUserLanguage(@AuthenticationPrincipal User user, @RequestParam("language") String language) {
         String resultStatus = service.updateUserLanguage(user, language);
         return ResponseEntity.ok(new ApiResponse<>(resultStatus, 200, language));
@@ -53,7 +54,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/delete_user/{id}")
+    @DeleteMapping("/delete-one/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") long id) {
         try {
             String resultStatus = service.delete(id);
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/get_users")
+    @GetMapping("/get-all")
     public ResponseEntity<?> getUsers() {
         try {
             return ResponseEntity.ok(service.findAll().stream()
@@ -80,7 +81,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/edit_user")
+    @PutMapping("/edit")
     public ResponseEntity<?> editUser(@RequestBody User user, @RequestParam("is_name_changed") boolean isNameChanged) {
         try {
             String resultStatus = service.editUser(user, isNameChanged);
@@ -92,8 +93,8 @@ public class UserController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/get_user/{id}")
-    public ResponseEntity<?> getUser2(@PathVariable("id") long id) {
+    @GetMapping("/get-one/{id}")
+    public ResponseEntity<?> getUser(@PathVariable("id") long id) {
         try {
             UserDto userDto = userConverter.convertToDto(service.findById(id));
             if (userDto != null) {

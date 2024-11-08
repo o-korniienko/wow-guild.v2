@@ -4,9 +4,11 @@ import com.wowguild.common.converter.CharacterConverter;
 import com.wowguild.common.dto.wow.UpdateStatus;
 import com.wowguild.common.entity.wow.Character;
 import com.wowguild.common.entity.wow.rank.Boss;
+import com.wowguild.common.entity.wow.rank.CharacterRank;
 import com.wowguild.common.entity.wow.rank.Zone;
 import com.wowguild.common.model.rank.RankedCharacter;
 import com.wowguild.common.model.rank.RankedMembersSearch;
+import com.wowguild.common.service.impl.BossService;
 import com.wowguild.common.service.impl.CharacterService;
 import com.wowguild.web_api.service.wow.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.wowguild.arguments.BossGenerator.generateBoss;
@@ -51,7 +52,7 @@ public class GuildManagerTest {
     @Mock
     private CharacterConverter characterConverter;
     @Mock
-    private WowLogsWorldDataService wowLogsWorldDataService;
+    private BossService bossService;
 
     @InjectMocks
     private GuildManager guildManager;
@@ -107,10 +108,10 @@ public class GuildManagerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getRankedMembersArgs")
-    void getRankedMembersTest(List<Character> characters, boolean isRanked) {
+    @MethodSource("getAllRankedMembersArgs")
+    void getAllRankedMembersTest(List<Character> characters, boolean isRanked) {
         when(characterService.findAll()).thenReturn(characters);
-        List<Character> rankedMembers = guildManager.getRankedMembers();
+        List<RankedCharacter> rankedMembers = guildManager.getAllRankedMembers();
 
         if (!isRanked) {
             assertTrue(rankedMembers.isEmpty());
@@ -134,10 +135,10 @@ public class GuildManagerTest {
 
     @ParameterizedTest
     @MethodSource("updateRankingArgs")
-    void updateRankingDataTest(Set<Boss> bosses, boolean isSuccess) {
-        when(wowLogsWorldDataService.getRaidsData()).thenReturn(bosses);
+    void updateRankingDataTest(List<Boss> bosses, boolean isSuccess) {
+        when(bossService.findAll()).thenReturn(bosses);
         if (bosses != null && !bosses.isEmpty()) {
-            when(wowLogsCharacterService.updateCharacters(bosses)).thenReturn(isSuccess);
+            when(wowLogsCharacterService.updateCharacters(any())).thenReturn(isSuccess);
         }
 
         String result = guildManager.updateRankingData();
@@ -178,7 +179,7 @@ public class GuildManagerTest {
         );
     }
 
-    static Stream<Arguments> getRankedMembersArgs() {
+    static Stream<Arguments> getAllRankedMembersArgs() {
         Character character = generateCharacter("Liut", LocalDateTime.now());
         Character character2 = generateCharacter("Ted", LocalDateTime.now());
         Character character3 = generateCharacter("Som", LocalDateTime.now());
@@ -235,9 +236,9 @@ public class GuildManagerTest {
         Boss boss2 = generateBoss("Test Boss2", 2L, 3, 1234);
 
         return Stream.of(
-                Arguments.of(Collections.emptySet(), false),
-                Arguments.of(Set.of(boss1, boss2), true),
-                Arguments.of(Set.of(boss1, boss2), false),
+                Arguments.of(Collections.emptyList(), false),
+                Arguments.of(List.of(boss1, boss2), true),
+                Arguments.of(List.of(boss1, boss2), false),
                 Arguments.of(null, false)
         );
     }

@@ -97,7 +97,7 @@ const EditForm = (props) => {
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch("/edit_user?is_name_changed=" + isNameChanged, {
+                    fetch("/user/edit?is_name_changed=" + isNameChanged, {
                         method: 'PUT',
                         headers: {
                             'X-XSRF-TOKEN': data.token,
@@ -115,7 +115,7 @@ const EditForm = (props) => {
     };
 
     useEffect(() => {
-        fetch('/get_user/' + id)
+        fetch('/user/get-one/' + id)
             .then(response => response.status != 200 ? showError(response) : response.json())
             .then(data => setUserData(data));
     }, []);

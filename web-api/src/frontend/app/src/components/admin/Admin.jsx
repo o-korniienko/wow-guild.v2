@@ -96,7 +96,7 @@ const UserList = (props) => {
     }
 
     useEffect(() => {
-        fetch('/get_users', {})
+        fetch('/user/get-all', {})
             .then(response => response.status != 200 ? showError(response) : response.json())
             .then(data => updateUsers2(data))
 
@@ -107,7 +107,7 @@ const UserList = (props) => {
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/delete_user/' + id, {
+                    fetch('/user/delete-one/' + id, {
                         method: 'DELETE',
                         headers: {
                             'X-XSRF-TOKEN': data.token,

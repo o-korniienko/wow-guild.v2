@@ -127,7 +127,7 @@ const MenuComponent = (props) => {
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/update_members_bz', {
+                    fetch('/member/update-all-bz', {
                         method: 'POST',
                         headers: {
                             'X-XSRF-TOKEN': data.token,
@@ -161,7 +161,7 @@ const MenuComponent = (props) => {
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/update_ranking', {
+                    fetch('/member/update-all-rank', {
                         method: 'POST',
                         headers: {
                             'X-XSRF-TOKEN': data.token,
@@ -342,11 +342,11 @@ function Members(props) {
     useEffect(() => {
         setLoading(true)
 
-        fetch('/get_user')
+        fetch('/user/get-active')
             .then(response => response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
             .then(data => setUserData(data));
 
-        fetch('/get_members', {})
+        fetch('/member/get-all', {})
             .then(response => response.status !== 200 ? showError(response) : response.json())
             .then(data => setBzData(data))
 

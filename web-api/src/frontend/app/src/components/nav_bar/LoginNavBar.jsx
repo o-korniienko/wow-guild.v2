@@ -83,7 +83,7 @@ function NavBar(props) {
         }
     }
     useEffect(() => {
-        fetch("/get_user")
+        fetch("/user/get-active")
             .then(response => {
                 try {
                     if (response.ok){

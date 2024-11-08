@@ -7,7 +7,7 @@ import com.wowguild.common.entity.wow.rank.Zone;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BossConverter implements Converter<Boss, BossDto> {
+public class RaidAndBossConverter implements Converter<Boss, BossDto> {
 
     @Override
     public Boss convertToEntity(BossDto bossDto) {

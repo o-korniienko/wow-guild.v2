@@ -50,7 +50,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers(
                                 "/perform_login",
-                                "/registration"
+                                "/user/registration"
                         ))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/index*",
@@ -69,9 +69,10 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 antMatcher(HttpMethod.GET, "/"),
                                 antMatcher(HttpMethod.GET, "/login_in"),
-                                antMatcher(HttpMethod.GET, "/get_about_us_messages"),
-                                antMatcher(HttpMethod.GET, "/get_user"),
-                                antMatcher(HttpMethod.GET, "/get_greeting_message"))
+                                antMatcher(HttpMethod.GET, "/info/get-about-guild-messages"),
+                                antMatcher(HttpMethod.GET, "/user/get-active"),
+                                antMatcher(HttpMethod.POST, "/user/registration"),
+                                antMatcher(HttpMethod.GET, "/info/get-greeting-message"))
                         .permitAll()
                         .anyRequest().authenticated()
                 );

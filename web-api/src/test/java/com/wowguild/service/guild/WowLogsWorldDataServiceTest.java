@@ -1,6 +1,5 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.common.entity.wow.rank.Boss;
 import com.wowguild.common.model.wow_logs.WowLogsWorldData;
 import com.wowguild.common.service.impl.BossService;
 import com.wowguild.common.service.impl.ZoneService;
@@ -22,12 +21,12 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.wowguild.arguments.WowLogsDataGenerator.getWowLogsWorldDataJson;
 import static com.wowguild.arguments.WowLogsDataGenerator.getWowLogsWorldDtaObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -51,29 +50,27 @@ public class WowLogsWorldDataServiceTest {
     private WowLogsWorldDataService wowLogsWorldDataService;
 
     @ParameterizedTest
-    @MethodSource("getRaidsDataArgs")
-    void getRaidsDataTest(String response, int size) {
+    @MethodSource("updateRaidsDataFromWowLogsArgs")
+    void updateRaidsDataFromWowLogsTest(String response, boolean success) {
         when(tokenManager.getTokenByTag("wow_logs")).thenReturn("some_token");
         when(httpSender.sendRequest(anyString(), any(HashMap.class), eq(HttpMethod.POST), anyString()))
                 .thenReturn(response);
         when(wowLogsWorldDataParser.parseTo(any())).thenReturn(getWowLogsWorldDtaObject());
 
-        Set<Boss> raidsData = wowLogsWorldDataService.getRaidsData();
-
-        assertEquals(size, raidsData.size());
-    }
-
-    static Stream<Arguments> getRaidsDataArgs() {
-        int size = 0;
-        List<WowLogsWorldData.Zone> zones = getWowLogsWorldDtaObject().getZones();
-        for (WowLogsWorldData.Zone zone : zones) {
-            size = size + (zone.getEncounters().size() * 3);
+        String result = wowLogsWorldDataService.updateRaidsDataFromWowLogs();
+        if (success) {
+            assertEquals("Successful", result);
+        } else {
+            assertNotEquals("Successful", result);
         }
 
+    }
+
+    static Stream<Arguments> updateRaidsDataFromWowLogsArgs() {
         return Stream.of(
-                Arguments.of("429 Too Many Requests", 0),
-                Arguments.of(getWowLogsWorldDataJson(), size),
-                Arguments.of("", 0)
+                Arguments.of("429 Too Many Requests", false),
+                Arguments.of(getWowLogsWorldDataJson(), true),
+                Arguments.of("", false)
         );
     }
 }

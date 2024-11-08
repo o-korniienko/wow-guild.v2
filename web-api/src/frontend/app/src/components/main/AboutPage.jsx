@@ -82,7 +82,7 @@ const updateGeneralText = (text, tag) => {
             response.json())
         .then(data => {
             if (data !== undefined && data !== null && data.token != undefined) {
-                fetch('/update_message_by_tag', {
+                fetch('/info/update-message-by-tag', {
                     method: 'POST',
                     headers: {
                         'X-XSRF-TOKEN': data.token,
@@ -108,43 +108,6 @@ const checkMessageUpdatingApiResponse = (data, tag) => {
         }
     }
 }
-
-/*
-const updateAboutText = (text) =>{
-    var aboutMessage = {
-        tag:"about",
-        message:text,
-    }
-    fetch('/update_message_by_tag/' , { method: 'POST',
-       headers: {
-         'X-XSRF-TOKEN': XSRFToken,
-         'Accept': 'application/json',
-         'Content-Type': 'application/json'
-       },
-       credentials: 'include',
-       body:JSON.stringify(aboutMessage)
-    })
-    .then(response => response.json())
-    .then(data => data[0] != "Successful" ? message.error(data[0]) : changeTags("about_section","about_text_area"));
-}
-const updateContactsText = (text) =>{
-    var contactsMessage = {
-        tag:"contacts",
-        message:text,
-    }
-    fetch('/update_message_by_tag/' , { method: 'POST',
-       headers: {
-         'X-XSRF-TOKEN': XSRFToken,
-         'Accept': 'application/json',
-         'Content-Type': 'application/json'
-       },
-       credentials: 'include',
-       body:JSON.stringify(contactsMessage)
-    })
-    .then(response => response.json())
-    .then(data => data[0] != "Successful" ? message.error(data[0]) : changeTags("contacts_section","contacts_text_area"));
-}
- */
 
 const Content = (props) => {
     const [generalText, setGeneralText] = useState("general info");
@@ -267,11 +230,11 @@ const Content = (props) => {
 
     useEffect(() => {
 
-        fetch('/get_user', {})
+        fetch('/user/get-active', {})
             .then(response=> response.status !== 200 ? showError(response) : response.json())
             .then(data => setUserData(data));
 
-        fetch('/get_about_us_messages', {})
+        fetch('/info/get-about-guild-messages', {})
             .then(response => response.status !== 200 ? showError(response) : response.json())
             .then(data => setData(data));
     }, []);
@@ -349,7 +312,7 @@ const Main = () => {
     }
 
     useEffect(() => {
-        fetch('/get_user', {})
+        fetch('/user/get-active', {})
             .then(response=> response.status !== 200 ? showError(response) : response.json())
             .then(data => setData(data));
     }, []);

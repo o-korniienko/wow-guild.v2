@@ -1,7 +1,7 @@
 package com.wowguild.converter;
 
 
-import com.wowguild.common.converter.BossConverter;
+import com.wowguild.common.converter.RaidAndBossConverter;
 import com.wowguild.common.dto.wow.BossDto;
 import com.wowguild.common.dto.wow.ZoneDto;
 import com.wowguild.common.entity.wow.rank.Boss;
@@ -20,16 +20,16 @@ import static com.wowguild.arguments.ZoneGenerator.generateZoneDto;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class BossConverterTest {
+public class RaidAndBossConverterTest {
 
 
-    private BossConverter bossConverter;
+    private RaidAndBossConverter raidAndBossConverter;
     private BossDto bossDtoExpected;
     private ZoneDto zoneDtoExpected;
 
     @BeforeEach
     void setUp() {
-        bossConverter = new BossConverter();
+        raidAndBossConverter = new RaidAndBossConverter();
         bossDtoExpected = generateBossDto("boss", 1, 1, 123);
         zoneDtoExpected = generateZoneDto("zone", 1, 1234567890, "exp_name");
     }
@@ -37,7 +37,7 @@ public class BossConverterTest {
     @ParameterizedTest
     @MethodSource("provideBossTestArgs")
     public void testConvertToDto(Boss boss, boolean positiveTest) {
-        BossDto bossDtoResult = bossConverter.convertToDto(boss);
+        BossDto bossDtoResult = raidAndBossConverter.convertToDto(boss);
         if (positiveTest) {
             assertEquals(bossDtoExpected, bossDtoResult);
         } else {
@@ -48,14 +48,14 @@ public class BossConverterTest {
     @ParameterizedTest
     @MethodSource("provideBossDtoTestArgs")
     public void testConvertToEntity(BossDto bossDto) {
-        Boss result = bossConverter.convertToEntity(bossDto);
+        Boss result = raidAndBossConverter.convertToEntity(bossDto);
         assertNull(result);
     }
 
     @ParameterizedTest
     @MethodSource("provideZoneTestArgs")
     public void testConvertToZoneDto(Zone zone, boolean positiveTest) {
-        ZoneDto zoneDtoResult = bossConverter.convertToZoneDto(zone);
+        ZoneDto zoneDtoResult = raidAndBossConverter.convertToZoneDto(zone);
         if (positiveTest) {
             assertEquals(zoneDtoExpected, zoneDtoResult);
         } else {

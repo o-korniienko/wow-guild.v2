@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,7 @@ public class WowLogsWorldDataService {
     private final BossService bossService;
     private final ZoneService zoneService;
 
-    public Set<Boss> getRaidsData() {
+    public String updateRaidsDataFromWowLogs() {
         String token = tokenManager.getTokenByTag("wow_logs");
         try {
             String query = "{worldData {zones {name id, encounters {name, id} expansion{name, id}}}}";
@@ -43,27 +46,26 @@ public class WowLogsWorldDataService {
 
             if (!response.isEmpty()) {
                 if (response.contains("429 Too Many Requests")) {
-                    return new HashSet<>();
+                    return "Could not update raids data - 429 Too Many Requests";
                 }
 
                 WowLogsWorldData worldData = wowLogsWorldDataParser.parseTo(response);
 
                 worldData.setZones(filterZonesBy(worldData.getZones(), "Mythic+", false));
 
-                return updateRaidsData(worldData);
-            } else {
-                log.info("No reports found, empty response");
+                updateRaidsData(worldData);
+
+                return "Successful";
             }
         } catch (JsonSyntaxException e) {
-            log.error("Could not get report data from WOWLogs, error {}", e.getMessage());
+            log.error("Could not update raids data, error {}", e.getMessage());
         }
 
-        return new HashSet<>();
+        return "Could not update raids data";
     }
 
-    private Set<Boss> updateRaidsData(WowLogsWorldData worldData) {
+    private void updateRaidsData(WowLogsWorldData worldData) {
         List<WowLogsWorldData.Zone> zones = worldData.getZones();
-        Set<Boss> result = new HashSet<>();
         for (WowLogsWorldData.Zone zone : zones) {
             Zone zoneFromDb = zoneService.findByCanonicalId(zone.getId());
             if (zoneFromDb == null) {
@@ -78,17 +80,13 @@ public class WowLogsWorldDataService {
             List<WowLogsWorldData.Encounter> encounters = zone.getEncounters();
             for (WowLogsWorldData.Encounter encounter : encounters) {
                 List<Boss> bossesFromDb = bossService.findByEncounterID(encounter.getId());
-                Set<Boss> bossSet = checkIfAllDifficultyOfBossesAdded(bossesFromDb, encounter, zoneFromDb);
-                result.addAll(bossSet);
+                checkIfAllDifficultyOfBossesAdded(bossesFromDb, encounter, zoneFromDb);
             }
         }
-
-        return result;
     }
 
-    private Set<Boss> checkIfAllDifficultyOfBossesAdded(List<Boss> bossesFromDb,
-                                                        WowLogsWorldData.Encounter encounter, Zone zone) {
-        Set<Boss> result = new HashSet<>();
+    private void checkIfAllDifficultyOfBossesAdded(List<Boss> bossesFromDb,
+                                                   WowLogsWorldData.Encounter encounter, Zone zone) {
         boolean is3DifficultyAdded = false;
         boolean is4DifficultyAdded = false;
         boolean is5DifficultyAdded = false;
@@ -96,15 +94,12 @@ public class WowLogsWorldDataService {
         for (Boss boss : bossesFromDb) {
             if (boss.getDifficulty() == 3) {
                 is3DifficultyAdded = true;
-                result.add(boss);
             }
             if (boss.getDifficulty() == 4) {
                 is4DifficultyAdded = true;
-                result.add(boss);
             }
             if (boss.getDifficulty() == 5) {
                 is5DifficultyAdded = true;
-                result.add(boss);
             }
         }
 
@@ -114,7 +109,6 @@ public class WowLogsWorldDataService {
             boss3Difficulty.setDifficulty(3);
             boss3Difficulty.setZone(zone);
             boss3Difficulty.setEncounterID(encounter.getId());
-            result.add(boss3Difficulty);
 
             bossService.save(boss3Difficulty);
         }
@@ -124,7 +118,6 @@ public class WowLogsWorldDataService {
             boss4Difficulty.setDifficulty(4);
             boss4Difficulty.setZone(zone);
             boss4Difficulty.setEncounterID(encounter.getId());
-            result.add(boss4Difficulty);
 
             bossService.save(boss4Difficulty);
         }
@@ -134,12 +127,9 @@ public class WowLogsWorldDataService {
             boss5Difficulty.setDifficulty(5);
             boss5Difficulty.setZone(zone);
             boss5Difficulty.setEncounterID(encounter.getId());
-            result.add(boss5Difficulty);
 
             bossService.save(boss5Difficulty);
         }
-
-        return result;
     }
 
     private List<WowLogsWorldData.Zone> filterZonesBy(List<WowLogsWorldData.Zone> zones, String prefix,

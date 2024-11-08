@@ -57,7 +57,8 @@ const RegistrationForm = (props) => {
         let username = values.username;
         let password = values.password;
         let language = localStorage.getItem("language");
-        fetch('/registration?username=' + username + '&password=' + password + "&language=" + language, {
+
+        fetch('/user/registration?username=' + username + '&password=' + password + "&language=" + language, {
             method: 'POST',
             mode: 'cors',
             headers: {

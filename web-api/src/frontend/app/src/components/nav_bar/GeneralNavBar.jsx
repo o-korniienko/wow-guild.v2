@@ -40,7 +40,7 @@ const Language = (props) => {
                 response.json())
             .then(data => {
                 if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/update_language?language=' + value, {
+                    fetch('/user/update-language?language=' + value, {
                         method: 'POST',
                         headers: {
                             'X-XSRF-TOKEN': data.token,
@@ -342,7 +342,7 @@ function NavBar(props) {
     }
 
     useEffect(() => {
-        fetch("/get_user")
+        fetch("/user/get-active")
             .then(response => {
                 try {
                     if (response.ok) {
