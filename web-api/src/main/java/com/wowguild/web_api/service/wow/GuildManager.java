@@ -110,7 +110,11 @@ public class GuildManager {
             if (character.getRanks() != null && !character.getRanks().isEmpty()) {
                 List<CharacterRank> characterRanks = character.getRanks();
                 for (CharacterRank characterRank : characterRanks) {
-                    rankedCharacters.add(buildRankedCharacter(key, character, characterRank));
+                    RankedCharacter rankedCharacter = RankedCharacter.create(key, character, characterRank);
+                    rankedCharacter.setRanks(characterRank.getRanks().stream()
+                            .map(characterConverter::convertToRankDto)
+                            .collect(Collectors.toList()));
+                    rankedCharacters.add(rankedCharacter);
                     key++;
                 }
             }
@@ -134,7 +138,10 @@ public class GuildManager {
                             && characterRank.getBoss().getName().equals(rankedMembersSearch.getBossName())
                             && characterRank.getBoss().getDifficulty() == rankedMembersSearch.getDifficulty()
                             && characterRank.getBoss().getZone().getZoneName().equals(rankedMembersSearch.getZoneName())) {
-                        RankedCharacter rankedCharacter = buildRankedCharacter(key, character, characterRank);
+                        RankedCharacter rankedCharacter = RankedCharacter.create(key, character, characterRank);
+                        rankedCharacter.setRanks(characterRank.getRanks().stream()
+                                .map(characterConverter::convertToRankDto)
+                                .collect(Collectors.toList()));
                         result.add(rankedCharacter);
 
                         key++;
@@ -146,23 +153,6 @@ public class GuildManager {
         result.sort(BY_MAX);
         return result;
     }
-
-    private RankedCharacter buildRankedCharacter(int key, Character character, CharacterRank characterRank){
-        return RankedCharacter.builder()
-                .key(key)
-                .id(character.getId())
-                .name(character.getName())
-                .classEn(character.getClassEn().name())
-                .max(characterRank.getMaxAmount())
-                .average(characterRank.getAverage())
-                .totalKills(characterRank.getTotalKills())
-                .ranks(characterRank.getRanks().stream()
-                        .map(characterConverter::convertToRankDto)
-                        .collect(Collectors.toList())
-                )
-                .build();
-    }
-
 
     public String updateRankingData() {
         List<Boss> bosses = bossService.findAll();

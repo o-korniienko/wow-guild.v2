@@ -41,12 +41,10 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestParam("username") String userName,
-                                          @RequestParam("password") String password,
-                                          @RequestParam("language") String language) {
+    public ResponseEntity<?> registration(@RequestBody UserDto userDto) {
         try {
-            String resultStatus = service.registration(userName, password, language);
-            return ResponseEntity.ok(new ApiResponse<>(resultStatus, 200, userName));
+            String resultStatus = service.registration(userDto);
+            return ResponseEntity.ok(new ApiResponse<>(resultStatus, 200, userDto.getUsername()));
         } catch (Exception e) {
             log.error("Could not create new user. Error: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Could not create new user");

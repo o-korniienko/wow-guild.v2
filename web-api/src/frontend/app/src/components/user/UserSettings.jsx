@@ -49,8 +49,6 @@ function setUserActivity(value) {
 }
 
 const result = (data, language) =>{
-    console.log(data)
-    console.log(language)
     if(data != undefined && data != null){
         if(data.message === "Exist"){
             if(language == "UA"){
@@ -100,7 +98,6 @@ const EditForm = (props) =>{
             .then(response => response.status != 200 ? showError(response) :
                 response.json())
             .then(data => {
-                console.log(data)
                 if (data !== undefined && data !== null && data.token != undefined) {
                   fetch("/user/edit?is_name_changed=" + isNameChanged, { method: 'PUT',
                      headers: {

@@ -58,13 +58,20 @@ const RegistrationForm = (props) => {
         let password = values.password;
         let language = localStorage.getItem("language");
 
-        fetch('/user/registration?username=' + username + '&password=' + password + "&language=" + language, {
+        let user = {
+            username:username,
+            pass:password,
+            language:language
+        }
+
+        fetch('/user/registration', {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'X-XSRF-TOKEN': XSRFToken,
-                credentials: 'include'
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify(user)
         }).then(response => response.status != 200 ? showError(response) :
             response.json())
             .then(data => processRegistrationApiResponse(data, props.currentLanguage));
@@ -99,14 +106,15 @@ const RegistrationForm = (props) => {
                 name="username"
                 rules={[{required: true, message: props.userErrText}]}
             >
-                <Input/>
+                <Input name='login' key="name" placeholder={props.loginErrorText}/>
             </Form.Item>
             <Form.Item
                 label={props.passLabelText}
                 name="password"
                 rules={[{required: true, message: props.passErrText}]}
             >
-                <Input.Password/>
+                <Input.Password autoComplete="new-password" id="password" name="password" key="password"
+                                                    placeholder="input a password"/>
             </Form.Item>
             <Form.Item {...tailLayout}>
                 <Space>

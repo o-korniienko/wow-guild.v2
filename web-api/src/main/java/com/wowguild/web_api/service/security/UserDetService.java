@@ -1,5 +1,6 @@
 package com.wowguild.web_api.service.security;
 
+import com.wowguild.common.dto.security.UserDto;
 import com.wowguild.common.entity.security.User;
 import com.wowguild.common.enums.user.Role;
 import com.wowguild.common.service.UserService;
@@ -57,19 +58,19 @@ public class UserDetService implements UserDetailsService {
         throw new EntityNotFoundException();
     }
 
-    public String registration(String userName, String password, String language) {
-        User user = userService.findByUsername(userName.trim());
+    public String registration(UserDto userDto) {
+        User user = userService.findByUsername(userDto.getUsername());
         if (user != null) {
             return "Exist";
         }
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
         user = new User();
-        user.setLanguage(language);
+        user.setLanguage(userDto.getLanguage());
         user.setActive(true);
-        user.setUsername(userName);
+        user.setUsername(userDto.getUsername());
         user.setRoles(roles);
-        user.setPassword(encoder.encode(password));
+        user.setPassword(encoder.encode(userDto.getPass()));
         userService.save(user);
         return "Success";
     }
