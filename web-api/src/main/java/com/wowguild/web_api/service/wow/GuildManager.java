@@ -13,6 +13,7 @@ import com.wowguild.common.service.impl.BossService;
 import com.wowguild.common.service.impl.CharacterService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import static com.wowguild.common.service.impl.CharacterService.BY_MAX;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class GuildManager {
 
     private final BattleNetGuildService battleNetGuildService;
@@ -35,6 +37,7 @@ public class GuildManager {
     private final BossService bossService;
 
     public List<Character> updateMembersFromBlizzardDB() {
+        log.info("Characters data(Blizzard) updating started");
         List<Character> charactersFromBlizzardDB = battleNetGuildService.parseGuildData(battleNetGuildService.getGuildData());
 
         //characterRepos.deleteAll();
@@ -73,22 +76,27 @@ public class GuildManager {
             }
         }
         charactersFromOurDB = characterService.sort(charactersFromOurDB, CharacterService.BY_GUILD_RANK, CharacterService.BY_LEVEL);
+        log.info("Characters data(Blizzard) updating ended");
         return charactersFromOurDB;
     }
 
 
     public String updateWowLogsReports() {
+        log.info("Guild reports (WowLogs) updating started");
         boolean isThereNoErrors = true;
         WOWLogsReportData reportData = wowLogsGuildService.getReports();
         isThereNoErrors = wowLogsGuildService.updateReports(reportData);
+        log.info("Guild reports (WowLogs) updating ended");
         if (isThereNoErrors) {
             return "Successful";
         } else {
             return "There were errors during updating rank data";
         }
+
     }
 
     public UpdateStatus<Character> updateCharacterData(long id) {
+        log.info("Character data (blizzard and WowLogs) updating started");
         Character character = characterService.findById(id);
         if (character != null) {
             GuildProfile guildProfile = battleNetGuildService.getGuildData();
@@ -97,6 +105,7 @@ public class GuildManager {
             if (updateCharacterStatus.getResult() != null) {
                 character = updateCharacterStatus.getResult();
             }
+            log.info("Character data (blizzard and WowLogs) updating ended");
             return wowLogsCharacterService.updateCharacter(character, updateCharacterStatus.getStatus());
         }
         throw new EntityNotFoundException();
@@ -155,11 +164,14 @@ public class GuildManager {
     }
 
     public String updateRankingData() {
+        log.info("Characters rank data (WowLogs) updating started");
         List<Boss> bosses = bossService.findAll();
         if (bosses == null || bosses.isEmpty()) {
             return "Could not update guild members rank data. There is no any raid boss in DB";
         }
-        return wowLogsCharacterService.updateCharacters(Set.copyOf(bosses)) ? "Successful" :
+        String result = wowLogsCharacterService.updateCharacters(Set.copyOf(bosses)) ? "Successful" :
                 "There were errors during updating of guild members rank data";
+        log.info("Characters rank data (WowLogs) updating ended");
+        return result;
     }
 }

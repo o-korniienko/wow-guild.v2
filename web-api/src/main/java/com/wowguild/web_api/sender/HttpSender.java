@@ -4,7 +4,6 @@ import com.wowguild.web_api.tool.LogHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,6 +25,7 @@ import java.util.Objects;
 public class HttpSender implements Sender {
 
     private final LogHandler logHandler;
+    private final RestTemplate template;
 
     @Override
     public String sendRequest(String url, HttpMethod method, String clientId, String clientSecret) {
@@ -38,7 +38,6 @@ public class HttpSender implements Sender {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorisation", "Basic");
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(bodyParamMap, headers);
-            RestTemplate template = new RestTemplate(getClientHttpRequestFactory());
             ResponseEntity<String> response = template.exchange(url, method, request, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -47,7 +46,7 @@ public class HttpSender implements Sender {
                 log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
-            log.error("Http request(1) sending error {} to URL {}", e.getMessage(), url);
+            log.error("Http request(1) sending error {}", e.getMessage());
         }
         return result;
     }
@@ -61,8 +60,6 @@ public class HttpSender implements Sender {
             headers.setBearerAuth(token.trim());
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(bodyParamMap, headers);
 
-
-            RestTemplate template = new RestTemplate(getClientHttpRequestFactory());
             ResponseEntity<String> response = template.exchange(new URI(url.trim()), method, request, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -76,7 +73,7 @@ public class HttpSender implements Sender {
                     "; URL: " + url + "; http method: " + method;
             logHandler.saveLog(logT, "http requests");
         } catch (URISyntaxException e) {
-            log.error("Http request(2) sending error {} to URL {}", e.getMessage(), url);
+            log.error("Http request(2) sending error {}", e.getMessage());
         }
         return result;
     }
@@ -91,7 +88,6 @@ public class HttpSender implements Sender {
             headers.setBearerAuth(token);
             HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
 
-            RestTemplate template = new RestTemplate(getClientHttpRequestFactory());
             ResponseEntity<String> response = template.exchange(url, method, request, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 result = response.getBody();
@@ -99,7 +95,7 @@ public class HttpSender implements Sender {
                 log.info("Http request got error {}", response.getStatusCode());
             }
         } catch (RestClientException e) {
-            log.error("Http request(3) sending error {} to URL {} with body {}", e.getMessage(), url, body);
+            log.error("Http request(3) sending error {}", e.getMessage());
 
             if (Objects.requireNonNull(e.getMessage()).contains("429 Too Many Requests")) {
                 result = "429 Too Many Requests";
@@ -107,18 +103,6 @@ public class HttpSender implements Sender {
         }
         return result;
     }
-
-    private SimpleClientHttpRequestFactory getClientHttpRequestFactory() {
-        SimpleClientHttpRequestFactory clientHttpRequestFactory
-                = new SimpleClientHttpRequestFactory();
-        //Connect timeout
-        clientHttpRequestFactory.setConnectTimeout(30 * 1000);
-
-        //Read timeout
-        clientHttpRequestFactory.setReadTimeout(30 * 1000);
-        return clientHttpRequestFactory;
-    }
-
 
     private String encodeValue(String value) {
         return URLEncoder.encode(value, StandardCharsets.UTF_8);

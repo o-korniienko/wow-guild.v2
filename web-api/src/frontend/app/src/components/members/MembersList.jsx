@@ -100,7 +100,8 @@ const MembersList = (props) => {
                         },
                         credentials: 'include'
                     })
-                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) :
+                            response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
                         .then(data => props.updateCharacterDataInTable(data, SEARCH));
                 }else{
                     props.setLoading(false);

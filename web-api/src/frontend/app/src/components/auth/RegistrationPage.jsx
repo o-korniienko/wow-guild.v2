@@ -106,7 +106,7 @@ const RegistrationForm = (props) => {
                 name="username"
                 rules={[{required: true, message: props.userErrText}]}
             >
-                <Input name='login' key="name" placeholder={props.loginErrorText}/>
+                <Input name='login' key="name" placeholder="input a login"/>
             </Form.Item>
             <Form.Item
                 label={props.passLabelText}

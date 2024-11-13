@@ -1,7 +1,7 @@
 import AppNavbar from './../nav_bar/GeneralNavBar.jsx';
 import MembersList from './/MembersList.jsx';
 import Stars from './/Stars.jsx';
-import {Affix, Card, Input, Layout, Menu, message, Spin} from 'antd';
+import {Affix, Card, Input, Layout, Menu, message, Spin, Button} from 'antd';
 import 'antd/dist/antd.css';
 import './MembersStyle.css';
 import {BarChartOutlined, SyncOutlined, TeamOutlined, UnorderedListOutlined} from '@ant-design/icons';
@@ -23,10 +23,12 @@ let languageLocal;
 
 
 function isAdmin(user) {
-    let roles = user.roles;
-    for (var i = 0; i < roles.length; i++) {
-        if (roles[i] === "ADMIN") {
-            return true;
+    if(user !== null && user !== undefined){
+        let roles = user.roles;
+        for (var i = 0; i < roles.length; i++) {
+            if (roles[i] === "ADMIN") {
+                return true;
+            }
         }
     }
     return false;
@@ -42,6 +44,7 @@ const MenuComponent = (props) => {
     const [hoverUpdateAll, setHoverUpdateAll] = useState(false);
     const [hoverRateList, setHoverRateList] = useState(false);
     const [hoverUpdateLogAll, setHoverUpdateLogAll] = useState(false);
+    const [hoverUpdateWowLogsRaidData, setHoverUpdateWowLogsRaidData] = useState(false);
 
 
     let language = props.language;
@@ -49,7 +52,9 @@ const MenuComponent = (props) => {
     let starsText = "Rating";
     let memberListText = "Members"
     let listText = "Members List"
-    let updateRankText = "Update WOWLogs Data"
+    let updateRankText = "Update WOWLogs ranks"
+    let updateRaidsDataText = "Update raids (WOWLogs)"
+    let adminElementsDisplayStyle = isAdmin(props.user) ? "block" : "none"
 
 
     if (language === "UA") {
@@ -57,14 +62,8 @@ const MenuComponent = (props) => {
         starsText = "Рейтинг";
         memberListText = "Учасники"
         listText = "Список"
-        updateRankText = "Оновити WOWLogs Дані"
-    }
-
-    if (props.user !== null && !isAdmin(props.user)) {
-        let adminMenu = document.getElementById('admin');
-        if (adminMenu != null) {
-            adminMenu.style.display = 'none';
-        }
+        updateRankText = "Оновити WOWLogs рейтинги"
+        updateRaidsDataText = "Оновити рейди (WOWLogs)"
     }
 
     const handleMouseEnter = (index) => {
@@ -81,6 +80,9 @@ const MenuComponent = (props) => {
                 break;
             case 4:
                 setHoverUpdateLogAll(true);
+                break;
+            case 5:
+                setHoverUpdateWowLogsRaidData(true);
                 break;
             default:
 
@@ -101,6 +103,9 @@ const MenuComponent = (props) => {
                 break;
             case 4:
                 setHoverUpdateLogAll(false);
+                break;
+            case 5:
+                setHoverUpdateWowLogsRaidData(false);
                 break;
             default:
         }
@@ -178,8 +183,54 @@ const MenuComponent = (props) => {
             });
     }
 
+    const updateWowLogsRaidsData = () => {
+        props.setLoading(true);
+
+        let mainDiv = document.getElementById('mainDiv');
+        if (mainDiv !== null && mainDiv !== undefined) {
+            mainDiv.className = 'main_div_disabled';
+        }
+        fetch("/csrf")
+            .then(response => response.status != 200 ? showError(response) :
+                response.json())
+            .then(data => {
+                if (data !== undefined && data !== null && data.token != undefined) {
+                    fetch('/raid/update-wow-logs-data', {
+                        method: 'POST',
+                        headers: {
+                            'X-XSRF-TOKEN': data.token,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include'
+
+                    })
+                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) :
+                            response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+                        .then(data => wowLogsRaidsUpdateResult(data));
+                }
+            });
+    }
+
 
     const rankingUpdateResult = (data) => {
+        props.setLoading(false);
+
+        if (data !== null && data !== undefined) {
+            if (data.message === 'Successful') {
+                message.success(data.message)
+            } else {
+                message.info(data.message)
+            }
+            let mainDiv = document.getElementById('mainDiv');
+            if (mainDiv != null) {
+                mainDiv.className = 'main_div_enabled';
+            }
+        }
+
+    }
+
+    const wowLogsRaidsUpdateResult = (data) => {
         props.setLoading(false);
 
         if (data !== null && data !== undefined) {
@@ -208,7 +259,7 @@ const MenuComponent = (props) => {
 
 
                 <SubMenu title={memberListText} icon={<TeamOutlined style={{color: '#1a854f', fontSize: '150%'}}/>}>
-                    <Menu.Item key="0" id="admin" icon={<UnorderedListOutlined style={{
+                    <Menu.Item key="0" icon={<UnorderedListOutlined style={{
                         color: '#1a854f',
                         fontSize: '150%',
 
@@ -224,17 +275,17 @@ const MenuComponent = (props) => {
                             {listText}
                         </Link>
                     </Menu.Item>
-                    <Menu.Item key="1" id="admin" icon={<SyncOutlined style={{color: '#1a854f', fontSize: '150%'}}/>}>
-                        <Link style={{
+                    <Menu.Item style={{display:adminElementsDisplayStyle}} key="1" >
+                        <Button type="link" style={{
                             color: hoverUpdateAll ? '#1e7ce4' : '#1a854f',
-                            fontSize: '100%'
+                            fontSize: '100%', size:'50%'
                         }}
                               onClick={updateMembersFromBlizzard}
                               onMouseEnter={() => handleMouseEnter(2)}
                               onMouseLeave={() => handleMouseLeave(2)}
                         >
                             {updateText}
-                        </Link>
+                        </Button>
                     </Menu.Item>
 
 
@@ -251,8 +302,8 @@ const MenuComponent = (props) => {
                                 {starsText}
                             </Link>
                         </Menu.Item>
-                        <Menu.Item key="3">
-                            <Link style={{
+                        <Menu.Item style={{display:adminElementsDisplayStyle}} key="3">
+                            <Button type="link" style={{
                                 color: hoverUpdateLogAll ? '#1e7ce4' : '#1a854f',
                                 fontSize: '100%'
                             }}
@@ -261,7 +312,19 @@ const MenuComponent = (props) => {
                                   onMouseLeave={() => handleMouseLeave(4)}
                             >
                                 {updateRankText}
-                            </Link>
+                            </Button>
+                        </Menu.Item>
+                        <Menu.Item style={{display:adminElementsDisplayStyle}} key="4">
+                            <Button type="link" style={{
+                                color: hoverUpdateWowLogsRaidData ? '#1e7ce4' : '#1a854f',
+                                fontSize: '100%'
+                            }}
+                                  onClick={updateWowLogsRaidsData}
+                                  onMouseEnter={() => handleMouseEnter(5)}
+                                  onMouseLeave={() => handleMouseLeave(5)}
+                            >
+                                {updateRaidsDataText}
+                            </Button>
                         </Menu.Item>
 
                     </SubMenu>
