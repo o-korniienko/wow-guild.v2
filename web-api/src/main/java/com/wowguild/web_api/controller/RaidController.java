@@ -7,6 +7,7 @@ import com.wowguild.web_api.service.wow.WowLogsWorldDataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,7 @@ public class RaidController {
         }
     }
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/update-wow-logs-data")
     public ResponseEntity<?> updateWowLogsRaidsData() {
         try {
