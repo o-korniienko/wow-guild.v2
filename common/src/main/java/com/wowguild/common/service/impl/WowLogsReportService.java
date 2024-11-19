@@ -21,11 +21,6 @@ public class WowLogsReportService implements EntityService<Report> {
     }
 
     @Override
-    public List<Report> getAllSorted() {
-        return findAll();
-    }
-
-    @Override
     public List<Report> saveAll(List<Report> reports) {
         return reportRepo.saveAll(reports);
     }

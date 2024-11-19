@@ -46,12 +46,6 @@ public class PushDeviceService implements EntityService<PushDevice> {
     }
 
     @Override
-    public List<PushDevice> getAllSorted() {
-        //TODO
-        return List.of();
-    }
-
-    @Override
     public List<PushDevice> sort(List<PushDevice> entities, Comparator<PushDevice> comparator1, Comparator<PushDevice> comparator2) {
         //TODO
         return List.of();

@@ -36,11 +36,6 @@ public class GuildEventService implements EntityService<GuildEvent> {
     }
 
     @Override
-    public List<GuildEvent> getAllSorted() {
-        return List.of();
-    }
-
-    @Override
     public List<GuildEvent> sort(List<GuildEvent> entities, Comparator<GuildEvent> comparator1, Comparator<GuildEvent> comparator2) {
         return List.of();
     }

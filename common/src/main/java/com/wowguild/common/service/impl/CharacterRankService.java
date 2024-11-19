@@ -21,11 +21,6 @@ public class CharacterRankService implements EntityService<CharacterRank> {
     }
 
     @Override
-    public List<CharacterRank> getAllSorted() {
-        return findAll();
-    }
-
-    @Override
     public List<CharacterRank> saveAll(List<CharacterRank> characterRanks) {
         return characterRankRepo.saveAll(characterRanks);
     }

@@ -99,7 +99,7 @@ public class MemberController {
         }
     }
 
-    @PostMapping("make_test")
+    @PostMapping("/make_test")
     public List<String> makeTest() {
         return new ArrayList<>(Collections.singletonList("Success"));
     }

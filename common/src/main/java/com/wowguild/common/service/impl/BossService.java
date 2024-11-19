@@ -25,7 +25,6 @@ public class BossService implements EntityService<Boss> {
         bossRepo.save(boss);
     }
 
-    @Override
     public List<Boss> getAllSorted() {
         List<Boss> bosses = findAll();
         bosses = sort(bosses, BY_ENCOUNTER_ID, null);

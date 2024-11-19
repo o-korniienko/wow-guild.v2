@@ -26,7 +26,6 @@ public class CharacterService implements EntityService<Character> {
         characterRepos.save(character);
     }
 
-    @Override
     public List<Character> getAllSorted() {
         List<Character> characters = findAll();
         characters = sort(characters, BY_GUILD_RANK, BY_LEVEL);

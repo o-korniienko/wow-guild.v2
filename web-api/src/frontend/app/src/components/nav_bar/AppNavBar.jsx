@@ -48,8 +48,6 @@ const LoginButton = (props) =>{
 
 }
 
-
-
 const Language = (props) =>{
     let lang = localStorage.getItem("language");
     if(lang == null){
@@ -64,8 +62,6 @@ const Language = (props) =>{
     }
 
     return(
-
-
             <Select
              style={{position:'relative', right:'5%', top:'25%', color:"#63baf2" }}
               placeholder="Please select"
@@ -142,10 +138,6 @@ const NavBar = (props)=>{
 
              </StyledPageHeader>)
 }
-
-
-
-
 
 
 export default function AppNavBar(props){

@@ -50,7 +50,8 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers(
                                 "/perform_login",
-                                "/user/registration"
+                                "/user/registration",
+                                "/simple_chat_web_socket/**"
                         ))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/index*",

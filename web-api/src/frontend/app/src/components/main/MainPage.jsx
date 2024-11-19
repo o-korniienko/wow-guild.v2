@@ -47,5 +47,5 @@ const Main =  () =>{
 }
 
 export default function MainPage(){
-return <Main/>
+    return <Main/>
 }

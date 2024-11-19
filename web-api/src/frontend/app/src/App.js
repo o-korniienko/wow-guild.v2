@@ -9,6 +9,7 @@ import EditUser from './components/admin/EditUser.jsx';
 import UserSettings from './components/user/UserSettings.jsx';
 import Members from './components/members/Members.jsx';
 import Stars from './components/members/Stars.jsx';
+import SimpleChat from './components/chat/SimpleChat.jsx';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
@@ -28,6 +29,7 @@ function App() {
          <Route path='/usr_settings/' exact={true} component={UserSettings}/>
          <Route path='/members/:tag' exact={true} component={Members}/>
          <Route path='/stars/' exact={true} component={Stars}/>
+         <Route path='/simple-chat/' exact={true} component={SimpleChat}/>
        </Switch>
      </Router>
     </CookiesProvider>

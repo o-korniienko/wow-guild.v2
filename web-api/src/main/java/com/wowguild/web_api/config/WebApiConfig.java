@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 @ComponentScan(basePackages = {"com.wowguild.common"})
@@ -33,6 +35,11 @@ public class WebApiConfig {
         RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
         restTemplate.setInterceptors(Collections.singletonList(loggingInterceptor()));
         return restTemplate;
+    }
+
+    @Bean
+    public ExecutorService getExecutorService(){
+        return Executors.newFixedThreadPool(4);
     }
 
     private SimpleClientHttpRequestFactory getClientHttpRequestFactory() {

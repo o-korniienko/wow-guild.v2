@@ -10,8 +10,6 @@ public interface EntityService<T> {
 
     void save(T entity);
 
-    List<T> getAllSorted();
-
     List<T> saveAll(List<T> entities);
 
     List<T> findAll();

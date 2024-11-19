@@ -21,11 +21,6 @@ public class RankService implements EntityService<Rank> {
     }
 
     @Override
-    public List<Rank> getAllSorted() {
-        return findAll();
-    }
-
-    @Override
     public List<Rank> saveAll(List<Rank> ranks) {
         return rankRepo.saveAll(ranks);
     }

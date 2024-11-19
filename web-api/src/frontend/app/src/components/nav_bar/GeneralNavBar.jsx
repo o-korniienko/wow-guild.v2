@@ -143,7 +143,7 @@ function UserButton(props) {
 
     const StyledUserButton = styled(Button)`
     position:relative;
-    right:5%;
+    right:3%;
     top:25%;
     color:#248755;
     font-family: "Trebuchet MS";
@@ -189,6 +189,35 @@ const LogOutButton = (props) => {
     )
 
 
+}
+
+const ChatButton = (props) => {
+
+    const StyledChatButton = styled(Button)`
+    position:relative;
+    right:8%;
+    top:25%;
+    color:#248755;
+    font-family: "Trebuchet MS";
+    text-decoration: underline;`
+
+    let language = props.language;
+    if (language === "UA") {
+        props.setChatText("Чат");
+
+    }
+
+    if (language === "EN") {
+        props.setChatText("Chat");
+
+    }
+
+    return (
+        <StyledChatButton type="link"><Link
+            to="/simple-chat">
+            {props.chatText}</Link>
+        </StyledChatButton>
+    )
 }
 
 const Menu = (props) => {
@@ -318,6 +347,7 @@ function NavBar(props) {
     const [addonsText, setAddonsText] = useState("");
     const [craftText, setCraftText] = useState("");
     const [adminText, setAdminText] = useState("");
+    const [chatText, setChatText] = useState("");
 
 
     const StyledPageHeader = styled(PageHeader)`
@@ -364,22 +394,25 @@ function NavBar(props) {
         return (<StyledPageHeader
             className="site-page-header"
             title=<Logo logoText={logoText} setLogoText={setLogoText} language={language}/>
-        extra = {
-            [<UserButton key='0' {...user}
-                         userTittle={userTittle}
-                         setUserTittle={setUserTittle}
-                         language={language}
-            />,
-        <LogOutButton key='1'
-                      logOutText={logOutText}
-                      setLogOutText={setLogOutText}
-                      language={language}
-        />,
-            <Language setCurrentDifficulty={props.setCurrentDifficulty} language={language} setLanguage={setLanguage}
-                      setFunction={props.setFunction}/>
-    ]
-    }
-    >
+            extra = {
+                [
+                <ChatButton language={language} chatText={chatText}
+                                          setChatText={setChatText}/>,
+                <UserButton key='0' {...user}
+                             userTittle={userTittle}
+                             setUserTittle={setUserTittle}
+                             language={language}
+                />,
+                <LogOutButton key='1'
+                          logOutText={logOutText}
+                          setLogOutText={setLogOutText}
+                          language={language}
+                />,
+                <Language language={language} setLanguage={setLanguage}
+                          setFunction={props.setFunction}/>
+                ]
+            }
+        >
 
     <
         Menu
