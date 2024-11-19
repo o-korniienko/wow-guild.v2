@@ -59,7 +59,7 @@ public class UserDetService implements UserDetailsService {
     }
 
     public String registration(UserDto userDto) {
-        User user = userService.findByUsername(userDto.getUsername());
+        User user = userService.findByUsername(userDto.getUsername().trim());
         if (user != null) {
             return "Exist";
         }
@@ -68,7 +68,7 @@ public class UserDetService implements UserDetailsService {
         user = new User();
         user.setLanguage(userDto.getLanguage());
         user.setActive(true);
-        user.setUsername(userDto.getUsername());
+        user.setUsername(userDto.getUsername().trim());
         user.setRoles(roles);
         user.setPassword(encoder.encode(userDto.getPass()));
         userService.save(user);
