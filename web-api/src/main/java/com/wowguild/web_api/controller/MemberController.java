@@ -30,7 +30,7 @@ public class MemberController {
     public ResponseEntity<?> getMembers() {
         try {
             return ResponseEntity.ok(guildManager.getMembers().stream()
-                    .map(characterConverter::convertToDto)
+                    .map(character -> characterConverter.convertPartlyToDto(character, false))
                     .collect(Collectors.toList()));
         } catch (Exception e) {
             log.error("Could not get guild members data. Error: {}", e.getMessage());
@@ -43,7 +43,7 @@ public class MemberController {
     public ResponseEntity<?> updateMembersFromBlizzardDB() {
         try {
             return ResponseEntity.ok(guildManager.updateMembersFromBlizzardDB().stream()
-                    .map(characterConverter::convertToDto)
+                    .map(character -> characterConverter.convertPartlyToDto(character, false))
                     .collect(Collectors.toList()));
         } catch (Exception e) {
             log.error("Could not update guild members blizzard data. Error: {}", e.getMessage());

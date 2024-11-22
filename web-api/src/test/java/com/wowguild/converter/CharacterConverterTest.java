@@ -41,6 +41,14 @@ public class CharacterConverterTest {
     }
 
     @ParameterizedTest
+    @MethodSource("testConvertPartlyToDtoArgs")
+    void testConvertPartlyToDto(Character character, CharacterDto expected, boolean isFull) {
+        CharacterDto result = converter.convertPartlyToDto(character, isFull);
+
+        assertEquals(expected, result);
+    }
+
+    @ParameterizedTest
     @MethodSource("provideCharacterDtoTestArgs")
     public void testConvertToEntity(CharacterDto characterDto) {
         Character result = converter.convertToEntity(characterDto);
@@ -62,6 +70,18 @@ public class CharacterConverterTest {
 
         return Stream.of(
                 Arguments.of(characterDto)
+        );
+    }
+
+    static Stream<Arguments> testConvertPartlyToDtoArgs() {
+        Character character = generateCharacter("Liut", now);
+        CharacterDto characterDto1 = generateCharacterDto("Liut", now);
+        CharacterDto characterDto2 = generateCharacterDto("Liut", now);
+        characterDto2.setRanks(null);
+
+        return Stream.of(
+                Arguments.of(character, characterDto1, true),
+                Arguments.of(character, characterDto2, false)
         );
     }
 }

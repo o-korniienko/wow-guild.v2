@@ -222,9 +222,7 @@ public class WowLogsCharacterService {
                             updatedRanks = fightRanks;
                         } else {
                             updatedRanks = ranksFromDB;
-                            for (Rank rank : fightRanks) {
-                                updatedRanks.add(rank);
-                            }
+                            updatedRanks.addAll(fightRanks);
                         }
                         characterRank.setRanks(updatedRanks);
                         characterRank.setMaxAmount((long) wowLogsRankData.getEncounterRankings().getBestAmount());
@@ -280,7 +278,6 @@ public class WowLogsCharacterService {
     }
 
     private boolean isRankInOurDBAlready(WOWLogsCharacterRankData.CharacterRankings.Rank logsRank, Character character, String metric) {
-        boolean result = false;
         if (logsRank.getReport().getCode() == null) {
             return true;
         }
@@ -290,14 +287,17 @@ public class WowLogsCharacterService {
                 List<Rank> ranks = characterRank.getRanks();
                 if (ranks != null) {
                     for (Rank rank : ranks) {
-                        if (rank.getMetric().equalsIgnoreCase(metric) && rank.getReportCode().equalsIgnoreCase(logsRank.getReport().getCode()) && rank.getFightID().equalsIgnoreCase(String.valueOf(logsRank.getReport().getFightID()))) {
-                            result = true;
+                        if (rank.getMetric().equalsIgnoreCase(metric)
+                                && rank.getReportCode().equalsIgnoreCase(logsRank.getReport().getCode())
+                                && rank.getFightID().equalsIgnoreCase(String.valueOf(logsRank.getReport()
+                                .getFightID()))) {
+                            return true;
                         }
                     }
                 }
             }
         }
-        return result;
+        return false;
     }
 
     private double getAverageDPS(List<Rank> characterRanks) {

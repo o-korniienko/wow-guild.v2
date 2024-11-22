@@ -45,6 +45,28 @@ public class CharacterConverter implements Converter<Character, CharacterDto> {
         return null;
     }
 
+    public CharacterDto convertPartlyToDto(Character character, boolean isFull){
+        if (character != null) {
+            CharacterDto characterDto = new CharacterDto();
+            characterDto.setName(character.getName());
+            characterDto.setId(character.getId());
+            characterDto.setRace(character.getRace());
+            characterDto.setLevel(character.getLevel());
+            characterDto.setGuildRank(character.getGuildRank());
+            characterDto.setBlizzardID(character.getBlizzardID());
+            characterDto.setCanonicalID(character.getCanonicalID());
+            characterDto.setClassEn(character.getClassEn());
+            characterDto.setRegionEn(character.getRegionEn());
+            characterDto.setIconURL(character.getIconURL());
+            if (character.getRanks() != null && isFull) {
+                characterDto.setRanks(character.getRanks().stream()
+                        .map(this::convertToCharacterRankDto).collect(Collectors.toList()));
+            }
+            return characterDto;
+        }
+        return null;
+    }
+
     public CharacterRankDto convertToCharacterRankDto(CharacterRank characterRank) {
         if (characterRank != null) {
             CharacterRankDto characterRankDto = new CharacterRankDto();
