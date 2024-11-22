@@ -1,23 +1,21 @@
 import React, { useState, useEffect} from 'react';
 import AppNavbar from './../nav_bar/GeneralNavBar.jsx';
 import 'antd/dist/antd.css';
-import Cookies from 'universal-cookie';
 import { Input, Form, InputNumber, Select, Button, Tooltip, Space, message } from 'antd';
 import {  useHistory } from 'react-router-dom';
 import  './Users.css';
 import styled from 'styled-components'
 import { showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
+import {resolveCSRFToken} from './../../common/csrf-resolver.jsx';
+import { useCookies } from 'react-cookie';
 
 const { TextArea } = Input;
 
 let userRole;
 let isActive;
 let languageLocal;
-
-
-
 let user2;
-const cookies = new Cookies();
+
 const { Option } = Select;
 const layout = {
   labelCol: {
@@ -70,6 +68,7 @@ const EditForm = (props) =>{
      let id = props.id;
      const [form] = Form.useForm();
      const [user, setUser] = useState(null);
+     const [cookies, setCookie] = useCookies(['csrf']);
      const history = useHistory();
      const back = () => history.goBack();
      const goBack = () => {
@@ -79,6 +78,11 @@ const EditForm = (props) =>{
              window.location.href = "/home";
          }
      }
+
+    useEffect(() => {
+        resolveCSRFToken()
+            .then(token => setCookie('csrf', token, { path: '/' }))
+    }, []);
 
      const onFinish = (values) => {
          let isNameChanged = false;
@@ -94,26 +98,18 @@ const EditForm = (props) =>{
              roles:userRole,
              language:localStorage.getItem("language"),
          }
-          fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
-                  fetch("/user/edit?is_name_changed=" + isNameChanged, { method: 'PUT',
-                     headers: {
-                       'X-XSRF-TOKEN': data.token,
-                       'Accept': 'application/json',
-                       'Content-Type': 'application/json'
-                     },
-                     credentials: 'include',
-                     body:JSON.stringify(userObject)
-                  })
-                   .then(response => response.status != 200 ? showError(response) :
-                     response.json() )
-                   .then(data => result(data,props.language));
-                }
-            })
-
+          fetch("/user/edit?is_name_changed=" + isNameChanged, { method: 'PUT',
+             headers: {
+               'X-XSRF-TOKEN': cookies.csrf,
+               'Accept': 'application/json',
+               'Content-Type': 'application/json'
+             },
+             credentials: 'include',
+             body:JSON.stringify(userObject)
+          })
+           .then(response => response.status != 200 ? showError(response) :
+             response.json() )
+           .then(data => result(data,props.language));
      };
 
      const getUser = ()=>{
@@ -162,8 +158,6 @@ const EditForm = (props) =>{
      }
 
 
-
-
     return (<div tabIndex={0} onKeyPress={clickHandler} className="sent-form">
                  <br/>
                  <br/>
@@ -206,10 +200,6 @@ const EditForm = (props) =>{
 
 }
 
-
-
-
-
  function Display(props) {
     languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
     const [currentLanguage, setLanguage] = useState(languageLocal);
@@ -222,10 +212,6 @@ const EditForm = (props) =>{
     const [saveButtonText, setSaveButtonText] = useState('');
     const [loginErrorText, setLoginErrorText] = useState('');
     const [emailErrorText, setEmailErrorText] = useState('');
-
-
-
-
 
     return (
         <div>
@@ -254,15 +240,11 @@ const EditForm = (props) =>{
                 setLoginErrorText = {setLoginErrorText}
                 emailErrorText = {emailErrorText}
                 setEmailErrorText = {setEmailErrorText}
-
-
            />
         </div>
     )
 }
 
-
  export default function UserSettingsPage(props){
-
     return <Display {... props}/>;
 }

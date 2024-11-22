@@ -314,7 +314,7 @@ const StyledTable = styled(Table)`
 
 
 
-function MainContent (){
+function MainContent (props){
     languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
     const [form] = Form.useForm();
     const [collapsed, setCollapsed] = useState(false);
@@ -433,26 +433,19 @@ function MainContent (){
             metric:metric
         }
 
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/member/get-all-ranked-by', {
-                        method: 'POST',
-                        headers: {
-                            'X-XSRF-TOKEN': data.token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'include',
-                        body: JSON.stringify(body)
-                    })
-                      .then(response => response.status !== 200 ? showErrorAndSetFalse(response, setLoading) :
-                          response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-                      .then(data => setMembersData(data));
-                }
-            })
+        fetch('/member/get-all-ranked-by', {
+            method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': props.cookies.csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(body)
+        })
+          .then(response => response.status !== 200 ? showErrorAndSetFalse(response, setLoading) :
+              response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+          .then(data => setMembersData(data));
     }
 
     const onSearch = value => {
@@ -571,6 +564,6 @@ function MainContent (){
 
 
 
-export default function MembersPage(){
-    return <MainContent/>
+export default function MembersPage(props){
+    return <MainContent {... props}/>
 }

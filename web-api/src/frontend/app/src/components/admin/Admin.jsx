@@ -2,12 +2,10 @@ import AppNavbar from './../nav_bar/GeneralNavBar.jsx';
 import {Button, Col, Input, Layout, message, Popconfirm, Row, Space, Table, Tag} from 'antd';
 import 'antd/dist/antd.css';
 import React, {useEffect, useState} from 'react';
-import Cookies from 'universal-cookie';
+import {resolveCSRFToken} from './../../common/csrf-resolver.jsx';
+import { useCookies } from 'react-cookie';
 import {Link} from 'react-router-dom';
 import {showError} from './../../common/error-handler.jsx';
-
-const cookies = new Cookies();
-const XSRFToken = cookies.get('XSRF-TOKEN')
 
 const {Search} = Input;
 const {Sider, Content} = Layout;
@@ -38,23 +36,10 @@ function DeleteButton(props) {
 
 }
 
-const testFunction = () => {
-    console.log("test function")
-    fetch('/make_test/', {
-        method: 'POST',
-        headers: {
-            'X-XSRF-TOKEN': XSRFToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-    })
-        .then(response => response.status !== 200 ? showError(response) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-        .then(data => console.log(data));
-}
 
 const UserList = (props) => {
     const [users, setUsers] = useState(null);
+    const [cookies, setCookie] = useCookies(['csrf']);
 
     if (props.language === "EN") {
         props.setSearchPlaceHolder("input search text");
@@ -96,6 +81,9 @@ const UserList = (props) => {
     }
 
     useEffect(() => {
+        resolveCSRFToken()
+                    .then(token => setCookie('csrf', token, { path: '/' }))
+
         fetch('/user/get-all', {})
             .then(response => response.status != 200 ? showError(response) : response.json())
             .then(data => updateUsers2(data))
@@ -144,6 +132,20 @@ const UserList = (props) => {
         }
     }
 
+    const testFunction = () => {
+        console.log("test function")
+        fetch('/make_test/', {
+            method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': cookies.csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+            .then(response => response.status !== 200 ? showError(response) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+            .then(data => console.log(data));
+    }
 
     return (
         <Layout style={{width: '80%', position: 'relative', left: '10%', marginTop: '5%'}}>

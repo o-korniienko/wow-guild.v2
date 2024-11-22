@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import AppNavbar from './../nav_bar/GeneralNavBar.jsx';
 import 'antd/dist/antd.css';
-import Cookies from 'universal-cookie';
 import {Button, Form, Input, message, Select, Space} from 'antd';
 import {useHistory} from 'react-router-dom';
 import {showError} from './../../common/error-handler.jsx';
+import {resolveCSRFToken} from './../../common/csrf-resolver.jsx';
+import { useCookies } from 'react-cookie';
 
 const {TextArea} = Input;
 
@@ -14,7 +15,6 @@ let languageLocal;
 
 
 let user2;
-const cookies = new Cookies();
 const {Option} = Select;
 const layout = {
     labelCol: {
@@ -67,10 +67,10 @@ const processUserEditinApiResponse = (data, language) => {
 
 
 const EditForm = (props) => {
-
     let id = props.id;
     const [form] = Form.useForm();
     const [user, setUser] = useState(null);
+    const [cookies, setCookie] = useCookies(['csrf']);
     const history = useHistory();
     const back = () => history.goBack();
     const goBack = () => {
@@ -92,15 +92,10 @@ const EditForm = (props) => {
             language: localStorage.getItem("language"),
         }
 
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch("/user/edit?is_name_changed=" + isNameChanged, {
+        fetch("/user/edit?is_name_changed=" + isNameChanged, {
                         method: 'PUT',
                         headers: {
-                            'X-XSRF-TOKEN': data.token,
+                            'X-XSRF-TOKEN': cookies.csrf,
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
                         },
@@ -110,11 +105,12 @@ const EditForm = (props) => {
                         .then(response => response.status != 200 ? showError(response) :
                             response.json())
                         .then(data => processUserEditinApiResponse(data, props.language))
-                }
-            });
     };
 
     useEffect(() => {
+        resolveCSRFToken()
+                    .then(token => setCookie('csrf', token, { path: '/' }))
+
         fetch('/user/get-one/' + id)
             .then(response => response.status != 200 ? showError(response) : response.json())
             .then(data => setUserData(data));

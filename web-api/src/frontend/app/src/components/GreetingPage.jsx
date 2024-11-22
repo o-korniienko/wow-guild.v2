@@ -2,15 +2,12 @@ import styled from 'styled-components';
 import { Button, Typography, Space, Divider} from 'antd';
 import 'antd/dist/antd.css';
 import React, { useState, useEffect} from 'react';
-import Cookies from 'universal-cookie';
 import  './Greeting.css';
 import AppNavbar from './nav_bar/AppNavBar.jsx';
 import { Link } from 'react-router-dom';
 import properties from '../properties';
 
 const { Text, Title, Paragraph  } = Typography;
-const cookies = new Cookies();
-const XSRFToken  = cookies.get('XSRF-TOKEN')
 const guildName = properties.guildName;
 let language = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
@@ -29,9 +26,6 @@ const GreetingText = (props) =>{
         props.setJoinText2("Приєднуйтесь ");
         props.setLogInText("увійдіть");
      }
-
-
-
     return(
         <label className="greeting_text"> {props.greetingText}</label>
     )

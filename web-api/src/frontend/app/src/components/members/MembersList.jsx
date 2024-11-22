@@ -1,15 +1,11 @@
 import {Card, Col, Input, List, message, Space} from 'antd';
 import './MembersStyle.css';
 import React, {useState} from 'react';
-import Cookies from 'universal-cookie';
 import wowLogo from './../logo/wow.png';
 import wowLogsLogo from './../logo/wowLogs.png';
 import RaiderIo from './../logo/raiderIo.png';
 import {SyncOutlined} from '@ant-design/icons';
 import { showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
-
-const cookies = new Cookies();
-const XSRFToken = cookies.get('XSRF-TOKEN')
 
 let SEARCH = ""
 
@@ -17,7 +13,6 @@ const MembersList = (props) => {
     const [pageSize, setPageSize] = useState(15)
     const [members, setMembers] = useState(props.members)
     const [searchText, setSearchText] = useState(SEARCH)
-
 
     var MEMBERS = props.allMembers;
 
@@ -86,27 +81,18 @@ const MembersList = (props) => {
         if (mainDiv != null) {
             mainDiv.className = 'main_div_disabled';
         }
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token !== undefined) {
-                    fetch('/member/update/' + id, {
-                        method: 'POST',
-                        headers: {
-                            'X-XSRF-TOKEN': data.token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'include'
-                    })
-                        .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) :
-                            response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-                        .then(data => props.updateCharacterDataInTable(data, SEARCH));
-                }else{
-                    props.setLoading(false);
-                }
-            });
+        fetch('/member/update/' + id, {
+            method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': props.cookies.csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+            .then(response => response.status !== 200 ? showErrorAndSetFalse(response, props.setLoading) :
+                response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+            .then(data => props.updateCharacterDataInTable(data, SEARCH));
         /* setTimeout(function(){
             props.setLoading(false)
         }, 2000); */

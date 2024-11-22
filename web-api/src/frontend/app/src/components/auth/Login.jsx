@@ -9,7 +9,6 @@ import {showError} from './../../common/error-handler.jsx';
 
 
 const cookies = new Cookies();
-const XSRFToken = cookies.get('XSRF-TOKEN')
 let language = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
 const getLogin = (data, language) => {
@@ -47,11 +46,7 @@ const LoginForm = (props) => {
 
         fetch('/perform_login?username=' + username + '&password=' + password, {
             method: 'POST',
-            mode: 'cors',
-            headers: {
-                'X-XSRF-TOKEN': XSRFToken,
-                credentials: 'include'
-            },
+            mode: 'cors'
         }).then(response => response.status !== 200 && response.status !== 401 ? showError(response) :
             getLogin(response, props.currentLanguage));
 

@@ -2,14 +2,11 @@ import {Button, Form, Input, message, Space} from 'antd';
 import AppNavbar from './../nav_bar/LoginNavBar.jsx';
 import 'antd/dist/antd.css';
 import React, {useState} from 'react';
-import Cookies from 'universal-cookie';
 import {Link} from 'react-router-dom';
 import './Auth.css';
 import {showError} from './../../common/error-handler.jsx';
 
 
-const cookies = new Cookies();
-const XSRFToken = cookies.get('XSRF-TOKEN')
 let language = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
 function ToLoginPage() {

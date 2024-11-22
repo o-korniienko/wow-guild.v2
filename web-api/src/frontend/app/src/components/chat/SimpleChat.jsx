@@ -8,6 +8,7 @@ import SockJS from 'sockjs-client';
 import { Stomp, Client } from '@stomp/stompjs';
 import './Chat.css';
 import {showError} from './../../common/error-handler.jsx';
+import {resolveCSRFToken} from './../../common/csrf-resolver.jsx';
 import { useCookies } from 'react-cookie';
 
 let language = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
@@ -80,10 +81,8 @@ const SimpleChat =  () =>{
     }
 
     useEffect(() => {
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => setCookie('csrf', data.token, { path: '/' }))
+        resolveCSRFToken()
+            .then(token => setCookie('csrf', token, { path: '/' }))
 
         fetch('/user/get-active')
             .then(response => response.status !== 200 ? showError(response) : response.url.includes("login_in") ?

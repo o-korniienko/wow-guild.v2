@@ -6,14 +6,14 @@ import 'antd/dist/antd.css';
 import './MembersStyle.css';
 import {BarChartOutlined, SyncOutlined, TeamOutlined, UnorderedListOutlined} from '@ant-design/icons';
 import React, {useEffect, useState} from 'react';
-import Cookies from 'universal-cookie';
 import {Link} from 'react-router-dom';
 import {showError, showErrorAndSetFalse} from './../../common/error-handler.jsx';
+import {resolveCSRFToken} from './../../common/csrf-resolver.jsx';
+import { useCookies } from 'react-cookie';
 
 const {Search} = Input;
 const {Sider, Content} = Layout;
 const {Meta} = Card;
-const cookies = new Cookies();
 
 
 const {SubMenu} = Menu;
@@ -127,25 +127,18 @@ const MenuComponent = (props) => {
             mainDiv.className = 'main_div_disabled';
         }
 
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/member/update-all-bz', {
-                        method: 'POST',
-                        headers: {
-                            'X-XSRF-TOKEN': data.token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'include'
+        fetch('/member/update-all-bz', {
+            method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': props.cookies.csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
 
-                    })
-                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-                        .then(data => props.setBzData(data));
-                }
-            });
+        })
+            .then(response => response.status !== 200 ? proccessError(response, mainDiv) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+            .then(data => props.setBzData(data));
 
     }
 
@@ -161,26 +154,19 @@ const MenuComponent = (props) => {
         if (mainDiv !== null && mainDiv !== undefined) {
             mainDiv.className = 'main_div_disabled';
         }
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/member/update-all-rank', {
-                        method: 'POST',
-                        headers: {
-                            'X-XSRF-TOKEN': data.token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'include'
+        fetch('/member/update-all-rank', {
+            method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': props.cookies.csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
 
-                    })
-                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) :
-                            response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-                        .then(data => rankingUpdateResult(data));
-                }
-            });
+        })
+            .then(response => response.status !== 200 ? proccessError(response, mainDiv) :
+                response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+            .then(data => rankingUpdateResult(data));
     }
 
     const updateWowLogsRaidsData = () => {
@@ -190,26 +176,19 @@ const MenuComponent = (props) => {
         if (mainDiv !== null && mainDiv !== undefined) {
             mainDiv.className = 'main_div_disabled';
         }
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/raid/update-wow-logs-data', {
-                        method: 'POST',
-                        headers: {
-                            'X-XSRF-TOKEN': data.token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        credentials: 'include'
+        fetch('/raid/update-wow-logs-data', {
+            method: 'POST',
+            headers: {
+                'X-XSRF-TOKEN': props.cookies.csrf,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
 
-                    })
-                        .then(response => response.status !== 200 ? proccessError(response, mainDiv) :
-                            response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
-                        .then(data => wowLogsRaidsUpdateResult(data));
-                }
-            });
+        })
+            .then(response => response.status !== 200 ? proccessError(response, mainDiv) :
+                response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
+            .then(data => wowLogsRaidsUpdateResult(data));
     }
 
 
@@ -345,6 +324,8 @@ function Members(props) {
     const [members, setMembers] = useState(null)
     const [user, setUser] = useState(null);
     const [contentType, setContentType] = useState(props.match.params.tag);
+    const [cookies, setCookie] = useCookies(['csrf']);
+
     let patchName = window.location.pathname;
 
     const setBzData = (value) => {
@@ -359,15 +340,15 @@ function Members(props) {
     }
 
     const ContentDiv = (props) => {
-
         if (contentType === "list") {
             return (<MembersList onSearch={onSearch} updateCharacterDataInTable={updateCharacterDataInTable}
                                  setMembers={setMembers} setSearchValue={setSearchValue} searchValue={searchValue}
                                  setLoading={setLoading} members={members} allMembers={MEMBERS}
-                                 language={currentLanguage}/>)
+                                 language={currentLanguage}
+                                 cookies={props.cookies}/>)
         }
         if (contentType === "stars") {
-            return (<Stars/>)
+            return (<Stars cookies={props.cookies}/>)
         }
     }
 
@@ -404,6 +385,9 @@ function Members(props) {
 
     useEffect(() => {
         setLoading(true)
+
+        resolveCSRFToken()
+            .then(token => setCookie('csrf', token, { path: '/' }))
 
         fetch('/user/get-active')
             .then(response => response.status !== 200 ? showErrorAndSetFalse(response, setLoading) : response.url.includes("login_in") ? window.location.href = "/login_in" : response.json())
@@ -474,11 +458,12 @@ function Members(props) {
                 <Layout>
                     <MenuComponent setContentType={setContentType} user={user} loading={loading}
                                    setSearchValue={setSearchValue} setLoading={setLoading} setBzData={setBzData}
-                                   language={currentLanguage}/>
+                                   language={currentLanguage}
+                                   cookies={cookies}/>
                     <Layout style={{minHeight: "100%"}}>
                         <Content disabled={true}>
 
-                            <ContentDiv contentType={contentType}/>
+                            <ContentDiv cookies={cookies} contentType={contentType}/>
                         </Content>
 
                     </Layout>

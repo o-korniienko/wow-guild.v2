@@ -2,16 +2,15 @@ import {Input, message, Space, Typography} from 'antd';
 import "antd/dist/antd.css";
 import './Main.css';
 import React, {useEffect, useState} from 'react';
-import Cookies from 'universal-cookie';
 import AppNavbarGeneral from './../nav_bar/GeneralNavBar.jsx';
 import AppNavbar from './../nav_bar/AppNavBar.jsx';
 import {CheckOutlined, CloseOutlined, EditOutlined} from '@ant-design/icons';
 import {showError} from './../../common/error-handler.jsx';
+import {resolveCSRFToken} from './../../common/csrf-resolver.jsx';
+import { useCookies } from 'react-cookie';
 
 const {Text, Title, Paragraph} = Typography;
 const {TextArea} = Input;
-const cookies = new Cookies();
-const XSRFToken = cookies.get('XSRF-TOKEN')
 const processString = require('react-process-string');
 let language;
 let preGeneralText
@@ -71,32 +70,6 @@ const OnEditing = (className, id, text) => {
 
 }
 
-const updateGeneralText = (text, tag) => {
-    text = text.trim()
-    var generalMessage = {
-        tag: tag,
-        message: text,
-    }
-    fetch("/csrf")
-        .then(response => response.status != 200 ? showError(response) :
-            response.json())
-        .then(data => {
-            if (data !== undefined && data !== null && data.token != undefined) {
-                fetch('/info/update-message-by-tag', {
-                    method: 'POST',
-                    headers: {
-                        'X-XSRF-TOKEN': data.token,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify(generalMessage)
-                })
-                    .then(response => response.status != 200 ? showError(response) : response.json())
-                    .then(data => checkMessageUpdatingApiResponse(data, tag));
-            }
-        });
-}
 
 const checkMessageUpdatingApiResponse = (data, tag) => {
     if (data !== null && data !== undefined){
@@ -113,8 +86,30 @@ const Content = (props) => {
     const [generalText, setGeneralText] = useState("general info");
     const [aboutText, setAboutText] = useState('some about us');
     const [contactsText, setContactsText] = useState('contacts');
+    const [cookies, setCookie] = useCookies(['csrf']);
+
     let user = null;
     //var user = props.user;
+
+    const updateGeneralText = (text, tag) => {
+        text = text.trim()
+        var generalMessage = {
+            tag: tag,
+            message: text,
+        }
+        fetch('/info/update-message-by-tag', {
+                    method: 'POST',
+                    headers: {
+                        'X-XSRF-TOKEN': cookies.csrf,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(generalMessage)
+                })
+                    .then(response => response.status != 200 ? showError(response) : response.json())
+                    .then(data => checkMessageUpdatingApiResponse(data, tag));
+    }
 
     const onClick = (event) => {
 
@@ -229,6 +224,8 @@ const Content = (props) => {
     }
 
     useEffect(() => {
+        resolveCSRFToken()
+                    .then(token => setCookie('csrf', token, { path: '/' }))
 
         fetch('/user/get-active', {})
             .then(response=> response.status !== 200 ? showError(response) : response.json())

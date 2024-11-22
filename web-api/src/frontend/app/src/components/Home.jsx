@@ -3,21 +3,13 @@ import GreetingPage from './GreetingPage.jsx';
 import { Button, Input } from 'antd';
 import 'antd/dist/antd.css';
 import React, { useState, useEffect } from 'react';
-import Cookies from 'universal-cookie';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-
-const cookies = new Cookies();
-
-
-
 function Home (){
-
      const [user, setUser] = useState(null);
 
-     const XSRFToken  = cookies.get('XSRF-TOKEN')
-      useEffect(() => {
+     useEffect(() => {
         fetch("/user/get-active")
         .then(response => {
             try {
@@ -44,8 +36,6 @@ function Home (){
 }
 
 
-
 export default function Recipients(){
-return <Home/>
-
+    return <Home/>
 }

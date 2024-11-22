@@ -4,11 +4,9 @@ import styled from 'styled-components'
 import './NavBar.css';
 import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import logo from './../logo/logo.jpg';
 import properties from './../../properties.js';
 
-const cookies = new Cookies();
 const {Option} = Select;
 const guildName = properties.guildName
 let languages = []

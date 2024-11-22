@@ -4,15 +4,17 @@ import styled from 'styled-components'
 import './NavBar.css';
 import React, {useEffect, useState} from 'react';
 import {Link, useHistory} from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import {ArrowLeftOutlined, UserOutlined} from '@ant-design/icons';
 import logo from './../logo/logo.jpg';
 import properties from './../../properties.js';
 import {showError} from './../../common/error-handler.jsx';
+import {resolveCSRFToken} from './../../common/csrf-resolver.jsx';
+import { useCookies } from 'react-cookie';
 
-const cookies = new Cookies();
 const {Option} = Select;
 const guildName = properties.guildName
+
+
 let languages = []
 let languageLocal = localStorage.getItem("language") != null ? localStorage.getItem("language") : "EN";
 
@@ -35,26 +37,19 @@ const Language = (props) => {
 
 
     const setLanguage = (value) => {
-        fetch("/csrf")
-            .then(response => response.status != 200 ? showError(response) :
-                response.json())
-            .then(data => {
-                if (data !== undefined && data !== null && data.token != undefined) {
-                    fetch('/user/update-language?language=' + value, {
+        fetch('/user/update-language?language=' + value, {
                         method: 'POST',
                         headers: {
-                            'X-XSRF-TOKEN': data.token,
+                            'X-XSRF-TOKEN': props.cookies.csrf,
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
                         },
                         credentials: 'include'
                     }).then(response => response.status != 200 ? showError(response) :
-                        response.json()).then(data => checkLanguageChengeApiResponse(data));
-                }
-            });
+                        response.json()).then(data => checkLanguageChangeApiResponse(data));
     }
 
-    const checkLanguageChengeApiResponse = (data) =>{
+    const checkLanguageChangeApiResponse = (data) =>{
         if (data !== null && data !== undefined){
             if (data.message === 'Success'){
                 UpdateData(data.data)
@@ -110,23 +105,16 @@ const Logo = (props) => {
     )
 }
 
-const LogOut = () => {
-    fetch("/csrf")
-        .then(response => response.status != 200 ? showError(response) :
-            response.json())
-        .then(data => {
-            if (data !== undefined && data !== null && data.token != undefined) {
-                fetch('/logout', {
-                    method: 'POST',
-                    headers: {
-                        'X-XSRF-TOKEN': data.token,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include'
-                }).then(response => response.status === false ? showError(showError) : getLogOut())
-            }
-        });
+const LogOut = (cookies) => {
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'X-XSRF-TOKEN': cookies.csrf,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    }).then(response => response.status === false ? showError(showError) : getLogOut())
 
 
 }
@@ -162,7 +150,6 @@ function UserButton(props) {
 
 
 const LogOutButton = (props) => {
-
     const StyledLogOutButton = styled(Button)`
     position:relative;
     right:3%;
@@ -183,7 +170,7 @@ const LogOutButton = (props) => {
     }
 
     return (
-        <StyledLogOutButton type="link"><Link onClick={LogOut}>
+        <StyledLogOutButton type="link"><Link onClick={() => LogOut(props.cookies)}>
             {props.logOutText}</Link>
         </StyledLogOutButton>
     )
@@ -348,6 +335,7 @@ function NavBar(props) {
     const [craftText, setCraftText] = useState("");
     const [adminText, setAdminText] = useState("");
     const [chatText, setChatText] = useState("");
+    const [cookies, setCookie] = useCookies(['csrf']);
 
 
     const StyledPageHeader = styled(PageHeader)`
@@ -372,6 +360,9 @@ function NavBar(props) {
     }
 
     useEffect(() => {
+        resolveCSRFToken()
+            .then(token => setCookie('csrf', token, { path: '/' }))
+
         fetch("/user/get-active")
             .then(response => {
                 try {
@@ -403,12 +394,12 @@ function NavBar(props) {
                              setUserTittle={setUserTittle}
                              language={language}
                 />,
-                <LogOutButton key='1'
+                <LogOutButton cookies={cookies} key='1'
                           logOutText={logOutText}
                           setLogOutText={setLogOutText}
                           language={language}
                 />,
-                <Language language={language} setLanguage={setLanguage}
+                <Language cookies={cookies} language={language} setLanguage={setLanguage}
                           setFunction={props.setFunction}/>
                 ]
             }
