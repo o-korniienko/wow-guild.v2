@@ -1,13 +1,11 @@
 package com.wowguild.web_api.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class MainController {
 
-    @GetMapping("/{path:[^\\.]+}")
+/*    @GetMapping("/{path:[^\\.]+}")
     public String index() {
         return "forward:/";
     }
@@ -20,6 +18,6 @@ public class MainController {
     @GetMapping(value = "/members/{tag}")
     public String index3(@PathVariable("tag") String tag) {
         return "forward:/";
-    }
+    }*/
 
 }

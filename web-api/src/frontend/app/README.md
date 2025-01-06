@@ -1,1 +1,0 @@
-# WOW guild app frontend

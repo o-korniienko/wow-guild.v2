@@ -19,7 +19,6 @@ public class TokenManagerImpl implements TokenManager {
     @Override
     public String getTokenByTag(String tag) {
         Token tokenFromDB = tokenRepo.findByTag(tag);
-
         String token = null;
         if (tokenFromDB != null) {
 
@@ -62,14 +61,13 @@ public class TokenManagerImpl implements TokenManager {
     }
 
     private boolean isTokenExpired(Token token) {
+        if (token.getAccess_token() == null || token.getExpires_in() == null || token.getCreateTime() == null){
+            return true;
+        }
         long expiresIn = token.getExpires_in();
         LocalDateTime createTokenDate = token.getCreateTime();
         LocalDateTime dateTokenWorkUntil = createTokenDate.plusSeconds(expiresIn);
         LocalDateTime nowDate = LocalDateTime.now();
-        if (nowDate.isAfter(dateTokenWorkUntil)) {
-            return true;
-        }
-
-        return false;
+        return nowDate.isAfter(dateTokenWorkUntil);
     }
 }

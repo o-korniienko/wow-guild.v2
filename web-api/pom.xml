@@ -127,7 +127,7 @@
             </plugin>
 
 
-            <plugin>
+            <!--<plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.7.6</version>
@@ -172,9 +172,9 @@
                     <workingDirectory>src/frontend/app</workingDirectory>
                 </configuration>
 
-            </plugin>
+            </plugin>-->
 
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -195,7 +195,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
 
         </plugins>

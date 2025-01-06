@@ -5,31 +5,9 @@
 /character_parser_error
 /character_request_error
 /http requests
-/src/frontend/app/node_modules/
-/src/frontend/package-lock.json
 
-
-
-# testing
-/src/frontend/coverage
-
-# production
-/src/frontend/build
-
-# misc
-/src/frontend.DS_Store
-/src/frontend.env.local
-/src/frontend.env.development.local
-/src/frontend.env.test.local
-/src/frontend.env.production.local
-
-/src/frontendnpm-debug.log*
-/src/frontendyarn-debug.log*
-/src/frontendyarn-error.log*
 /for_tests.txt
-/web-api/src/frontend/app/node_modules/
-/web-api/src/frontend/app/build/
-/web-api/src/frontend/app/node/
+
 /web-api/target/
 /common/target/
 /push-api/target/
