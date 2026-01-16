@@ -11,4 +11,5 @@ public class SimpleChatMessageDto {
     private String message;
     private LocalDateTime date;
     private long userId;
+    private String userName;
 }

@@ -14,6 +14,7 @@ public class SimpleChatMessageConverter implements Converter<SimpleChatMessage, 
             message.setMessage(simpleChatMessageDto.getMessage());
             message.setDate(simpleChatMessageDto.getDate());
             message.setUserId(simpleChatMessageDto.getUserId());
+            message.setUserName(simpleChatMessageDto.getUserName());
             return message;
         }
 
@@ -28,6 +29,7 @@ public class SimpleChatMessageConverter implements Converter<SimpleChatMessage, 
             message.setMessage(simpleChatMessage.getMessage());
             message.setDate(simpleChatMessage.getDate());
             message.setUserId(simpleChatMessage.getUserId());
+            message.setUserName(simpleChatMessage.getUserName());
             return message;
         }
         return null;

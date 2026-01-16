@@ -18,4 +18,5 @@ public class SimpleChatMessage {
     private String message;
     private LocalDateTime date;
     private long userId;
+    private String userName;
 }
