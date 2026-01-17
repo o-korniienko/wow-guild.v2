@@ -11,7 +11,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class KafkaConfig {
 
     @Bean
     public ConsumerFactory<String, KafkaMessage> consumerFactory() {
-        JsonDeserializer<KafkaMessage> deserializer = new JsonDeserializer<>(KafkaMessage.class);
+        JacksonJsonDeserializer<KafkaMessage> deserializer = new JacksonJsonDeserializer<>(KafkaMessage.class);
         //deserializer.setRemoveTypeHeaders(false);
         //deserializer.addTrustedPackages("wowguild.common.model.kafka");
         //deserializer.setUseTypeMapperForKey(true);

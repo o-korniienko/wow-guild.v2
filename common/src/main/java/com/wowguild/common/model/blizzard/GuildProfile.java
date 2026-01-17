@@ -1,11 +1,13 @@
 package com.wowguild.common.model.blizzard;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class GuildProfile {
+    @JsonProperty("_links")
     private Links _links;
     private Guild guild;
     private List<Member> members;

@@ -4,14 +4,11 @@ import com.wowguild.common.converter.Converter;
 import com.wowguild.common.entity.wow.rank.Report;
 import com.wowguild.common.model.wow_logs.WOWLogsFightData;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
+import com.wowguild.common.service.impl.WowLogsReportService;
 import com.wowguild.web_api.WebApi;
 import com.wowguild.web_api.sender.HttpSender;
-import com.wowguild.common.service.impl.CharacterService;
-import com.wowguild.common.service.impl.WowLogsReportService;
-import com.wowguild.common.service.impl.ZoneService;
-import com.wowguild.web_api.service.wow.WowLogsCharacterService;
-import com.wowguild.web_api.service.wow.WowLogsGuildService;
 import com.wowguild.web_api.service.token.TokenManager;
+import com.wowguild.web_api.service.wow.WowLogsGuildService;
 import com.wowguild.web_api.tool.parser.ReportDataParser;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,11 +17,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
@@ -38,15 +34,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class WowLogsGuildServiceTest {
 
-    @MockBean
+    @MockitoBean
     private TokenManager tokenManager;
-    @MockBean
+    @MockitoBean
     private HttpSender httpSender;
-    @MockBean
+    @MockitoBean
     private WowLogsReportService reportService;
-    @MockBean
+    @MockitoBean
     private ReportDataParser reportDataParser;
-    @MockBean
+    @MockitoBean
     private Converter<Report, WOWLogsReportData.ReportDto> reportConverter;
 
     @Autowired

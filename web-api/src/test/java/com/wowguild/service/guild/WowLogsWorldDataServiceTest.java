@@ -1,6 +1,5 @@
 package com.wowguild.service.guild;
 
-import com.wowguild.common.model.wow_logs.WowLogsWorldData;
 import com.wowguild.common.service.impl.BossService;
 import com.wowguild.common.service.impl.ZoneService;
 import com.wowguild.web_api.WebApi;
@@ -15,12 +14,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static com.wowguild.arguments.WowLogsDataGenerator.getWowLogsWorldDataJson;
@@ -35,15 +33,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class WowLogsWorldDataServiceTest {
 
-    @MockBean
+    @MockitoBean
     private WowLogsWorldDataParser wowLogsWorldDataParser;
-    @MockBean
+    @MockitoBean
     private TokenManager tokenManager;
-    @MockBean
+    @MockitoBean
     private HttpSender httpSender;
-    @MockBean
+    @MockitoBean
     private BossService bossService;
-    @MockBean
+    @MockitoBean
     private ZoneService zoneService;
 
     @Autowired
