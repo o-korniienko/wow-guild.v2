@@ -17,9 +17,9 @@ public class Rank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-    private long amount;
-    private int killIlvl;
+    private Long id;
+    private Long amount;
+    private Integer killIlvl;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
     private String reportCode;

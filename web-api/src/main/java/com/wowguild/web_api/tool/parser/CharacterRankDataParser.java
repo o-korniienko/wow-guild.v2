@@ -32,8 +32,10 @@ public class CharacterRankDataParser implements Parser<WOWLogsCharacterRankData>
 
     @Override
     public WOWLogsCharacterRankData parseTo(String json) {
+        System.out.println("rank data json: " + json);
         try {
             String characterRank = parseByKey(json, "character");
+            System.out.println("characterRank json: " + characterRank);
             return mapper.readValue(characterRank, WOWLogsCharacterRankData.class);
         } catch (JacksonException e) {
             log.error("Could not parse json, error: {}", e.getMessage());

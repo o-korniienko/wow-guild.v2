@@ -70,8 +70,9 @@ public class WebSecurityConfig {
                                 "/login_in",
                                 "/info/get-about-guild-messages",
                                 "/user/get-active",
-                                "/user/registration",
                                 "/info/get-greeting-message")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/user/registration")
                         .permitAll()
                         .anyRequest().authenticated()
                 );

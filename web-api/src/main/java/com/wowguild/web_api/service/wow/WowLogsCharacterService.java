@@ -167,7 +167,7 @@ public class WowLogsCharacterService {
                             Rank rank = new Rank();
                             rank.setDate(Instant.ofEpochMilli(
                                     logsRank.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDateTime());
-                            rank.setAmount((long) logsRank.getAmount());
+                            rank.setAmount(logsRank.getAmount() != null ? logsRank.getAmount().longValue() : 0L);
                             rank.setKillIlvl(logsRank.getBracketData());
                             rank.setFightID(String.valueOf(logsRank.getReport().getFightID()));
                             rank.setReportCode(logsRank.getReport().getCode());
@@ -195,7 +195,7 @@ public class WowLogsCharacterService {
                         characterRank = new CharacterRank();
                         List<Boss> bossList = this.bossService.findByEncounterID(boss.getEncounterID());
                         Boss bossFromDB = null;
-                        if (bossList != null && bossList.size() > 0) {
+                        if (bossList != null && !bossList.isEmpty()) {
                             for (Boss boss1 : bossList) {
                                 if (boss1.getDifficulty() == boss.getDifficulty()) {
                                     bossFromDB = boss1;
@@ -210,7 +210,7 @@ public class WowLogsCharacterService {
                         }
                         characterRank.setRanks(fightRanks);
                         characterRank.setTotalKills(wowLogsRankData.getEncounterRankings().getTotalKills());
-                        characterRank.setMaxAmount((long) wowLogsRankData.getEncounterRankings().getBestAmount());
+                        characterRank.setMaxAmount(wowLogsRankData.getEncounterRankings().getBestAmount() != null ? wowLogsRankData.getEncounterRankings().getBestAmount().longValue() : 0L);
                         characterRank.setAverage((long) getAverageDPS(fightRanks));
                         characterRank.setMetric(wowLogsRankData.getEncounterRankings().getMetric());
                         rankService.saveAll(fightRanks);
@@ -218,14 +218,14 @@ public class WowLogsCharacterService {
                     } else {
                         List<Rank> ranksFromDB = characterRank.getRanks();
                         List<Rank> updatedRanks = new ArrayList<>();
-                        if (ranksFromDB == null || ranksFromDB.size() == 0) {
+                        if (ranksFromDB == null || ranksFromDB.isEmpty()) {
                             updatedRanks = fightRanks;
                         } else {
                             updatedRanks = ranksFromDB;
                             updatedRanks.addAll(fightRanks);
                         }
                         characterRank.setRanks(updatedRanks);
-                        characterRank.setMaxAmount((long) wowLogsRankData.getEncounterRankings().getBestAmount());
+                        characterRank.setMaxAmount(wowLogsRankData.getEncounterRankings().getBestAmount() != null ? wowLogsRankData.getEncounterRankings().getBestAmount().longValue() : 0L);
                         characterRank.setAverage((long) getAverageDPS(updatedRanks));
                         characterRank.setMetric(wowLogsRankData.getEncounterRankings().getMetric());
                         rankService.saveAll(updatedRanks);

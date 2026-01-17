@@ -9,11 +9,11 @@ public class Zone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private String zoneName;
     private String expansionName;
     @Column(unique = true)
-    private long canonicalId;
+    private Long canonicalId;
 
 }

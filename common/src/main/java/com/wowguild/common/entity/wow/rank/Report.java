@@ -12,9 +12,9 @@ public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     private String code;
-    private long endTime;
+    private Long endTime;
 
     public Report() {
     }

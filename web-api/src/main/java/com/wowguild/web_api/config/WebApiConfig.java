@@ -61,6 +61,7 @@ public class WebApiConfig {
             ClientHttpResponse response = execution.execute(request, body);
 
             log.info("Response Status Code: {}", response.getStatusCode());
+            log.info("response body: {}", response.getBody());
 
             return response;
         };

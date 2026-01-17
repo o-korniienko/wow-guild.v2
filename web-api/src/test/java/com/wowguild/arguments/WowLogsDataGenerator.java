@@ -348,7 +348,7 @@ public class WowLogsDataGenerator {
                                       "bracketData": 3,
                                       "spec": "Arms",
                                       "bestSpec": "Arms",
-                                      "classType": 1,
+                                      "class": 1,
                                       "faction": 0
                                     },
                                     {
@@ -375,7 +375,7 @@ public class WowLogsDataGenerator {
                                       "bracketData": 2,
                                       "spec": "Protection",
                                       "bestSpec": "Protection",
-                                      "classType": 1,
+                                      "class": 1,
                                       "faction": 1
                                     }
                                   ]

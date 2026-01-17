@@ -1,5 +1,6 @@
 package com.wowguild.common.model.wow_logs;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
 
@@ -14,52 +15,53 @@ public class WOWLogsCharacterRankData {
     @Data
     @ToString
     public static class CharacterRankings {
-        private double bestAmount;
-        private double medianPerformance;
-        private double averagePerformance;
-        private int totalKills;
-        private int fastestKill;
-        private int difficulty;
+        private Double bestAmount;
+        private Double medianPerformance;
+        private Double averagePerformance;
+        private Integer totalKills;
+        private Integer fastestKill;
+        private Integer difficulty;
         private String metric;
-        private int partition;
-        private int zone;
+        private Integer partition;
+        private Integer zone;
         private List<Rank> ranks;
 
         @Data
         @ToString
         public static class Rank {
             private boolean lockedIn;
-            private double rankPercent;
-            private double historicalPercent;
-            private double todayPercent;
-            private int rankTotalParses;
-            private int historicalTotalParses;
-            private int todayTotalParses;
+            private Double rankPercent;
+            private Double historicalPercent;
+            private Double todayPercent;
+            private Integer rankTotalParses;
+            private Integer historicalTotalParses;
+            private Integer todayTotalParses;
             private Guild guild;
             private Report report;
-            private int duration;
-            private long startTime;
-            private double amount;
-            private int bracketData;
+            private Integer duration;
+            private Long startTime;
+            private Double amount;
+            private Integer bracketData;
             private String spec;
             private String bestSpec;
-            private int classType;
-            private int faction;
+            @JsonProperty("class")
+            private Integer classType;
+            private Integer faction;
 
             @Data
             @ToString
             public static class Guild {
-                private int id;
+                private Integer id;
                 private String name;
-                private int faction;
+                private Integer faction;
             }
 
             @Data
             @ToString
             public static class Report {
                 private String code;
-                private long startTime;
-                private int fightID;
+                private Long startTime;
+                private Integer fightID;
             }
         }
     }

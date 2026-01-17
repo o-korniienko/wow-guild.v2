@@ -10,12 +10,12 @@ import java.util.List;
 public class CharacterRank {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     @ManyToOne
     private Boss boss;
-    private long maxAmount;
-    private long average;
-    private int totalKills;
+    private Long maxAmount;
+    private Long average;
+    private Integer totalKills;
     private String metric;
     @OneToMany
     @JoinColumn(name = "character_rank_id")

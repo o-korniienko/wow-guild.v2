@@ -10,7 +10,7 @@ public class BossGenerator {
         boss.setName(name);
         boss.setId(id);
         boss.setDifficulty(difficulty);
-        boss.setEncounterID(setEncounterID);
+        boss.setEncounterID((long) setEncounterID);
         boss.setZone(null);
 
         return boss;

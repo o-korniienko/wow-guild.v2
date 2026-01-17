@@ -11,12 +11,12 @@ public class Boss {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     private String name;
-    private long encounterID;
+    private Long encounterID;
     @ManyToOne
     @JoinColumn(name = "zone_id")
     private Zone zone;
-    private int difficulty;
+    private Integer difficulty;
 
 }

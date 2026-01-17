@@ -36,10 +36,10 @@ public class CharacterGenerator {
 
     public static CharacterRank generateCharacterRank(LocalDateTime date) {
         CharacterRank characterRank = new CharacterRank();
-        characterRank.setId(1);
+        characterRank.setId(1L);
         characterRank.setBoss(null);
-        characterRank.setMaxAmount(9999);
-        characterRank.setAverage(5555);
+        characterRank.setMaxAmount(9999L);
+        characterRank.setAverage(5555L);
         characterRank.setTotalKills(43);
         characterRank.setMetric("dps");
         List<Rank> ranks = Collections.singletonList(generateRank(date));
@@ -50,8 +50,8 @@ public class CharacterGenerator {
 
     public static Rank generateRank(LocalDateTime date) {
         Rank rank = new Rank();
-        rank.setId(1);
-        rank.setAmount(4444);
+        rank.setId(1L);
+        rank.setAmount(4444L);
         rank.setKillIlvl(608);
         rank.setDate(date);
         rank.setReportCode("12356");
