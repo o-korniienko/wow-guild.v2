@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -64,16 +62,16 @@ public class WebSecurityConfig {
                                 "/*.ico",
                                 "/*.jsx",
                                 "/static/**",
-
                                 "/error")
                         .permitAll()
                         .requestMatchers(
-                                antMatcher(HttpMethod.GET, "/"),
-                                antMatcher(HttpMethod.GET, "/login_in"),
-                                antMatcher(HttpMethod.GET, "/info/get-about-guild-messages"),
-                                antMatcher(HttpMethod.GET, "/user/get-active"),
-                                antMatcher(HttpMethod.POST, "/user/registration"),
-                                antMatcher(HttpMethod.GET, "/info/get-greeting-message"))
+                                HttpMethod.GET,
+                                "/",
+                                "/login_in",
+                                "/info/get-about-guild-messages",
+                                "/user/get-active",
+                                "/user/registration",
+                                "/info/get-greeting-message")
                         .permitAll()
                         .anyRequest().authenticated()
                 );

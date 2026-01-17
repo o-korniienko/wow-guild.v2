@@ -21,9 +21,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,19 +45,19 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class WowLogsCharacterServiceTest {
 
-    @MockBean
+    @MockitoBean
     private CharacterService characterService;
-    @MockBean
+    @MockitoBean
     private BossService bossService;
-    @MockBean
+    @MockitoBean
     private CharacterRankService characterRankService;
-    @MockBean
+    @MockitoBean
     private RankService rankService;
-    @MockBean
+    @MockitoBean
     private TokenManager tokenManager;
-    @MockBean
+    @MockitoBean
     private HttpSender httpSender;
-    @MockBean
+    @MockitoBean
     private Parser<WOWLogsCharacterRankData> characterRankDataParser;
 
     @Autowired

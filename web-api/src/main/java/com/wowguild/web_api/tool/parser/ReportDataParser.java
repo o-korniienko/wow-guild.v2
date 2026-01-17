@@ -1,8 +1,8 @@
 package com.wowguild.web_api.tool.parser;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import com.wowguild.common.model.wow_logs.WOWLogsFightData;
 import com.wowguild.common.model.wow_logs.WOWLogsReportData;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class ReportDataParser implements Parser<WOWLogsReportData> {
         try {
             String reportJson = parseByKey(json, "reports");
             return mapper.readValue(reportJson, WOWLogsReportData.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Could not parse json, error: {}", e.getMessage());
         }
         return null;
@@ -47,7 +47,7 @@ public class ReportDataParser implements Parser<WOWLogsReportData> {
         try {
             String fightJson = parseByKey(json, "report");
             return mapper.readValue(fightJson, WOWLogsFightData.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Could not parse json, error: {}", e.getMessage());
         }
         return null;
