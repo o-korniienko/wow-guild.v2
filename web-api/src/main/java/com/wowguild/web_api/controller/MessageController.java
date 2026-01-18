@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/info")
+@RequestMapping("/api/v1/info")
 public class MessageController {
 
     private final MessageService service;

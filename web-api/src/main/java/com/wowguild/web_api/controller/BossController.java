@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/boss")
+@RequestMapping("/api/v1/boss")
 public class BossController {
 
     private final BossService bossService;

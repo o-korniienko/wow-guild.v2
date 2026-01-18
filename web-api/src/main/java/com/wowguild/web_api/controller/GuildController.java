@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/guild")
+@RequestMapping("/api/v1/guild")
 public class GuildController {
 
     private final GuildManager guildManager;

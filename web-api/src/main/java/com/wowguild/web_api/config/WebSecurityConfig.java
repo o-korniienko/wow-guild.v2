@@ -3,26 +3,27 @@ package com.wowguild.web_api.config;
 import com.wowguild.web_api.handler.LoginFailHandler;
 import com.wowguild.web_api.handler.LoginSuccessHandler;
 import com.wowguild.web_api.handler.NoRedirectLogoutSuccessHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +31,10 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableJdbcHttpSession
 public class WebSecurityConfig {
-
+    @Value("${app.security.origin.fe-url}")
+    private String FE_ORIGIN;
 
     @Bean
     public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
@@ -39,18 +42,20 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http, LoginFailHandler loginFailHandler, LoginSuccessHandler loginSuccessHandler) {
         http
                 //.cors(cors -> cors.disable())
                 //.csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configure(http))
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers(
-                                "/perform_login",
-                                "/user/registration",
-                                "/simple_chat_web_socket/**"
-                        ))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf ->
+                        csrf
+                                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                                .ignoringRequestMatchers(
+                                        "/api/v1/perform_login",
+                                        "/api/v1/user/registration",
+                                        "/api/v1/simple_chat_web_socket/**"
+                                ))
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/index*",
                                 "/*.js",
@@ -67,25 +72,23 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/",
-                                "/login_in",
-                                "/info/get-about-guild-messages",
-                                "/user/get-active",
-                                "/info/get-greeting-message")
+                                "/api/v1/info/get-about-guild-messages",
+                                "/api/v1/user/get-active",
+                                "/api/v1/info/get-greeting-message")
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/user/registration")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/user/registration")
                         .permitAll()
                         .anyRequest().authenticated()
                 );
         http
                 .formLogin(formLogin -> formLogin
-                        .failureHandler(new LoginFailHandler())
-                        .loginPage("/login_in")
-                        .loginProcessingUrl("/perform_login")
-                        .successHandler(new LoginSuccessHandler(Duration.ofHours(6)))
+                        .failureHandler(loginFailHandler)
+                        .loginProcessingUrl("/api/v1/perform_login")
+                        .successHandler(loginSuccessHandler)
                         .permitAll());
         http
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/v1/logout")
                         .logoutSuccessHandler(new NoRedirectLogoutSuccessHandler())
                         .permitAll());
 
@@ -93,19 +96,10 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> {
-            web.debug(false)
-                    /*.ignoring()
-                    .requestMatchers("/perform_login")*/;
-        };
-    }
-
-    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3006"));
+        configuration.setAllowedOrigins(Collections.singletonList(FE_ORIGIN));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         List<String> settings = new ArrayList<>();
@@ -137,16 +131,4 @@ public class WebSecurityConfig {
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder(8);
     }
-
-    /*@Bean
-    protected UserDetailsService userDetailsService() {
-*//*        UserDetails user =
-                User.withDefaultPasswordEncoder()
-                        .username("alex")
-                        .password("123")
-                        .roles("USER")
-                        .build();
-        return new InMemoryUserDetailsManager(user);*//*
-        return userService;
-    }*/
 }

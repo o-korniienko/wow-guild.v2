@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/raid")
+@RequestMapping("/api/v1/raid")
 public class RaidController {
 
     private final WowLogsWorldDataService wowLogsWorldDataService;

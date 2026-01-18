@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/simple-chat")
+@RequestMapping("/api/v1/simple-chat")
 public class SimpleChatController {
 
     private final SimpleChatService simpleChatService;
